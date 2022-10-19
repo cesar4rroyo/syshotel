@@ -19,12 +19,18 @@ class DatabaseSeeder extends Seeder
             'usertypes',
             'business',
             'users',
+            'menu_groups',
+            'menu_options',
+            'access',
         ]);
 
         $this->call([
             UserTypeSeeder::class,
             BusinessSeeder::class,
             UserSeeder::class,
+            MenuGroupSeeder::class,
+            MenuOptionSeeder::class,
+            AccessSeeder::class,
         ]);
     }
 

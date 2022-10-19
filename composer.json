@@ -32,7 +32,11 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        }
+        },
+        "files": [
+            "app/Librerias/helpers.php",
+            "app/Librerias/Libreria.php"
+        ]
     },
     "scripts": {
         "post-autoload-dump": [

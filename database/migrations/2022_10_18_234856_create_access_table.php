@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('access', function (Blueprint $table) {
             $table->id();
             $table->foreignId('usertype_id')->references('id')->on('usertypes');
-            $table->foreignId('menu_option_id')->references('id')->on('menu_options');
+            $table->foreignId('menuoption_id')->references('id')->on('menu_options');
             $table->timestamps();
         });
     }

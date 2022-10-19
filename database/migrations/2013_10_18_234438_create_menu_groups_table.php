@@ -15,7 +15,11 @@ return new class extends Migration
     {
         Schema::create('menu_groups', function (Blueprint $table) {
             $table->id();
+            $table->string('name', 200);
+            $table->string('icon', 200)->nullable();
+            $table->integer('order')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
