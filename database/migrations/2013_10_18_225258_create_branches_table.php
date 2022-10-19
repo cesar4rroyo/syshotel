@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('city')->nullable();
+            $table->string('status')->default('A');
             $table->foreignId('business_id')->references('id')->on('business');
             $table->timestamps();
             $table->softDeletes();

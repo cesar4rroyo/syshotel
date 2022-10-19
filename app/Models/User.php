@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -27,6 +28,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'usertype_id',
+        'business_id',
+        'people_id'
     ];
 
     /**
@@ -58,4 +62,38 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function business()
+    {
+        return $this->belongsTo(Business::class);
+    }
+
+    public function people()
+    {
+        return $this->belongsTo(People::class);
+    }
+
+    public function usertype()
+    {
+        return $this->belongsTo(Usertype::class);
+    }
+
+    public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'user_branches', 'user_id', 'branch_id');
+    }
+
+    public function cashboxes()
+    {
+        return $this->belongsToMany(CashBox::class, 'user_cashboxes', 'user_id', 'cashbox_id');
+    }
+
+    public function scopesearch(Builder $query, string $param, int $usertype_id = null, int $business_id = null)
+    {
+        return $query->where('name', 'like', "%$param%")
+            ->where('email', 'like', "%$param%")
+            ->where('usertype_id', $usertype_id)
+            ->where('business_id', $business_id)
+            ->orderBy('name', 'asc');
+    }
 }

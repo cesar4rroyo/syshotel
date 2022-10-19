@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
             $table->foreignId('usertype_id')->references('id')->on('usertypes');
-            $table->foreignId('bussiness_id')->references('id')->on('business');
+            $table->foreignId('business_id')->references('id')->on('business');
             $table->foreignId('people_id')->nullable()->references('id')->on('people');
             $table->timestamps();
             $table->softDeletes();
