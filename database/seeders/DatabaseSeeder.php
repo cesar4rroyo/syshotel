@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             'menu_groups',
             'menu_options',
             'access',
+            'branches',
         ]);
 
         $this->call([
@@ -31,6 +32,7 @@ class DatabaseSeeder extends Seeder
             MenuGroupSeeder::class,
             MenuOptionSeeder::class,
             AccessSeeder::class,
+            BranchSeeder::class,
         ]);
     }
 

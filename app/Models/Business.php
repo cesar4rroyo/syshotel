@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
 
 class Business extends Model
 {
@@ -22,15 +22,27 @@ class Business extends Model
         'status',
     ];
 
-    public function scopesearch(Builder $query, string $param, string $status = null)
+    public function getStatusBusinessAttribute()
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('address', 'like', "%$param%")
-            ->where('city', 'like', "%$param%")
-            ->where('phone', 'like', "%$param%")
-            ->where('email', 'like', "%$param%")
-            ->where('status', $status)
-            ->orderBy('name', 'asc');
+        return $this->status == 'A' ? 'Activo' : 'Inactivo';
+    }
+
+    public function scopesearch(Builder $query, string $param = null, string $status = null)
+    {
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', '%' . $param . '%')
+                ->orWhere('address', 'like', '%' . $param . '%')
+                ->orWhere('city', 'like', '%' . $param . '%')
+                ->orWhere('phone', 'like', '%' . $param . '%')
+                ->orWhere('email', 'like', '%' . $param . '%');
+        })->when($status, function ($query, $status) {
+            return $query->where('status', $status);
+        })->orderBy('name', 'asc');
+    }
+
+    public function settings()
+    {
+        return $this->hasOne(Setting::class, 'business_id', 'id');
     }
 
     public function users()

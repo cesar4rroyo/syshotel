@@ -1821,7 +1821,7 @@ input:checked + .toggle-bg {
 }
 .bg-blue-corp {
   --tw-bg-opacity: 1;
-  background-color: rgb(4 62 217 / var(--tw-bg-opacity));
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 .bg-red-500 {
   --tw-bg-opacity: 1;
@@ -2348,8 +2348,8 @@ input:checked + .toggle-bg {
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 .hover\:bg-blue-corp:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(4 62 217 / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.8;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 .hover\:bg-gray-700:hover {
   --tw-bg-opacity: 1;

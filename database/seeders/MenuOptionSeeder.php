@@ -62,14 +62,14 @@ class MenuOptionSeeder extends Seeder
         DB::table('menu_options')->insert([
             'name' => 'Lista de Comprobantes',
             'icon' => 'fas fa-list-ol',
-            'link' => 'bussiness',
+            'link' => 'business',
             'order' => 7,
             'menugroup_id' => 5
         ]);
         DB::table('menu_options')->insert([
             'name' => 'Nota de Crédito',
             'icon' => 'fas fa-list-ol',
-            'link' => 'bussiness',
+            'link' => 'business',
             'order' => 7,
             'menugroup_id' => 5
         ]);
@@ -77,7 +77,7 @@ class MenuOptionSeeder extends Seeder
         DB::table('menu_options')->insert([
             'name' => 'Empresas',
             'icon' => 'fas fa-list-ol',
-            'link' => 'bussiness',
+            'link' => 'business',
             'order' => 7,
             'menugroup_id' => 6
         ]);

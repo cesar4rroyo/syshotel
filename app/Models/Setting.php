@@ -16,7 +16,7 @@ class Setting extends Model
         'razon_social',
         'ruc',
         'nombre_comercial',
-        'dirreccion',
+        'direccion',
         'telefono',
         'email',
         'logo',
