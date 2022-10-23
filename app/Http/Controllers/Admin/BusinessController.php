@@ -159,7 +159,7 @@ class BusinessController extends Controller
             $error = DB::transaction(function () use ($request) {
                 $model = $this->model->create($request->all());
             });
-            event(new BinnacleEvent(auth()->user()->id, 'STORE', 'Stored new ' . $this->entity));
+            // event(new BinnacleEvent(auth()->user()->id, 'STORE', 'Stored new ' . $this->entity));
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -260,6 +260,7 @@ class BusinessController extends Controller
                 return $exist;
             }
             $listar = 'SI';
+            $model = $this->model->find($id);
             $formData = [
                 'route'         => array($this->routes['update'], $this->model->find($id)),
                 'method'        => 'PUT',
@@ -269,7 +270,7 @@ class BusinessController extends Controller
                 'boton'         => 'Guardar',
                 'entidad'       => $this->entity,
                 'listar'        => $listar,
-                'model'         => $this->model->find($id),
+                'model'         => $model,
                 'action'        => $action,
             ];
             switch ($action) {
@@ -277,7 +278,30 @@ class BusinessController extends Controller
                     return view($this->folderview . '.settings')->with(compact('formData'));
                     break;
                 case 'BRANCHES':
-                    return view($this->folderview . '.branches')->with(compact('formData'));
+                    $branches = $model->branches;
+                    $cabecera = [
+                        [
+                            'valor' => 'Nombre',
+                            'numero' => 1,
+                        ],
+                        [
+                            'valor' => 'Dirección',
+                            'numero' => 1,
+                        ],
+                        [
+                            'valor' => 'Ciudad',
+                            'numero' => 1,
+                        ],
+                        [
+                            'valor' => 'Teléfono',
+                            'numero' => 1,
+                        ],
+                        [
+                            'valor' => 'Email',
+                            'numero' => 1,
+                        ],
+                    ];
+                    return view($this->folderview . '.branches')->with(compact('formData', 'branches', 'cabecera'));
                     break;
                 case 'USERS':
                     return view($this->folderview . '.users')->with(compact('formData'));

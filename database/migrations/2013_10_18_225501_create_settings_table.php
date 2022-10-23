@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('logo')->nullable();
             //TO DO - Agregar campos para configurar el sistema con facturación electrónica
             $table->foreignId('business_id')->references('id')->on('business');
+            $table->foreignId('branch_id')->references('id')->on('branches');
             $table->timestamps();
             $table->softDeletes();
         });

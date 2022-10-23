@@ -24,5 +24,15 @@ class BranchSeeder extends Seeder
             'business_id' => 1,
             'status' => 'A',
         ]);
+
+        DB::table('branches')->insert([
+            'name' => 'Branch 2',
+            'address' => 'Address 2',
+            'phone' => 'Phone 2',
+            'email' => 'Email 2',
+            'city' => 'Chiclayo',
+            'business_id' => 1,
+            'status' => 'A',
+        ]);
     }
 }
