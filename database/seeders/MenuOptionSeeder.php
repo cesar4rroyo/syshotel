@@ -81,5 +81,15 @@ class MenuOptionSeeder extends Seeder
             'order' => 7,
             'menugroup_id' => 6
         ]);
+
+
+        //administracion menu
+        DB::table('menu_options')->insert([
+            'name' => 'Pisos',
+            'icon' => 'fas fa-hotel',
+            'link' => 'floor',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
     }
 }
