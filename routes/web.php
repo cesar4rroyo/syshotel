@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\BusinessController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +29,11 @@ Route::middleware([
     })->name('dashboard');
 
     Route::post('business/search', [BusinessController::class, 'search'])->name('business.search');
-    Route::get('business/maintenance/{id}/{action}', [BusinessController::class, 'maintenance'])->name('business.maintenance');
     Route::get('business/delete/{id}/{listagain}', [BusinessController::class, 'delete'])->name('business.delete');
     Route::resource('business', BusinessController::class)->except(['show']);
+
+    Route::post('branch/search', [BranchController::class, 'search'])->name('branch.search');
+    Route::get('branch/maintenance/{id}/{action}', [BranchController::class, 'maintenance'])->name('branch.maintenance');
+    Route::get('branch/delete/{id}/{listagain}', [BranchController::class, 'delete'])->name('branch.delete');
+    Route::resource('branch', BranchController::class)->except(['show']);
 });

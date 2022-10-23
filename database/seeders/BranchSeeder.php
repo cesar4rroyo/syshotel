@@ -23,6 +23,7 @@ class BranchSeeder extends Seeder
             'city' => 'Chiclayo',
             'business_id' => 1,
             'status' => 'A',
+            'is_main' => true,
         ]);
 
         DB::table('branches')->insert([

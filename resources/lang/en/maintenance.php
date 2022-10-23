@@ -68,7 +68,11 @@ return [
         ],
         'business' => [
             'name' => 'Nombre',
+            'status' => 'Estado',
+            'address' => 'Dirección',
+            'phone' => 'Teléfono',
             'email' => 'Email',
+            'city' => 'Ciudad',
             'usertype' => 'Tipo de Usuario',
             'person' => 'Persona',
             'title' => 'Empresas',
@@ -76,6 +80,19 @@ return [
             'branches' => 'Sucursales de la Empresa',
             'users' => 'Usuarios de la Empresa',
         ],
+        'branch' => [
+            'title' => 'Sucursales',
+            'name' => 'Nombre',
+            'status' => 'Estado',
+            'address' => 'Dirección',
+            'phone' => 'Teléfono',
+            'email' => 'Email',
+            'city' => 'Ciudad',
+            'business' => 'Empresa',
+            'title' => 'Sucursales',
+            'settings' => 'Configuraciones de la Sucursal',
+            'users' => 'Usuarios de la Sucursal',
+        ]
     ],
 
     'utils' => [
@@ -84,7 +101,8 @@ return [
         'detele-mesage' => '¿Está seguro de eliminar el registro?',
         'no-result' => 'No se encontraron resultados',
         'import'  => 'Importar',
-        'file'   => 'Archivo'
+        'file'   => 'Archivo',
+        'back'   => 'Regresar',
     ],
 
 ];

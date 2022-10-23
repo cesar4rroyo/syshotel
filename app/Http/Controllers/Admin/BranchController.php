@@ -3,41 +3,45 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BusinessRequest;
 use App\Http\Services\BusinessService;
 use App\Librerias\Libreria;
-use App\Models\Business;
+use App\Models\Branch;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class BusinessController extends Controller
+class BranchController extends Controller
 {
     use CRUDTrait;
 
-    public BusinessService $businessService;
+    private BusinessService $businessService;
+
+    private string $usersTitle;
+    private string $settingsTitle;
 
     public function __construct()
     {
-        $this->model            = new Business();
+        $this->model            = new Branch();
         $this->businessService  = new BusinessService();
 
-        $this->entity       = 'business';
-        $this->folderview   = 'admin.business';
-        $this->adminTitle   = __('maintenance.admin.business.title');
+        $this->entity       = 'branches';
+        $this->folderview   = 'admin.branch';
+        $this->adminTitle   = __('maintenance.admin.branch.title');
         $this->addTitle     = __('maintenance.general.add', ['entity' => $this->adminTitle]);
         $this->updateTitle  = __('maintenance.general.edit', ['entity' => $this->adminTitle]);
         $this->deleteTitle  = __('maintenance.general.delete', ['entity' => $this->adminTitle]);
+        $this->usersTitle   = __('maintenance.admin.business.branches');
+        $this->settingsTitle = __('maintenance.admin.business.settings');
         $this->routes = [
-            'search'  => 'business.search',
-            'index'   => 'business.index',
-            'store'   => 'business.store',
-            'delete'  => 'business.delete',
-            'create'  => 'business.create',
-            'edit'    => 'business.edit',
-            'update'  => 'business.update',
-            'destroy' => 'business.destroy',
-            'branches' => 'branch.maintenance',
+            'search'  => 'branch.search',
+            'index'   => 'branch.index',
+            'store'   => 'branch.store',
+            'delete'  => 'branch.delete',
+            'create'  => 'branch.create',
+            'edit'    => 'branch.edit',
+            'update'  => 'branch.update',
+            'destroy' => 'branch.destroy',
+            'maintenance' => 'branch.maintenance',
+            'back'    => 'business',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
 
@@ -73,8 +77,9 @@ class BusinessController extends Controller
             $paginas = $request->page;
             $filas = $request->filas;
             $nombre      = $this->getParam($request->nombre);
+            $businessId  = $this->getParam($request->businessId);
 
-            $result = $this->model::search($nombre);
+            $result = $this->model::search($nombre, $businessId);
             $list   = $result->get();
 
             if (count($list) > 0) {
@@ -92,27 +97,33 @@ class BusinessController extends Controller
                     'fin'               => $paramPaginacion['fin'],
                     'ruta'              => $this->routes,
                     'entidad'           => $this->entity,
+                    'usersTitle'        => $this->usersTitle,
+                    'settingsTitle'     => $this->settingsTitle,
                 ]);
             }
             return view($this->folderview . '.list')->with('lista', $list)->with([
                 'entidad'           => $this->entity,
+                'usersTitle'        => $this->usersTitle,
+                'settingsTitle'     => $this->settingsTitle,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
     }
 
-    public function index()
+    public function index(int $businessId = null)
     {
         try {
+            $bussines = $this->businessService->getBusinessById($businessId);
             return view($this->folderview . '.index')->with([
                 'entidad'           => $this->entity,
-                'titulo_admin'      => $this->adminTitle,
+                'titulo_admin'      => $this->adminTitle . ' de ' . $bussines->name,
                 'titulo_eliminar'   => $this->deleteTitle,
                 'titulo_modificar'  => $this->updateTitle,
                 'titulo_registrar'  => $this->addTitle,
                 'ruta'              => $this->routes,
                 'cboRangeFilas'     => $this->cboRangeFilas(),
+                'businessId'        => $businessId,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -237,25 +248,28 @@ class BusinessController extends Controller
     public function maintenance($id, $action)
     {
         try {
-            $exist = $this->verificarExistencia($id, $this->entity);
-            if ($exist !== true) {
-                return $exist;
-            }
-            $listar = 'SI';
-            $model = $this->model->find($id);
-            $formData = [
-                'route'         => array($this->routes['update'], $this->model->find($id)),
-                'method'        => 'PUT',
-                'class'         => 'form-horizontal',
-                'id'            => $this->idForm,
-                'autocomplete'  => 'off',
-                'boton'         => 'Guardar',
-                'entidad'       => $this->entity,
-                'listar'        => $listar,
-                'model'         => $model,
-                'action'        => $action,
-            ];
+            // $exist = $this->verificarExistencia($id, $this->entity);
+            // if ($exist !== true) {
+            //     return $exist;
+            // }
+            // $listar = 'SI';
+            // $branches = $this->model->where('business_id', $id)->get();
+            // $formData = [
+            //     'route'         => array($this->routes['update'], $this->model->find($id)),
+            //     'method'        => 'PUT',
+            //     'class'         => 'form-horizontal',
+            //     'id'            => $this->idForm,
+            //     'autocomplete'  => 'off',
+            //     'boton'         => 'Guardar',
+            //     'entidad'       => $this->entity,
+            //     'listar'        => $listar,
+            //     'model'         => $model,
+            //     'action'        => $action,
+            // ];
             switch ($action) {
+                case 'LIST':
+                    return $this->index($id);
+                    break;
                 case 'SETTINGS':
                     return view($this->folderview . '.settings')->with(compact('formData'));
                     break;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -55,11 +56,25 @@ class BusinessService
     {
     }
 
-    public function storeOrUpdateBusinessBranches(Request $request)
+    public function storeOrUpdateBusinessBranches(Business $business, bool $is_main): void
     {
+        Branch::updateOrCreate([
+            'business_id' => $business->id,
+            'name' => $business->name,
+            'address' => $business->address,
+            'phone' => $business->phone,
+            'email' => $business->email,
+            'city' => $business->city,
+            'is_main' => $is_main,
+        ]);
     }
 
     public function storeOrUpdateBusinessProfilePicture(Request $request)
     {
+    }
+
+    public function getBusinessById(int $id): Business
+    {
+        return Business::find($id);
     }
 }

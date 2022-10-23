@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
 
 class Branch extends Model
 {
@@ -21,17 +21,25 @@ class Branch extends Model
         'email',
         'status',
         'business_id',
+        'is_main',
     ];
 
-    public function scopesearch(Builder $query, string $param, int $business_id = null)
+    public function getStatusBranchAttribute()
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('address', 'like', "%$param%")
-            ->where('city', 'like', "%$param%")
-            ->where('phone', 'like', "%$param%")
-            ->where('email', 'like', "%$param%")
-            ->where('business_id', $business_id)
-            ->orderBy('name', 'asc');
+        return $this->status == 'A' ? 'Activo' : 'Inactivo';
+    }
+
+    public function scopesearch(Builder $query, string $param = null, int $business_id = null)
+    {
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', "%$param%")
+                ->where('address', 'like', "%$param%")
+                ->where('city', 'like', "%$param%")
+                ->where('phone', 'like', "%$param%")
+                ->where('email', 'like', "%$param%");
+        })->when($business_id, function ($query, $business_id) {
+            return $query->where('business_id', $business_id);
+        })->orderBy('name', 'asc');
     }
 
     public function business()
