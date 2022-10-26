@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BranchRequest;
+use App\Http\Requests\BusinessRequest;
 use App\Http\Services\BusinessService;
 use App\Librerias\Libreria;
 use App\Models\Branch;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BranchController extends Controller
 {
@@ -133,6 +136,7 @@ class BranchController extends Controller
     public function create(Request $request)
     {
         try {
+            $businessId = $request->params['businessId'];
             $formData = [
                 'route'             => $this->routes['store'],
                 'method'            => 'POST',
@@ -143,6 +147,7 @@ class BranchController extends Controller
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
+                'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -150,12 +155,11 @@ class BranchController extends Controller
         }
     }
 
-    public function store(BusinessRequest $request)
+    public function store(BranchRequest $request)
     {
         try {
             $error = DB::transaction(function () use ($request) {
-                $business = $this->model->create($request->all());
-                $this->businessService->storeOrUpdateBusinessBranches($business, true);
+                $this->model::create($request->all());
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -166,6 +170,7 @@ class BranchController extends Controller
     public function edit(Request $request, $id)
     {
         try {
+            $businessId = $request->params['businessId'];
             $exist = $this->verificarExistencia($id, $this->entity);
             if ($exist !== true) {
                 return $exist;
@@ -181,6 +186,7 @@ class BranchController extends Controller
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
+                'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {

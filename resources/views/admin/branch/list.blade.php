@@ -21,7 +21,7 @@
 					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'USERS'))}}', '{{$usersTitle}}', this);">
 						<i style="color: green" class="fas fa-users"></i>
 					</button>
-					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
+					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar, 'params1' => ['businessId'=>$value->business_id]])
 					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'PHOTO'))}}', '{{$usersTitle}}', this);">
 						<i style="color: black" class="fas fa-images"></i>
 					</button>

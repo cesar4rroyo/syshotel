@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests;
 
+use Elegant\Sanitizer\Laravel\SanitizesInput;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BusinessRequest extends FormRequest
 {
+    use SanitizesInput;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -48,6 +50,23 @@ class BusinessRequest extends FormRequest
             'address.required' => 'El campo Dirección es obligatorio.',
             'address.max' => 'El campo Dirección no debe ser mayor a 255 caracteres.',
             'city.max' => 'El campo Ciudad no debe ser mayor a 255 caracteres.',
+        ];
+    }
+
+    /**
+     * Get the sanitized data from the request.
+     *
+     * @return array<string, mixed>
+     */
+
+    public function filters()
+    {
+        return [
+            'name' => 'trim|escape|uppercase',
+            'email' => 'trim|escape|lowercase',
+            'phone' => 'trim|escape',
+            'address' => 'trim|escape|uppercase',
+            'city' => 'trim|escape|uppercase',
         ];
     }
 }

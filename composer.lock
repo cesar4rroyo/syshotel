@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38df77e53f4c78f3a21a8ec11d0d0a7a",
+    "content-hash": "d0b8f498174fa7f6e9883c651f8e51b2",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -533,6 +533,75 @@
                 }
             ],
             "time": "2022-06-18T20:57:19+00:00"
+        },
+        {
+            "name": "elegantweb/sanitizer",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elegantweb/sanitizer.git",
+                "reference": "4870dbb421e6dd4560584f02f96d2cc69a869c23"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elegantweb/sanitizer/zipball/4870dbb421e6dd4560584f02f96d2cc69a869c23",
+                "reference": "4870dbb421e6dd4560584f02f96d2cc69a869c23",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^6.0|^7.0|^8.0|^9.0",
+                "illuminate/validation": "^6.0|^7.0|^8.0|^9.0",
+                "nesbot/carbon": "^1.0|^2.0",
+                "php": "^8.0|^8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Elegant\\Sanitizer\\Laravel\\SanitizerServiceProvider"
+                    ],
+                    "aliases": {
+                        "Sanitizer": "Elegant\\Sanitizer\\Laravel\\Facade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Elegant\\Sanitizer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "William Wallace San Paulo",
+                    "email": "info@waavi.com"
+                },
+                {
+                    "name": "Sina Sharifzade",
+                    "email": "sharifzadesina@gmail.com"
+                }
+            ],
+            "description": "Sanitization library for PHP and the Laravel framework.",
+            "keywords": [
+                "input",
+                "input filter",
+                "input sanitation",
+                "input sanitizer",
+                "laravel",
+                "sanitation",
+                "transform input"
+            ],
+            "support": {
+                "issues": "https://github.com/elegantweb/sanitizer/issues",
+                "source": "https://github.com/elegantweb/sanitizer/tree/v2.0.1"
+            },
+            "time": "2022-03-20T09:09:03+00:00"
         },
         {
             "name": "fruitcake/php-cors",

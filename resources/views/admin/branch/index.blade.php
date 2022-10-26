@@ -19,7 +19,7 @@
                 ])
             </div>
             <div class="">
-                @include('utils.addbutton', ['entidad' => $entidad, 'ruta' => $ruta['create'], 'titulo' => $titulo_registrar])
+                @include('utils.addbutton', ['entidad' => $entidad, 'ruta' => $ruta['create'], 'titulo' => $titulo_registrar, 'params' => ['businessId' => $businessId]])
             </div>
         </div>
         <div class="overflow-x-auto relative py-8 px-12 rounded-xl bg-white" id="listado{{ $entidad }}"></div>
