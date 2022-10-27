@@ -3,17 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BranchRequest;
-use App\Http\Requests\BusinessRequest;
-use App\Http\Requests\LogoRequest;
 use App\Http\Services\BusinessService;
-use App\Librerias\Libreria;
-use App\Models\Branch;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class BranchController extends Controller
+class UserController extends Controller
 {
     use CRUDTrait;
 
@@ -198,17 +192,20 @@ class BranchController extends Controller
 
     public function update(Request $request, $id)
     {
+        dd($request->all());
         try {
             $error = DB::transaction(function () use ($request, $id) {
                 switch ($request->action) {
                     case 'SETTINGS':
                         $this->businessService->storeOrUpdateBussinessSettings($request, $id);
                         break;
+                    case 'BRANCHES':
+                        # code...
+                        break;
                     case 'USERS':
                         # code...
                         break;
-                    case 'IS_MAIN':
-                        $this->businessService->setMainBusinessBranch($request);
+                    case 'PROFILEPHOTO':
                         break;
                     default:
                         $this->model->find($id)->update($request->all());
@@ -285,10 +282,6 @@ class BranchController extends Controller
                     $formData['method'] = 'POST';
                     return view($this->folderview . '.uploadPhoto')->with(compact('formData'));
                     break;
-                case 'IS_MAIN':
-                    $formData['model'] = $this->model->find($id);
-                    return view($this->folderview . '.ismain')->with(compact('formData'));
-                    break;
                 default:
                     return view('utils.comfirndelete')->with(compact('formData'));
                     break;
@@ -301,9 +294,6 @@ class BranchController extends Controller
     public function destroy($id)
     {
         try {
-            if ($this->model->find($id)->is_main) {
-                return $this->MessageResponse('No se puede eliminar la sucursal principal', 'danger');
-            }
             $error = DB::transaction(function () use ($id) {
                 $this->model->find($id)->delete();
             });

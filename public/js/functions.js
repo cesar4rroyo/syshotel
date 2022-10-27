@@ -246,7 +246,8 @@ function guardarArchivo(entidad, idboton, entidad2)
 	};
 	var request = $.ajax({
 		url     : $(idformulario).attr('action'),
-		method  : "POST",
+		method  : $(idformulario).attr('method'),
+		headers : {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
 		data    : formData,
 		processData: false,
 		contentType: false,

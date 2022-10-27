@@ -9,22 +9,34 @@
 		?>
 		@foreach ($lista as $key => $value)
         <tr>
-			<td class="py-3 px-4">{{ $value->name }}</td>
+			<td class="py-3 px-4">
+				{{ $value->name }}
+				@if ($value->is_main)
+					<span class="bg-yellow-100 text-yellow-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-yellow-200 dark:text-yellow-900">Principal</span>
+				@endif
+			</td>
 			<td class="py-3 px-4">{{ $value->statusBranch }}</td>
 			<td class="py-3 px-4">{{ $value->email . ' ' . $value->phone }}</td>
 			<td class="py-3 px-4">{{ $value->address }}</td>
 			<td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">
-					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'SETTINGS'))}}', '{{$settingsTitle}}', this);">
+					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'SETTINGS', 'businessId' => $value->business_id))}}', '{{$settingsTitle}}', this);">
 						<i style="color: orange" class="fas fa-wrench"></i>
 					</button>
-					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'USERS'))}}', '{{$usersTitle}}', this);">
+					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'USERS', 'businessId' => $value->business_id))}}', '{{$usersTitle}}', this);">
 						<i style="color: green" class="fas fa-users"></i>
 					</button>
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar, 'params1' => ['businessId'=>$value->business_id]])
-					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'PHOTO'))}}', '{{$usersTitle}}', this);">
-						<i style="color: black" class="fas fa-images"></i>
-					</button>
+					@if ($value->settings)
+						<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'PROFILEPHOTO', 'businessId' => $value->business_id))}}', 'Cambiar Logo', this);">
+							<i style="color: black" class="fas fa-images"></i>
+						</button>	
+					@endif
+					@if (!$value->is_main)
+						<button title="Hacer Principal" class="btn" onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'IS_MAIN', 'businessId' => $value->business_id ))}}', 'Cambiar sucursal principal', this);">
+							<i style="color: violet" class="fas fa-check-circle"></i>
+						</button>
+					@endif
 				</div>
 			</td>
 		</tr>

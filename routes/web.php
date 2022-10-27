@@ -33,7 +33,8 @@ Route::middleware([
     Route::resource('business', BusinessController::class)->except(['show']);
 
     Route::post('branch/search', [BranchController::class, 'search'])->name('branch.search');
-    Route::get('branch/maintenance/{id}/{action}', [BranchController::class, 'maintenance'])->name('branch.maintenance');
     Route::get('branch/delete/{id}/{listagain}', [BranchController::class, 'delete'])->name('branch.delete');
+    Route::post('branch/uploadPhoto', [BranchController::class, 'uploadPhoto'])->name('branch.uploadPhoto');
+    Route::get('branch/maintenance/{id}/{action}/{businessId}', [BranchController::class, 'maintenance'])->name('branch.maintenance');
     Route::resource('branch', BranchController::class)->except(['show']);
 });

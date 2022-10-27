@@ -92,6 +92,7 @@ return [
             'title' => 'Sucursales',
             'settings' => 'Configuraciones de la Sucursal',
             'users' => 'Usuarios de la Sucursal',
+            'isMain' => 'Estas seguro de cambiar de sucursal principal?',
         ]
     ],
 

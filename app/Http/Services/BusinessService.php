@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 class BusinessService
@@ -36,7 +37,10 @@ class BusinessService
         $validator = Validator::make($request->all(), $rules, $messages)->stopOnFirstFailure()->validate();
 
         Setting::updateOrCreate(
-            ['business_id' => $id],
+            [
+                'business_id' => $request->business_id,
+                'branch_id' => $request->branch_id,
+            ],
             [
                 'razon_social' => $request->razon_social,
                 'nombre_comercial' => $request->nombre_comercial,
@@ -69,12 +73,37 @@ class BusinessService
         ]);
     }
 
-    public function storeOrUpdateBusinessProfilePicture(Request $request)
+    public function storeOrUpdateBranchProfilePhoto(Request $request)
     {
+        $branch = Branch::find($request->branch_id);
+        $logo_name = $branch->name . '_' . time() . '.' . $request->file->extension();
+        $request->file->storeAs('public/logos', $logo_name);
+        $branch->settings->updateOrCreate([
+            'business_id' => $request->business_id,
+            'branch_id' => $request->branch_id,
+        ], [
+            'logo' => $logo_name,
+        ]);
     }
 
     public function getBusinessById(int $id): Business
     {
         return Business::find($id);
+    }
+
+    public function getBranchesSettingsById(int $id): array
+    {
+        return Setting::where('branch_id', $id)->get()->toArray() ?? [];
+    }
+
+    public function setMainBusinessBranch(Request $request): void
+    {
+        $business = Business::find($request->business_id);
+        $business->branches()->where('id', '!=', $request->branch_id)->update([
+            'is_main' => false,
+        ]);
+        $business->branches()->where('id', $request->branch_id)->update([
+            'is_main' => true,
+        ]);
     }
 }

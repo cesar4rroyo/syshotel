@@ -96,4 +96,9 @@ class Branch extends Model
     {
         return $this->belongsToMany(User::class, 'user_branches', 'branch_id', 'user_id');
     }
+
+    public function settings()
+    {
+        return $this->hasOne(Setting::class);
+    }
 }
