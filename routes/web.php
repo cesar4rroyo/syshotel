@@ -41,6 +41,7 @@ Route::middleware([
 
     Route::post('user/search', [UserController::class, 'search'])->name('user.search');
     Route::get('user/delete/{id}/{listagain}', [UserController::class, 'delete'])->name('user.delete');
-    Route::get('user/maintenance/{action}/{businessId}', [UserController::class, 'maintenance'])->name('user.maintenance');
+    Route::post('user/uploadPhoto', [UserController::class, 'uploadPhoto'])->name('user.uploadPhoto');
+    Route::get('user/maintenance/{action}/{businessId}/{userId?}', [UserController::class, 'maintenance'])->name('user.maintenance');
     Route::resource('user', UserController::class)->except(['show']);
 });

@@ -3,8 +3,8 @@
 id="{{ $formData['id'] }}" autocomplete="off">
     @csrf
     <input type="hidden" name="accion" id="accion" value="listar">
-    <input type="hidden" name="branch_id" id="branch_id" value="{{ $formData['branchId'] }}">
     <input type="hidden" name="business_id" id="business_id" value="{{ $formData['businessId'] }}">
+    <input type="hidden" name="userId" id="userId" value="{{ $formData['model']->id }}">
 <div class="flex space-x-6">
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="name">{{ trans('maintenance.utils.file') }}</label>

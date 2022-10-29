@@ -243,7 +243,7 @@ class UserController extends Controller
         }
     }
 
-    public function maintenance($action, $businessId)
+    public function maintenance($action, $businessId, $userId = null)
     {
         try {
             $listar = 'SI';
@@ -265,7 +265,7 @@ class UserController extends Controller
                     return $this->index($businessId);
                     break;
                 case 'PROFILEPHOTO':
-                    $formData['model'] = $this->model->find($id)->settings;
+                    $formData['model'] = $this->model->find($userId);
                     $formData['route'] = $this->routes['uploadPhoto'];
                     $formData['method'] = 'POST';
                     return view($this->folderview . '.uploadPhoto')->with(compact('formData'));

@@ -89,7 +89,7 @@ class BusinessService
 
     public function storeOrUpdateUserPhoto(Request $request)
     {
-        $user = User::find($request->user_id);
+        $user = User::find($request->userId);
         $user_name = $user->name . '_' . time() . '.' . $request->file->extension();
         $request->file->storeAs('public/users', $user_name);
         $user->update([

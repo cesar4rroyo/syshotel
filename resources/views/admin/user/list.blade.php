@@ -21,6 +21,9 @@
 			<td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar, 'params1' => ['businessId'=>$value->business_id]])
+					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'PROFILEPHOTO', 'businessId' => $value->business_id, 'userId' => $value->id))}}', 'Cambiar Logo', this);">
+						<i style="color: black" class="fas fa-images"></i>
+					</button>	
 				</div>
 			</td>
 		</tr>
