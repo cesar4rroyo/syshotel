@@ -3,9 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LogoRequest;
+use App\Http\Requests\UserRequest;
 use App\Http\Services\BusinessService;
+use App\Librerias\Libreria;
+use App\Models\Branch;
+use App\Models\User;
+use App\Models\UserType;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -18,29 +25,27 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->model            = new Branch();
+        $this->model            = new User();
         $this->businessService  = new BusinessService();
 
-        $this->entity       = 'branches';
-        $this->folderview   = 'admin.branch';
-        $this->adminTitle   = __('maintenance.admin.branch.title');
+        $this->entity       = 'users';
+        $this->folderview   = 'admin.user';
+        $this->adminTitle   = __('maintenance.admin.user.title');
         $this->addTitle     = __('maintenance.general.add', ['entity' => $this->adminTitle]);
         $this->updateTitle  = __('maintenance.general.edit', ['entity' => $this->adminTitle]);
         $this->deleteTitle  = __('maintenance.general.delete', ['entity' => $this->adminTitle]);
-        $this->usersTitle   = __('maintenance.admin.business.branches');
-        $this->settingsTitle = __('maintenance.admin.business.settings');
         $this->routes = [
-            'search'  => 'branch.search',
-            'index'   => 'branch.index',
-            'store'   => 'branch.store',
-            'delete'  => 'branch.delete',
-            'create'  => 'branch.create',
-            'edit'    => 'branch.edit',
-            'update'  => 'branch.update',
-            'destroy' => 'branch.destroy',
-            'maintenance' => 'branch.maintenance',
+            'search'  => 'user.search',
+            'index'   => 'user.index',
+            'store'   => 'user.store',
+            'delete'  => 'user.delete',
+            'create'  => 'user.create',
+            'edit'    => 'user.edit',
+            'update'  => 'user.update',
+            'destroy' => 'user.destroy',
+            'maintenance' => 'user.maintenance',
             'back'    => 'business',
-            'uploadPhoto' => 'branch.uploadPhoto',
+            'uploadPhoto' => 'user.uploadPhoto',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
 
@@ -48,19 +53,23 @@ class UserController extends Controller
 
         $this->headers = [
             [
-                'valor'  => 'Nombre',
+                'valor'  => 'Usuario',
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Estado',
+                'valor'  => 'Correo',
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Email/Teléfono',
+                'valor'  => 'Tipo de Usuario',
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Dirección',
+                'valor'  => 'Sucursal',
+                'numero' => '1',
+            ],
+            [
+                'valor'  => 'Persona',
                 'numero' => '1',
             ],
             [
@@ -77,8 +86,10 @@ class UserController extends Controller
             $filas = $request->filas;
             $nombre      = $this->getParam($request->nombre);
             $businessId  = $this->getParam($request->businessId);
+            $userTypeId  = $this->getParam($request->userTypeId);
+            $branchId    = $this->getParam($request->branchId);
 
-            $result = $this->model::search($nombre, $businessId);
+            $result = $this->model::search($nombre, $userTypeId, $businessId, $branchId);
             $list   = $result->get();
 
             if (count($list) > 0) {
@@ -96,14 +107,10 @@ class UserController extends Controller
                     'fin'               => $paramPaginacion['fin'],
                     'ruta'              => $this->routes,
                     'entidad'           => $this->entity,
-                    'usersTitle'        => $this->usersTitle,
-                    'settingsTitle'     => $this->settingsTitle,
                 ]);
             }
             return view($this->folderview . '.list')->with('lista', $list)->with([
                 'entidad'           => $this->entity,
-                'usersTitle'        => $this->usersTitle,
-                'settingsTitle'     => $this->settingsTitle,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -143,6 +150,8 @@ class UserController extends Controller
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
+                'cboUserTypes'      => $this->generateCboGeneral(UserType::class, 'name', 'id', 'Seleccione una opción'),
+                'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -151,11 +160,11 @@ class UserController extends Controller
         }
     }
 
-    public function store(BranchRequest $request)
+    public function store(UserRequest $request)
     {
         try {
             $error = DB::transaction(function () use ($request) {
-                $this->model::create($request->all());
+                $this->model::create($request->all())->branches()->attach($request->branch_id);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -182,6 +191,8 @@ class UserController extends Controller
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
+                'cboUserTypes'      => $this->generateCboGeneral(UserType::class, 'name', 'id', 'Seleccione una opción'),
+                'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -190,29 +201,14 @@ class UserController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
-        dd($request->all());
         try {
             $error = DB::transaction(function () use ($request, $id) {
-                switch ($request->action) {
-                    case 'SETTINGS':
-                        $this->businessService->storeOrUpdateBussinessSettings($request, $id);
-                        break;
-                    case 'BRANCHES':
-                        # code...
-                        break;
-                    case 'USERS':
-                        # code...
-                        break;
-                    case 'PROFILEPHOTO':
-                        break;
-                    default:
-                        $this->model->find($id)->update($request->all());
-                        break;
-                }
+                $user = $this->model->find($id);
+                $user->update($request->all());
+                $user->branches()->sync($request->branch_id);
             });
-            // event(new BinnacleEvent(auth()->user()->id, 'UPDATE', 'Updated ' . $this->entity));
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -247,12 +243,12 @@ class UserController extends Controller
         }
     }
 
-    public function maintenance($id, $action, $businessId)
+    public function maintenance($action, $businessId)
     {
         try {
             $listar = 'SI';
             $formData = [
-                'route'         => array($this->routes['update'], $this->model->find($id)),
+                'route'         => array($this->routes['update'], $this->model->find($businessId)),
                 'method'        => 'PUT',
                 'class'         => 'form-horizontal',
                 'id'            => $this->idForm,
@@ -263,18 +259,10 @@ class UserController extends Controller
                 'model'         => $this->model,
                 'action'        => $action,
                 'businessId'    => $businessId,
-                'branchId'      => $id,
             ];
             switch ($action) {
                 case 'LIST':
-                    return $this->index($id);
-                    break;
-                case 'SETTINGS':
-                    $formData['model'] = $this->model->find($id)->settings;
-                    return view($this->folderview . '.settings')->with(compact('formData'));
-                    break;
-                case 'USERS':
-                    return view($this->folderview . '.users')->with(compact('formData'));
+                    return $this->index($businessId);
                     break;
                 case 'PROFILEPHOTO':
                     $formData['model'] = $this->model->find($id)->settings;
@@ -307,7 +295,7 @@ class UserController extends Controller
     {
         try {
             $error = DB::transaction(function () use ($request) {
-                $this->businessService->storeOrUpdateBranchProfilePhoto($request);
+                $this->businessService->storeOrUpdateUserPhoto($request);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {

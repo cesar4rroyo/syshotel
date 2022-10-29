@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
             'password' => bcrypt('123456'),
             'usertype_id' => 1,
             'business_id' => 1,
+            'branch_id' => 1,
         ]);
     }
 }

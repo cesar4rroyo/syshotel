@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\BusinessController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,4 +38,9 @@ Route::middleware([
     Route::post('branch/uploadPhoto', [BranchController::class, 'uploadPhoto'])->name('branch.uploadPhoto');
     Route::get('branch/maintenance/{id}/{action}/{businessId}', [BranchController::class, 'maintenance'])->name('branch.maintenance');
     Route::resource('branch', BranchController::class)->except(['show']);
+
+    Route::post('user/search', [UserController::class, 'search'])->name('user.search');
+    Route::get('user/delete/{id}/{listagain}', [UserController::class, 'delete'])->name('user.delete');
+    Route::get('user/maintenance/{action}/{businessId}', [UserController::class, 'maintenance'])->name('user.maintenance');
+    Route::resource('user', UserController::class)->except(['show']);
 });

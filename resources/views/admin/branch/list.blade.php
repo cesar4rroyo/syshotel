@@ -23,9 +23,6 @@
 					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'SETTINGS', 'businessId' => $value->business_id))}}', '{{$settingsTitle}}', this);">
 						<i style="color: orange" class="fas fa-wrench"></i>
 					</button>
-					<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'USERS', 'businessId' => $value->business_id))}}', '{{$usersTitle}}', this);">
-						<i style="color: green" class="fas fa-users"></i>
-					</button>
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar, 'params1' => ['businessId'=>$value->business_id]])
 					@if ($value->settings)
 						<button class="btn"  onclick="modal('{{URL::route($ruta['maintenance'], array($value->id, 'action'=>'PROFILEPHOTO', 'businessId' => $value->business_id))}}', 'Cambiar Logo', this);">

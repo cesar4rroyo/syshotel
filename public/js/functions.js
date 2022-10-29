@@ -210,7 +210,7 @@ function guardar (entidad, idboton, entidad2) {
 		respuesta = msg;
 	}).fail(function(xhr, textStatus, errorThrown) {
 		respuesta = xhr.responseText;
-		if(JSON.parse(respuesta).message.trim() == 'The given data was invalid.'){
+		if(JSON.parse(respuesta).message.trim()){
 			mostrarErrores(xhr.responseText, idformulario, entidad, 1);
 		}
 		respuesta = 'ERROR';
