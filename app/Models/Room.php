@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
+
 
 class Room extends Model
 {
@@ -23,20 +24,26 @@ class Room extends Model
         'room_type_id',
     ];
 
-    public function scopesearch(Builder $query, string $param, int $branch_id = null, int $business_id = null, int $room_type_id = null, int $floor_id = null)
+    public function getStatusRoomAttribute()
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('number', 'like', "%$param%")
-            ->where('branch_id', $branch_id)
-            ->where('business_id', $business_id)
-            ->where('room_type_id', $room_type_id)
-            ->where('floor_id', $floor_id)
-            ->orderBy('name', 'asc');
+        return $this->status == 'A' ? 'Activo' : 'Inactivo';
+    }
+
+    public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null)
+    {
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', "%$param%");
+        })->when($branch_id, function ($query, $branch_id) {
+            return $query->where('branch_id', $branch_id);
+        })->when($business_id, function ($query, $business_id) {
+            return $query->where('business_id', $business_id);
+        })->orderBy('name', 'asc');
+
     }
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function business()
@@ -46,11 +53,11 @@ class Room extends Model
 
     public function floor()
     {
-        return $this->belongsTo(Floor::class);
+        return $this->belongsTo(Floor::class, 'floor_id');
     }
 
     public function roomType()
     {
-        return $this->belongsTo(RoomType::class);
+        return $this->belongsTo(RoomType::class, 'room_type_id');
     }
 }

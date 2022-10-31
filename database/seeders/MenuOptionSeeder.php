@@ -91,5 +91,55 @@ class MenuOptionSeeder extends Seeder
             'order' => 7,
             'menugroup_id' => 1
         ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Tipos de Habitación',
+            'icon' => 'fas fa-hotel',
+            'link' => 'roomtype',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Habitaciones',
+            'icon' => 'fas fa-hotel',
+            'link' => 'room',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Servicios',
+            'icon' => 'fas fa-list-ol',
+            'link' => 'service',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Categorías',
+            'icon' => 'fas fa-list-ol',
+            'link' => 'category',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Unidades',
+            'icon' => 'fas fa-list-ol',
+            'link' => 'unit',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Productos',
+            'icon' => 'fab fa-product-hunt',
+            'link' => 'product',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Conceptos',
+            'icon' => 'fas fa-list-ol',
+            'link' => 'concept',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+
     }
 }
