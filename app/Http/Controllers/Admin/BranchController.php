@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchRequest;
-use App\Http\Requests\BusinessRequest;
 use App\Http\Requests\LogoRequest;
 use App\Http\Services\BusinessService;
 use App\Librerias\Libreria;
@@ -204,9 +203,6 @@ class BranchController extends Controller
                     case 'SETTINGS':
                         $this->businessService->storeOrUpdateBussinessSettings($request, $id);
                         break;
-                    case 'USERS':
-                        # code...
-                        break;
                     case 'IS_MAIN':
                         $this->businessService->setMainBusinessBranch($request);
                         break;
@@ -215,7 +211,6 @@ class BranchController extends Controller
                         break;
                 }
             });
-            // event(new BinnacleEvent(auth()->user()->id, 'UPDATE', 'Updated ' . $this->entity));
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -275,9 +270,6 @@ class BranchController extends Controller
                 case 'SETTINGS':
                     $formData['model'] = $this->model->find($id)->settings;
                     return view($this->folderview . '.settings')->with(compact('formData'));
-                    break;
-                case 'USERS':
-                    return view($this->folderview . '.users')->with(compact('formData'));
                     break;
                 case 'PROFILEPHOTO':
                     $formData['model'] = $this->model->find($id)->settings;

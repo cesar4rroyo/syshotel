@@ -15,8 +15,11 @@
 			<td class="py-3 px-4">{{ $value->address }}</td>
 			<td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">
-					<button class="btn"  onclick="cargarRuta('{{URL::route($ruta['branches'], [$value->id, 'action'=>'LIST', 'businessId' => $value->id])}}', 'main-container');">
+					<button class="btn" onclick="cargarRuta('{{URL::route($ruta['branches'], [$value->id, 'action'=>'LIST', 'businessId' => $value->id])}}', 'main-container');">
 						<i style="color: purple" class="fas fa-building"></i>
+					</button>
+					<button class="btn" onclick="cargarRuta('{{URL::route($ruta['users'], ['action'=>'LIST', 'businessId' => $value->id])}}', 'main-container');">
+						<i style="color: green" class="fas fa-users"></i>
 					</button>
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
 				</div>

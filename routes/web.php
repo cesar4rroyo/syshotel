@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\BusinessController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoriesController;
 use App\Http\Controllers\Admin\ConceptsController;
 use App\Http\Controllers\Admin\FloorsController;
@@ -10,8 +12,6 @@ use App\Http\Controllers\Admin\RoomsController;
 use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\UnitsController;
-use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,36 +45,42 @@ Route::middleware([
     Route::post('branch/uploadPhoto', [BranchController::class, 'uploadPhoto'])->name('branch.uploadPhoto');
     Route::get('branch/maintenance/{id}/{action}/{businessId}', [BranchController::class, 'maintenance'])->name('branch.maintenance');
     Route::resource('branch', BranchController::class)->except(['show']);
-    /* floor routes */
-    Route::post('floor/search', [FloorsController::class, 'search'])->name('floor.search');
-    Route::get('floor/delete/{id}/{listagain}', [FloorsController::class, 'delete'])->name('floor.delete');
-    Route::resource('floor', FloorsController::class)->except(['show']);
-    /* room routes */
-    Route::post('room/search', [RoomsController::class, 'search'])->name('room.search');
-    Route::get('room/delete/{id}/{listagain}', [RoomsController::class, 'delete'])->name('room.delete');
-    Route::resource('room', RoomsController::class)->except(['show']);
-    /* room types */
-    Route::post('roomtype/search', [RoomTypeController::class, 'search'])->name('roomtype.search');
-    Route::get('roomtype/delete/{id}/{listagain}', [RoomTypeController::class, 'delete'])->name('roomtype.delete');
-    Route::resource('roomtype', RoomTypeController::class)->except(['show']);
-    /* services routes */
-    Route::post('service/search', [ServicesController::class, 'search'])->name('service.search');
-    Route::get('service/delete/{id}/{listagain}', [ServicesController::class, 'delete'])->name('service.delete');
-    Route::resource('service', ServicesController::class)->except(['show']);
-    /* products routes */
-    Route::post('product/search', [ProductsController::class, 'search'])->name('product.search');
-    Route::get('product/delete/{id}/{listagain}', [ProductsController::class, 'delete'])->name('product.delete');
-    Route::resource('product', ProductsController::class)->except(['show']);
-    /* categories routes */
-    Route::post('category/search', [CategoriesController::class, 'search'])->name('category.search');
-    Route::get('category/delete/{id}/{listagain}', [CategoriesController::class, 'delete'])->name('category.delete');
-    Route::resource('category', CategoriesController::class)->except(['show']);
-    /* concepts routes */
-    Route::post('concept/search', [ConceptsController::class, 'search'])->name('concept.search');
-    Route::get('concept/delete/{id}/{listagain}', [ConceptsController::class, 'delete'])->name('concept.delete');
-    Route::resource('concept', ConceptsController::class)->except(['show']);
-    /* units routes */
-    Route::post('unit/search', [UnitsController::class, 'search'])->name('unit.search');
-    Route::get('unit/delete/{id}/{listagain}', [UnitsController::class, 'delete'])->name('unit.delete');
-    Route::resource('unit', UnitsController::class)->except(['show']);
+    Route::post('user/search', [UserController::class, 'search'])->name('user.search');
+    Route::get('user/delete/{id}/{listagain}', [UserController::class, 'delete'])->name('user.delete');
+    Route::post('user/uploadPhoto', [UserController::class, 'uploadPhoto'])->name('user.uploadPhoto');
+    Route::get('user/maintenance/{action}/{businessId}/{userId?}', [UserController::class, 'maintenance'])->name('user.maintenance');
+    Route::resource('user', UserController::class)->except(['show']);
+    
+     /* floor routes */
+     Route::post('floor/search', [FloorsController::class, 'search'])->name('floor.search');
+     Route::get('floor/delete/{id}/{listagain}', [FloorsController::class, 'delete'])->name('floor.delete');
+     Route::resource('floor', FloorsController::class)->except(['show']);
+     /* room routes */
+     Route::post('room/search', [RoomsController::class, 'search'])->name('room.search');
+     Route::get('room/delete/{id}/{listagain}', [RoomsController::class, 'delete'])->name('room.delete');
+     Route::resource('room', RoomsController::class)->except(['show']);
+     /* room types */
+     Route::post('roomtype/search', [RoomTypeController::class, 'search'])->name('roomtype.search');
+     Route::get('roomtype/delete/{id}/{listagain}', [RoomTypeController::class, 'delete'])->name('roomtype.delete');
+     Route::resource('roomtype', RoomTypeController::class)->except(['show']);
+     /* services routes */
+     Route::post('service/search', [ServicesController::class, 'search'])->name('service.search');
+     Route::get('service/delete/{id}/{listagain}', [ServicesController::class, 'delete'])->name('service.delete');
+     Route::resource('service', ServicesController::class)->except(['show']);
+     /* products routes */
+     Route::post('product/search', [ProductsController::class, 'search'])->name('product.search');
+     Route::get('product/delete/{id}/{listagain}', [ProductsController::class, 'delete'])->name('product.delete');
+     Route::resource('product', ProductsController::class)->except(['show']);
+     /* categories routes */
+     Route::post('category/search', [CategoriesController::class, 'search'])->name('category.search');
+     Route::get('category/delete/{id}/{listagain}', [CategoriesController::class, 'delete'])->name('category.delete');
+     Route::resource('category', CategoriesController::class)->except(['show']);
+     /* concepts routes */
+     Route::post('concept/search', [ConceptsController::class, 'search'])->name('concept.search');
+     Route::get('concept/delete/{id}/{listagain}', [ConceptsController::class, 'delete'])->name('concept.delete');
+     Route::resource('concept', ConceptsController::class)->except(['show']);
+     /* units routes */
+     Route::post('unit/search', [UnitsController::class, 'search'])->name('unit.search');
+     Route::get('unit/delete/{id}/{listagain}', [UnitsController::class, 'delete'])->name('unit.delete');
+     Route::resource('unit', UnitsController::class)->except(['show']);
 });

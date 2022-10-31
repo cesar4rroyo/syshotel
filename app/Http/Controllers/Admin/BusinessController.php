@@ -38,6 +38,7 @@ class BusinessController extends Controller
             'update'  => 'business.update',
             'destroy' => 'business.destroy',
             'branches' => 'branch.maintenance',
+            'users' => 'user.maintenance',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
 
@@ -181,25 +182,8 @@ class BusinessController extends Controller
     {
         try {
             $error = DB::transaction(function () use ($request, $id) {
-                switch ($request->action) {
-                    case 'SETTINGS':
-                        $this->businessService->storeOrUpdateBussinessSettings($request, $id);
-                        break;
-                    case 'BRANCHES':
-                        # code...
-                        break;
-                    case 'USERS':
-                        # code...
-                        break;
-                    case 'PROFILEPHOTO':
-                        # code...
-                        break;
-                    default:
-                        $this->model->find($id)->update($request->all());
-                        break;
-                }
+                $this->model->find($id)->update($request->all());
             });
-            // event(new BinnacleEvent(auth()->user()->id, 'UPDATE', 'Updated ' . $this->entity));
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -229,72 +213,6 @@ class BusinessController extends Controller
                 'modelo'        => $this->model->find($id),
             ];
             return view('utils.comfirndelete')->with(compact('formData'));
-        } catch (\Throwable $th) {
-            return $this->MessageResponse($th->getMessage(), 'danger');
-        }
-    }
-
-    public function maintenance($id, $action)
-    {
-        try {
-            $exist = $this->verificarExistencia($id, $this->entity);
-            if ($exist !== true) {
-                return $exist;
-            }
-            $listar = 'SI';
-            $model = $this->model->find($id);
-            $formData = [
-                'route'         => array($this->routes['update'], $this->model->find($id)),
-                'method'        => 'PUT',
-                'class'         => 'form-horizontal',
-                'id'            => $this->idForm,
-                'autocomplete'  => 'off',
-                'boton'         => 'Guardar',
-                'entidad'       => $this->entity,
-                'listar'        => $listar,
-                'model'         => $model,
-                'action'        => $action,
-            ];
-            switch ($action) {
-                case 'SETTINGS':
-                    return view($this->folderview . '.settings')->with(compact('formData'));
-                    break;
-                case 'BRANCHES':
-                    $branches = $model->branches;
-                    $cabecera = [
-                        [
-                            'valor' => 'Nombre',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Dirección',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Ciudad',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Teléfono',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Email',
-                            'numero' => 1,
-                        ],
-                    ];
-                    return view($this->folderview . '.branches')->with(compact('formData', 'branches', 'cabecera'));
-                    break;
-                case 'USERS':
-                    return view($this->folderview . '.users')->with(compact('formData'));
-                    break;
-                case 'PROFILEPHOTO':
-                    # code...
-                    break;
-                default:
-                    return view('utils.comfirndelete')->with(compact('formData'));
-                    break;
-            }
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }

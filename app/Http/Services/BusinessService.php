@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Models\Branch;
 use App\Models\Business;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
@@ -83,6 +84,16 @@ class BusinessService
             'branch_id' => $request->branch_id,
         ], [
             'logo' => $logo_name,
+        ]);
+    }
+
+    public function storeOrUpdateUserPhoto(Request $request)
+    {
+        $user = User::find($request->userId);
+        $user_name = $user->name . '_' . time() . '.' . $request->file->extension();
+        $request->file->storeAs('public/users', $user_name);
+        $user->update([
+            'profile_photo_path' => $user_name,
         ]);
     }
 
