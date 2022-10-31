@@ -86,14 +86,14 @@ class MenuOptionSeeder extends Seeder
         //administracion menu
         DB::table('menu_options')->insert([
             'name' => 'Pisos',
-            'icon' => 'fas fa-hotel',
+            'icon' => 'fas fa-h-square',
             'link' => 'floor',
             'order' => 7,
             'menugroup_id' => 1
         ]);
         DB::table('menu_options')->insert([
             'name' => 'Tipos de Habitación',
-            'icon' => 'fas fa-hotel',
+            'icon' => 'fas fa-door-open',
             'link' => 'roomtype',
             'order' => 7,
             'menugroup_id' => 1
@@ -107,28 +107,28 @@ class MenuOptionSeeder extends Seeder
         ]);
         DB::table('menu_options')->insert([
             'name' => 'Servicios',
-            'icon' => 'fas fa-list-ol',
+            'icon' => 'fas fa-concierge-bell',
             'link' => 'service',
             'order' => 7,
             'menugroup_id' => 1
         ]);
         DB::table('menu_options')->insert([
             'name' => 'Categorías',
-            'icon' => 'fas fa-list-ol',
+            'icon' => 'fas fa-layer-group',
             'link' => 'category',
             'order' => 7,
             'menugroup_id' => 1
         ]);
         DB::table('menu_options')->insert([
             'name' => 'Unidades',
-            'icon' => 'fas fa-list-ol',
+            'icon' => 'fas fa-dollar-sign',
             'link' => 'unit',
             'order' => 7,
             'menugroup_id' => 1
         ]);
         DB::table('menu_options')->insert([
             'name' => 'Productos',
-            'icon' => 'fab fa-product-hunt',
+            'icon' => 'fas fa-shopping-cart',
             'link' => 'product',
             'order' => 7,
             'menugroup_id' => 1
@@ -140,6 +140,5 @@ class MenuOptionSeeder extends Seeder
             'order' => 7,
             'menugroup_id' => 1
         ]);
-
     }
 }
