@@ -120,7 +120,8 @@ class UserController extends Controller
     public function index(int $businessId = null)
     {
         try {
-            $bussines = $this->businessService->getBusinessById($businessId);
+            $id = $businessId ? $businessId : auth()->user()->business_id;
+            $bussines = $this->businessService->getBusinessById($id);
             return view($this->folderview . '.index')->with([
                 'entidad'           => $this->entity,
                 'titulo_admin'      => $this->adminTitle . ' de ' . $bussines->name,
@@ -130,6 +131,7 @@ class UserController extends Controller
                 'ruta'              => $this->routes,
                 'cboRangeFilas'     => $this->cboRangeFilas(),
                 'businessId'        => $businessId,
+                'showBackBtn'       => $businessId ? true : false,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -139,7 +141,7 @@ class UserController extends Controller
     public function create(Request $request)
     {
         try {
-            $businessId = $request->params['businessId'];
+            $businessId = $request->businessId ?? auth()->user()->business_id;
             $formData = [
                 'route'             => $this->routes['store'],
                 'method'            => 'POST',

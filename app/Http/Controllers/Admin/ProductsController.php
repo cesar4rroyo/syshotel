@@ -145,7 +145,7 @@ class ProductsController extends Controller
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
-            return $this->MessageResponse($th->getMessage(), 'danger');
+            return $this->MessageResponse($th->getMessage(), 'danger', $th);
         }
     }
 

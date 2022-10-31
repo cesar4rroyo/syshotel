@@ -2,11 +2,13 @@
     <div class="flex flex-col w-full space-y-6">
         <p class="text-4xl font-bold font-baloo">
             {{ $titulo_admin }}
-            <button style="width: 120px; float:right" class="text-white bg-blue-500 hover:bg-yellow-500 focus:outline-none focus:ring-0 font-medium rounded-lg text-sm px-3.5 py-2.5 flex items-center space-x-2" id="btnNuevo"
-            onclick="cargarRuta('{{ URL::to($ruta['back']) }}', 'main-container')">
-            <i class="fas fa-undo"></i>
-            <p>{{ trans('maintenance.utils.back') }}</p>
-        </button>
+            @if ($showBackBtn)
+                <button style="width: 120px; float:right" class="text-white bg-blue-500 hover:bg-yellow-500 focus:outline-none focus:ring-0 font-medium rounded-lg text-sm px-3.5 py-2.5 flex items-center space-x-2" id="btnNuevo"
+                onclick="cargarRuta('{{ URL::to($ruta['back']) }}', 'main-container')">
+                    <i class="fas fa-undo"></i>
+                    <p>{{ trans('maintenance.utils.back') }}</p>
+                </button>
+            @endif
         </p>
         <div class="flex items-center justify-between w-full py-8 px-12 rounded-xl bg-white">
             <div class="">
