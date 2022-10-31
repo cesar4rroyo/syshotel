@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
+
 
 class Category extends Model
 {
@@ -15,32 +16,34 @@ class Category extends Model
 
     protected $fillable = [
         'name',
-        'description',
         'business_id',
         'branch_id',
     ];
 
-    public function scopesearch(Builder $query, string $param, int $branch_id = null, int $business_id = null)
+    public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null)
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('description', 'like', "%$param%")
-            ->where('business_id', $business_id)
-            ->where('branch_id', $branch_id)
-            ->orderBy('name', 'asc');
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', "%$param%");
+        })->when($branch_id, function ($query, $branch_id) {
+            return $query->where('branch_id', $branch_id);
+        })->when($business_id, function ($query, $business_id) {
+            return $query->where('business_id', $business_id);
+        })->orderBy('name', 'asc');
+
     }
 
     public function business()
     {
-        return $this->belongsTo(Business::class);
+        return $this->belongsTo(Business::class, 'business_id');
     }
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'category_id');
     }
 }

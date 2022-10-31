@@ -23,6 +23,14 @@ class DatabaseSeeder extends Seeder
             'menu_options',
             'access',
             'branches',
+            'categories',
+            'concepts',
+            'floors',
+            'units',
+            'room_types',
+            'services',
+            'rooms',
+            'products',
         ]);
 
         $this->call([
@@ -33,6 +41,14 @@ class DatabaseSeeder extends Seeder
             MenuOptionSeeder::class,
             AccessSeeder::class,
             BranchSeeder::class,
+            CategorySeeder::class,
+            ConceptSeeder::class,
+            FloorSeeder::class,
+            UnitSeeder::class,
+            RoomTyperSeeder::class,
+            ServiceSeeder::class,
+            RoomSeeder::class,
+            ProductSeeder::class,
         ]);
     }
 

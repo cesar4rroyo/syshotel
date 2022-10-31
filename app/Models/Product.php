@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
 
 class Product extends Model
 {
@@ -24,22 +24,21 @@ class Product extends Model
         'unit_id',
     ];
 
-    public function scopesearch(Builder $query, string $param, int $branch_id = null, int $business_id = null, int  $category_id = null, int $unit_id = null)
+    public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null)
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('description', 'like', "%$param%")
-            ->where('sale_price', 'like', "%$param%")
-            ->where('purchase_price', 'like', "%$param%")
-            ->where('branch_id', $branch_id)
-            ->where('business_id', $business_id)
-            ->where('category_id', $category_id)
-            ->where('unit_id', $unit_id)
-            ->orderBy('name', 'asc');
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', "%$param%");
+        })->when($branch_id, function ($query, $branch_id) {
+            return $query->where('branch_id', $branch_id);
+        })->when($business_id, function ($query, $business_id) {
+            return $query->where('business_id', $business_id);
+        })->orderBy('name', 'asc');
+
     }
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function business()
@@ -49,11 +48,11 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     public function unit()
     {
-        return $this->belongsTo(Unit::class);
+        return $this->belongsTo(Unit::class, 'unit_id');
     }
 }

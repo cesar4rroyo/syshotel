@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Elegant\Sanitizer\Laravel\SanitizesInput;
 use Illuminate\Foundation\Http\FormRequest;
-use Elegant\Sanitizer\Sanitizer;
+
 
 class BranchRequest extends FormRequest
 {
