@@ -17,14 +17,14 @@ class ConceptSeeder extends Seeder
     {
         DB::table('concepts')->insert([
             'name' => 'Concept 1',
-            'type' => 'Type 1',
+            'type' => 'I',
             'branch_id' => 1,
             'business_id' => 1,
         ]);
 
         DB::table('concepts')->insert([
             'name' => 'Concept 2',
-            'type' => 'Type 2',
+            'type' => 'E',
             'branch_id' => 1,
             'business_id' => 1,
         ]);

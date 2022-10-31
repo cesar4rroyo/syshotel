@@ -30,8 +30,16 @@
 <div class="flex space-x-6 mt-3">
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="type">{{ trans('maintenance.admin.concept.type') }}</label>
-        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="type" id="type"
-            value="{{ isset($formData['model']) ? $formData['model']->type : null }}" required>
+        <select
+            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full p-2.5"
+            name="type" id="type" required>
+            @foreach ($formData['cboTypes'] as $key => $value)
+                <option value="{{ $key }}"
+                    {{ isset($formData['model']) && $formData['model']->type == $key ? 'selected' : null }}>
+                    {{ $value }}
+                </option>
+            @endforeach
+        </select>
     </div>
     <div class="w-full"></div>
 </div>

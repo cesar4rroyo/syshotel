@@ -30,7 +30,6 @@ class Concept extends Model
         })->when($business_id, function ($query, $business_id) {
             return $query->where('business_id', $business_id);
         })->orderBy('name', 'asc');
-
     }
 
     public function branch()
@@ -41,5 +40,10 @@ class Concept extends Model
     public function business()
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function getTypeAttribute($value)
+    {
+        return $value == 'I' ? 'Ingreso' : 'Egreso';
     }
 }

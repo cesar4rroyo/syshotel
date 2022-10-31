@@ -87,7 +87,10 @@ class UserController extends Controller
             $nombre      = $this->getParam($request->nombre);
             $businessId  = $this->getParam($request->businessId);
             $userTypeId  = $this->getParam($request->userTypeId);
-            $branchId    = $this->getParam($request->branchId);
+            $branchId = $this->getParam($request->branch_id);
+            if ($branchId == null && auth()->user()->usertype_id != 1) {
+                $branchId = auth()->user()->branch_id;
+            }
 
             $result = $this->model::search($nombre, $userTypeId, $businessId, $branchId);
             $list   = $result->get();

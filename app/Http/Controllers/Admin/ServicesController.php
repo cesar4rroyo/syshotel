@@ -74,6 +74,9 @@ class ServicesController extends Controller
             $nombre   = $this->getParam($request->nombre);
             $businessId = auth()->user()->business_id;
             $branchId = $this->getParam($request->branch_id);
+            if ($branchId == null && auth()->user()->usertype_id != 1) {
+                $branchId = auth()->user()->branch_id;
+            }
             $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 

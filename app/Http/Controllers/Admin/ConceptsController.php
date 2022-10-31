@@ -70,6 +70,9 @@ class ConceptsController extends Controller
             $nombre   = $this->getParam($request->nombre);
             $businessId = auth()->user()->business_id;
             $branchId = $this->getParam($request->branch_id);
+            if ($branchId == null && auth()->user()->usertype_id != 1) {
+                $branchId = auth()->user()->branch_id;
+            }
             $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
@@ -126,6 +129,7 @@ class ConceptsController extends Controller
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
                 'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
+                'cboTypes'          => ['' => 'Seleccione una opción'] + config('constants.conceptTypes'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
