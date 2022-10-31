@@ -100,7 +100,7 @@ return [
             'name'   => 'Nombre',
             'branch' => 'Sucursal',
         ],
-        'room' =>[
+        'room' => [
             'title'    => 'Habitaciones',
             'name'     => 'Nombre',
             'number'   => 'Número',
