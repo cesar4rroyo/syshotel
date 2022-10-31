@@ -64,8 +64,9 @@ class CategoriesController extends Controller
             $filas = $request->filas;
 
             $nombre   = $this->getParam($request->nombre);
-
-            $result   = $this->model::search($nombre);
+            $businessId = auth()->user()->business_id;
+            $branchId = $this->getParam($request->branch_id);
+            $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
             if (count($list) > 0) {
@@ -122,11 +123,10 @@ class CategoriesController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name','id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
 
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
-
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
@@ -137,7 +137,7 @@ class CategoriesController extends Controller
         try {
 
             $error = DB::transaction(function () use ($request) {
-                $model = $this->model->create( [
+                $model = $this->model->create([
                     'name'          => $this->getParam($request->input('name')),
                     'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
@@ -168,7 +168,7 @@ class CategoriesController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name','id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));

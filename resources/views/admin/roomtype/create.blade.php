@@ -14,14 +14,14 @@
     </div>
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="capacity">{{ trans('maintenance.admin.roomtype.capacity') }}</label>
-        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" capacity="capacity" id="capacity"
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="capacity" id="capacity"
             value="{{ isset($formData['model']) ? $formData['model']->capacity : null }}" required>
     </div>
 </div>
 <div class="flex space-x-6 mt-3">
     <div class="flex flex-col space-y-1 w-full">
-        <label class="font-medium text-sm text-gray-600" for="phone">{{ trans('maintenance.admin.roomtype.price') }}</label>
-        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="phone" id="phone"
+        <label class="font-medium text-sm text-gray-600" for="price">{{ trans('maintenance.admin.roomtype.price') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="price" id="price"
             value="{{ isset($formData['model']) ? $formData['model']->price: null }}" required>
     </div>
     <div class="flex flex-col space-y-1 w-full">

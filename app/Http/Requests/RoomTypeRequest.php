@@ -27,8 +27,8 @@ class RoomTypeRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'capacity' => 'required',
-            'price' => 'required',
+            'capacity' => 'required|numeric',
+            'price' => 'required|numeric',
             'branch_id' => 'required',
         ];
     }
@@ -38,7 +38,9 @@ class RoomTypeRequest extends FormRequest
         return [
             'name.required' => 'El campo nombre es obligatorio',
             'capacity.required' => 'El campo capacidad es obligatorio',
+            'capacity.numeric' => 'El campo capacidad debe ser un número',
             'price.required' => 'El campo precio es obligatorio',
+            'price.numeric' => 'El campo precio debe ser un número',
             'branch_id.required' => 'El campo sucursal es obligatorio',
         ];
     }

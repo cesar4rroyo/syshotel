@@ -18,7 +18,6 @@ class FloorsController extends Controller
     public function __construct()
     {
         $this->model       = new Floor();
-
         $this->entity      = 'floors';
         $this->folderview  = 'admin.floor';
         $this->adminTitle  = __('maintenance.admin.floor.title');
@@ -64,10 +63,12 @@ class FloorsController extends Controller
             $filas = $request->filas;
 
             $nombre   = $this->getParam($request->nombre);
-            $result   = $this->model::search($nombre);
+            $businessId = auth()->user()->business_id;
+            $branchId = $this->getParam($request->branch_id);
+            $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
-            if (count($list)>0){
+            if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
                 $request->replace(array('page' => $paramPaginacion['nuevapagina']));
@@ -119,10 +120,9 @@ class FloorsController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name','id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
-
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
@@ -164,7 +164,7 @@ class FloorsController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name','id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -228,7 +228,4 @@ class FloorsController extends Controller
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
     }
-
-
 }
-

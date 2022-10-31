@@ -82,10 +82,12 @@ class ProductsController extends Controller
             $filas = $request->filas;
 
             $nombre   = $this->getParam($request->nombre);
-            $result   = $this->model::search($nombre);
+            $businessId = auth()->user()->business_id;
+            $branchId = $this->getParam($request->branch_id);
+            $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
-            if (count($list)>0){
+            if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
                 $request->replace(array('page' => $paramPaginacion['nuevapagina']));
@@ -137,12 +139,11 @@ class ProductsController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         =>$this->generateCboGeneral(Branch::class,'name', 'id', 'Seleccione una sucursal'),
-                'cboCategory'       =>$this->generateCboGeneral(Category::class,'name', 'id', 'Seleccione una categoría'),
-                'cboUnit'           =>$this->generateCboGeneral(Unit::class,'name', 'id', 'Seleccione una unidad'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione una sucursal'),
+                'cboCategory'       => $this->generateCboGeneral(Category::class, 'name', 'id', 'Seleccione una categoría'),
+                'cboUnit'           => $this->generateCboGeneral(Unit::class, 'name', 'id', 'Seleccione una unidad'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
-
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
@@ -155,6 +156,10 @@ class ProductsController extends Controller
             $error = DB::transaction(function () use ($request) {
                 $model = $this->model->create([
                     'name'          => $this->getParam($request->input('name')),
+                    'sale_price'    => $this->getParam($request->input('sale_price')),
+                    'purchase_price' => $this->getParam($request->input('purchase_price')),
+                    'unit_id'       => $this->getParam($request->input('unit_id')),
+                    'category_id'   => $this->getParam($request->input('category_id')),
                     'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
                 ]);
@@ -184,9 +189,9 @@ class ProductsController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         =>$this->generateCboGeneral(Branch::class,'name', 'id', 'Seleccione una sucursal'),
-                'cboCategory'       =>$this->generateCboGeneral(Category::class,'name', 'id', 'Seleccione una categoría'),
-                'cboUnit'           =>$this->generateCboGeneral(Unit::class,'name', 'id', 'Seleccione una unidad'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione una sucursal'),
+                'cboCategory'       => $this->generateCboGeneral(Category::class, 'name', 'id', 'Seleccione una categoría'),
+                'cboUnit'           => $this->generateCboGeneral(Unit::class, 'name', 'id', 'Seleccione una unidad'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -201,6 +206,10 @@ class ProductsController extends Controller
             $error = DB::transaction(function () use ($request, $id) {
                 $this->model->find($id)->update([
                     'name'          => $this->getParam($request->input('name')),
+                    'sale_price'    => $this->getParam($request->input('sale_price')),
+                    'purchase_price' => $this->getParam($request->input('purchase_price')),
+                    'unit_id'       => $this->getParam($request->input('unit_id')),
+                    'category_id'   => $this->getParam($request->input('category_id')),
                     'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
                 ]);

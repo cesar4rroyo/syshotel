@@ -72,10 +72,12 @@ class RoomTypeController extends Controller
             $filas = $request->filas;
 
             $nombre   = $this->getParam($request->nombre);
-            $result   = $this->model::search($nombre);
+            $businessId = auth()->user()->business_id;
+            $branchId = $this->getParam($request->branch_id);
+            $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
-            if (count($list)>0){
+            if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
                 $request->replace(array('page' => $paramPaginacion['nuevapagina']));
@@ -127,10 +129,9 @@ class RoomTypeController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name', 'id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
-
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
@@ -146,6 +147,7 @@ class RoomTypeController extends Controller
                     'capacity'      => $request->input('capacity'),
                     'price'         => $request->input('price'),
                     'branch_id'     => $request->input('branch_id'),
+                    'business_id'   => auth()->user()->business_id,
                 ]);
             });
             return is_null($error) ? "OK" : $error;
@@ -173,7 +175,7 @@ class RoomTypeController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name', 'id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -188,6 +190,8 @@ class RoomTypeController extends Controller
             $error = DB::transaction(function () use ($request, $id) {
                 $this->model->find($id)->update([
                     'name'          => $this->getParam($request->input('name')),
+                    'capacity'      => $request->input('capacity'),
+                    'price'         => $request->input('price'),
                     'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
                 ]);
@@ -237,5 +241,4 @@ class RoomTypeController extends Controller
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
     }
-
 }

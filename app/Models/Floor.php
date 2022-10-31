@@ -29,7 +29,6 @@ class Floor extends Model
         })->when($business_id, function ($query, $business_id) {
             return $query->where('business_id', $business_id);
         })->orderBy('name', 'asc');
-
     }
 
     public function branch()

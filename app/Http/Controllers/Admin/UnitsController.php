@@ -64,10 +64,12 @@ class UnitsController extends Controller
             $filas = $request->filas;
 
             $nombre   = $this->getParam($request->nombre);
-            $result   = $this->model::search($nombre);
+            $businessId = auth()->user()->business_id;
+            $branchId = $this->getParam($request->branch_id);
+            $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
-            if (count($list)>0){
+            if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
                 $request->replace(array('page' => $paramPaginacion['nuevapagina']));
@@ -119,10 +121,9 @@ class UnitsController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name','id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
-
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
@@ -164,7 +165,7 @@ class UnitsController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name','id','Seleccione Sucursal'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));

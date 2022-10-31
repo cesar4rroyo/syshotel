@@ -82,10 +82,12 @@ class RoomsController extends Controller
             $filas = $request->filas;
 
             $nombre   = $this->getParam($request->nombre);
-            $result   = $this->model::search($nombre);
+            $businessId = auth()->user()->business_id;
+            $branchId = $this->getParam($request->branch_id);
+            $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
-            if (count($list)>0){
+            if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
                 $request->replace(array('page' => $paramPaginacion['nuevapagina']));
@@ -138,12 +140,11 @@ class RoomsController extends Controller
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
-                'cboRoomType'       =>$this->generateCboGeneral(RoomType::class,'name','id','Seleccione tipo de dormitorio'),
-                'cboFloor'          =>$this->generateCboGeneral(Floor::class,'name','id','Seleccione piso'),
-                'cboBranch'         =>$this->generateCboGeneral(Branch::class,'name', 'id','Seleccione Sucursal'),
+                'cboRoomType'       => $this->generateCboGeneral(RoomType::class, 'name', 'id', 'Seleccione tipo de dormitorio'),
+                'cboFloor'          => $this->generateCboGeneral(Floor::class, 'name', 'id', 'Seleccione piso'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
-
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
@@ -156,6 +157,10 @@ class RoomsController extends Controller
             $error = DB::transaction(function () use ($request) {
                 $model = $this->model->create([
                     'name'          => $this->getParam($request->input('name')),
+                    'number'        => $this->getParam($request->input('number')),
+                    'status'        => $this->getParam($request->input('status')),
+                    'room_type_id'  => $this->getParam($request->input('room_type_id')),
+                    'floor_id'      => $this->getParam($request->input('floor_id')),
                     'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
                 ]);
@@ -186,9 +191,9 @@ class RoomsController extends Controller
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
-                'cboBranch'         => $this->generateCboGeneral(Branch::class,'name', 'id','Seleccione Sucursal'),
-                'cboRoomType'       =>$this->generateCboGeneral(RoomType::class,'name','id','Seleccione tipo de dormitorio'),
-                'cboFloor'          =>$this->generateCboGeneral(Floor::class,'name','id','Seleccione piso'),
+                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
+                'cboRoomType'       => $this->generateCboGeneral(RoomType::class, 'name', 'id', 'Seleccione tipo de dormitorio'),
+                'cboFloor'          => $this->generateCboGeneral(Floor::class, 'name', 'id', 'Seleccione piso'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -203,6 +208,10 @@ class RoomsController extends Controller
             $error = DB::transaction(function () use ($request, $id) {
                 $this->model->find($id)->update([
                     'name'          => $this->getParam($request->input('name')),
+                    'number'        => $this->getParam($request->input('number')),
+                    'status'        => $this->getParam($request->input('status')),
+                    'room_type_id'  => $this->getParam($request->input('room_type_id')),
+                    'floor_id'      => $this->getParam($request->input('floor_id')),
                     'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
                 ]);
