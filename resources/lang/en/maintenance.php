@@ -165,6 +165,14 @@ return [
             'phone'    => 'Teléfono',
             'comments' => 'Comentarios',
         ],
+        'payment' => [
+            'title'    => 'Métodos de Pago',
+            'name'     => 'Nombre',
+            'branch'   => 'Sucursal',
+            'business' => 'Empresa',
+            'type'     => 'Tipo',
+            'notes'    => 'Comentarios',
+        ],
     ],
 
     'utils' => [

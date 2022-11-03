@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ConceptsController;
 use App\Http\Controllers\Admin\FloorsController;
 use App\Http\Controllers\Admin\MenuGroupController;
 use App\Http\Controllers\Admin\MenuOptionController;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RoomsController;
@@ -63,6 +64,11 @@ Route::middleware([
     Route::get('cashbox/delete/{id}/{listagain}', [CashBoxController::class, 'delete'])->name('cashbox.delete');
     Route::get('cashbox/maintenance/{action}/{businessId}/{cashboxId?}', [CashBoxController::class, 'maintenance'])->name('cashbox.maintenance');
     Route::resource('cashbox', CashBoxController::class)->except(['show']);
+
+    Route::post('payment/search', [PaymentController::class, 'search'])->name('payment.search');
+    Route::get('payment/delete/{id}/{listagain}', [PaymentController::class, 'delete'])->name('payment.delete');
+    Route::get('payment/maintenance/{action}/{businessId}/{paymentId?}', [PaymentController::class, 'maintenance'])->name('payment.maintenance');
+    Route::resource('payment', PaymentController::class)->except(['show']);
 
     /* floor routes */
     Route::post('floor/search', [FloorsController::class, 'search'])->name('floor.search');

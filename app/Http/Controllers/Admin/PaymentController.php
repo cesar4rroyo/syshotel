@@ -3,44 +3,43 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BusinessRequest;
+use App\Http\Requests\PaymentRequest;
 use App\Http\Services\BusinessService;
 use App\Librerias\Libreria;
-use App\Models\Business;
+use App\Models\Branch;
+use App\Models\Payments;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class BusinessController extends Controller
+class PaymentController extends Controller
 {
     use CRUDTrait;
-
     public BusinessService $businessService;
+
 
     public function __construct()
     {
-        $this->model            = new Business();
+        $this->model            = new Payments();
         $this->businessService  = new BusinessService();
 
-        $this->entity       = 'business';
-        $this->folderview   = 'admin.business';
-        $this->adminTitle   = __('maintenance.admin.business.title');
+        $this->entity       = 'payments';
+        $this->folderview   = 'admin.payment';
+        $this->adminTitle   = __('maintenance.admin.payment.title');
         $this->addTitle     = __('maintenance.general.add', ['entity' => $this->adminTitle]);
         $this->updateTitle  = __('maintenance.general.edit', ['entity' => $this->adminTitle]);
         $this->deleteTitle  = __('maintenance.general.delete', ['entity' => $this->adminTitle]);
         $this->routes = [
-            'search'  => 'business.search',
-            'index'   => 'business.index',
-            'store'   => 'business.store',
-            'delete'  => 'business.delete',
-            'create'  => 'business.create',
-            'edit'    => 'business.edit',
-            'update'  => 'business.update',
-            'destroy' => 'business.destroy',
-            'branches' => 'branch.maintenance',
-            'users' => 'user.maintenance',
-            'cashboxes' => 'cashbox.maintenance',
-            'payments' => 'payment.maintenance',
+            'search'  => 'payment.search',
+            'index'   => 'payment.index',
+            'store'   => 'payment.store',
+            'delete'  => 'payment.delete',
+            'create'  => 'payment.create',
+            'edit'    => 'payment.edit',
+            'update'  => 'payment.update',
+            'destroy' => 'payment.destroy',
+            'maintenance' => 'payment.maintenance',
+            'back'    => 'business',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
 
@@ -52,15 +51,11 @@ class BusinessController extends Controller
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Estado',
+                'valor'  => 'Tipo',
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Email/Teléfono',
-                'numero' => '1',
-            ],
-            [
-                'valor'  => 'Dirección',
+                'valor'  => 'Observación',
                 'numero' => '1',
             ],
             [
@@ -76,10 +71,14 @@ class BusinessController extends Controller
             $paginas = $request->page;
             $filas = $request->filas;
             $nombre      = $this->getParam($request->nombre);
+            $businessId  = $this->getParam($request->businessId);
+            $branchId = $this->getParam($request->branch_id);
+            if ($branchId == null && auth()->user()->usertype_id != 1) {
+                $branchId = auth()->user()->branch_id;
+            }
 
-            $result = $this->model::search($nombre);
+            $result = $this->model::search($nombre, $branchId, $businessId);
             $list   = $result->get();
-
             if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
@@ -105,17 +104,21 @@ class BusinessController extends Controller
         }
     }
 
-    public function index()
+    public function index(int $businessId = null)
     {
         try {
+            $id = $businessId ? $businessId : auth()->user()->business_id;
+            $bussines = $this->businessService->getBusinessById($id);
             return view($this->folderview . '.index')->with([
                 'entidad'           => $this->entity,
-                'titulo_admin'      => $this->adminTitle,
+                'titulo_admin'      => $this->adminTitle . ' de ' . $bussines->name,
                 'titulo_eliminar'   => $this->deleteTitle,
                 'titulo_modificar'  => $this->updateTitle,
                 'titulo_registrar'  => $this->addTitle,
                 'ruta'              => $this->routes,
                 'cboRangeFilas'     => $this->cboRangeFilas(),
+                'businessId'        => $businessId,
+                'showBackBtn'       => $businessId ? true : false,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -125,6 +128,7 @@ class BusinessController extends Controller
     public function create(Request $request)
     {
         try {
+            $businessId = $request->businessId ?? auth()->user()->business_id;
             $formData = [
                 'route'             => $this->routes['store'],
                 'method'            => 'POST',
@@ -134,7 +138,8 @@ class BusinessController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
+                'cboTypes'          => ['cash' => 'Efectivo', 'card' => 'Tarjeta', 'transfer' => 'Transferencia'],
+                'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -142,12 +147,11 @@ class BusinessController extends Controller
         }
     }
 
-    public function store(BusinessRequest $request)
+    public function store(PaymentRequest $request)
     {
         try {
             $error = DB::transaction(function () use ($request) {
-                $business = $this->model->create($request->all());
-                $this->businessService->storeOrUpdateBusinessBranches($business, true);
+                $this->model::create($request->all());
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -158,6 +162,7 @@ class BusinessController extends Controller
     public function edit(Request $request, $id)
     {
         try {
+            $businessId = $request->params['businessId'];
             $exist = $this->verificarExistencia($id, $this->entity);
             if ($exist !== true) {
                 return $exist;
@@ -172,7 +177,8 @@ class BusinessController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
+                'cboTypes'          => ['cash' => 'Efectivo', 'card' => 'Tarjeta', 'transfer' => 'Transferencia'],
+                'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -180,11 +186,12 @@ class BusinessController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(PaymentRequest $request, $id)
     {
         try {
             $error = DB::transaction(function () use ($request, $id) {
-                $this->model->find($id)->update($request->all());
+                $user = $this->model->find($id);
+                $user->update($request->all());
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -215,6 +222,36 @@ class BusinessController extends Controller
                 'modelo'        => $this->model->find($id),
             ];
             return view('utils.comfirndelete')->with(compact('formData'));
+        } catch (\Throwable $th) {
+            return $this->MessageResponse($th->getMessage(), 'danger');
+        }
+    }
+
+    public function maintenance($action, $businessId, $userId = null)
+    {
+        try {
+            $listar = 'SI';
+            $formData = [
+                'route'         => array($this->routes['update'], $this->model->find($businessId)),
+                'method'        => 'PUT',
+                'class'         => 'form-horizontal',
+                'id'            => $this->idForm,
+                'autocomplete'  => 'off',
+                'boton'         => 'Guardar',
+                'entidad'       => $this->entity,
+                'listar'        => $listar,
+                'model'         => $this->model,
+                'action'        => $action,
+                'businessId'    => $businessId,
+            ];
+            switch ($action) {
+                case 'LIST':
+                    return $this->index($businessId);
+                    break;
+                default:
+                    return view('utils.comfirndelete')->with(compact('formData'));
+                    break;
+            }
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }

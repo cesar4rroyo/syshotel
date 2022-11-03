@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             'rooms',
             'products',
             'cashboxes',
+            'payments',
         ]);
 
         $this->call([
@@ -51,6 +52,7 @@ class DatabaseSeeder extends Seeder
             RoomSeeder::class,
             ProductSeeder::class,
             CashBoxSeeder::class,
+            PaymentSeeder::class,
         ]);
     }
 
