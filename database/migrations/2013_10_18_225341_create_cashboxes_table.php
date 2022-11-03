@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('comments')->nullable();
             $table->foreignId('branch_id')->references('id')->on('branches');
+            $table->foreignId('business_id')->references('id')->on('business');
             $table->timestamps();
             $table->softDeletes();
         });

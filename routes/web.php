@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\BusinessController;
+use App\Http\Controllers\Admin\CashBoxController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CategoriesController;
@@ -51,11 +52,17 @@ Route::middleware([
     Route::post('branch/uploadPhoto', [BranchController::class, 'uploadPhoto'])->name('branch.uploadPhoto');
     Route::get('branch/maintenance/{id}/{action}/{businessId}', [BranchController::class, 'maintenance'])->name('branch.maintenance');
     Route::resource('branch', BranchController::class)->except(['show']);
+
     Route::post('user/search', [UserController::class, 'search'])->name('user.search');
     Route::get('user/delete/{id}/{listagain}', [UserController::class, 'delete'])->name('user.delete');
     Route::post('user/uploadPhoto', [UserController::class, 'uploadPhoto'])->name('user.uploadPhoto');
     Route::get('user/maintenance/{action}/{businessId}/{userId?}', [UserController::class, 'maintenance'])->name('user.maintenance');
     Route::resource('user', UserController::class)->except(['show']);
+
+    Route::post('cashbox/search', [CashBoxController::class, 'search'])->name('cashbox.search');
+    Route::get('cashbox/delete/{id}/{listagain}', [CashBoxController::class, 'delete'])->name('cashbox.delete');
+    Route::get('cashbox/maintenance/{action}/{businessId}/{cashboxId?}', [CashBoxController::class, 'maintenance'])->name('cashbox.maintenance');
+    Route::resource('cashbox', CashBoxController::class)->except(['show']);
 
     /* floor routes */
     Route::post('floor/search', [FloorsController::class, 'search'])->name('floor.search');

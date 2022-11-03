@@ -156,6 +156,14 @@ return [
             'branch'   => 'Sucursal',
             'business' => 'Empresa',
         ],
+        'cashbox' => [
+            'title'    => 'Cajas',
+            'name'     => 'Nombre',
+            'branch'   => 'Sucursal',
+            'business' => 'Empresa',
+            'phone'    => 'Teléfono',
+            'comments' => 'Comentarios',
+        ],
     ],
 
     'utils' => [

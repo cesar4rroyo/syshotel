@@ -21,6 +21,9 @@
 					<button class="btn" onclick="cargarRuta('{{URL::route($ruta['users'], ['action'=>'LIST', 'businessId' => $value->id])}}', 'main-container');">
 						<i style="color: green" class="fas fa-users"></i>
 					</button>
+					<button class="btn" onclick="cargarRuta('{{URL::route($ruta['cashboxes'], ['action'=>'LIST', 'businessId' => $value->id])}}', 'main-container');">
+						<i style="color: rgb(117, 125, 9)" class="fas fa-store"></i>
+					</button>
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
 				</div>
 			</td>
