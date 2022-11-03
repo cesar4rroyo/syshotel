@@ -17,6 +17,11 @@
 					{{ '- ' . $item->name }}<br>
 				@endforeach
 			</td>
+			<td class="py-3 px-4">
+				@foreach ($value->cashboxes as $item)
+					{{ '- ' . $item->name }}<br>
+				@endforeach
+			</td>
 			<td class="py-3 px-4">{{ isset($value->people) ? $value->people->name : '-' }}</td>
 			<td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">

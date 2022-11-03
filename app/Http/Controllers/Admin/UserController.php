@@ -8,11 +8,13 @@ use App\Http\Requests\UserRequest;
 use App\Http\Services\BusinessService;
 use App\Librerias\Libreria;
 use App\Models\Branch;
+use App\Models\CashBox;
 use App\Models\User;
 use App\Models\UserType;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -65,7 +67,11 @@ class UserController extends Controller
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Sucursal',
+                'valor'  => 'Sucursales',
+                'numero' => '1',
+            ],
+            [
+                'valor'  => 'Cajas',
                 'numero' => '1',
             ],
             [
@@ -157,6 +163,7 @@ class UserController extends Controller
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
                 'cboUserTypes'      => $this->generateCboGeneral(UserType::class, 'name', 'id', 'Seleccione una opción'),
                 'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
+                'cboCashboxes'      => CashBox::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -169,7 +176,9 @@ class UserController extends Controller
     {
         try {
             $error = DB::transaction(function () use ($request) {
-                $this->model::create($request->all())->branches()->attach($request->branch_id);
+                $user = $this->model::create($request->all());
+                $user->branches()->attach($request->branch_id);
+                $user->cashboxes()->attach($request->cashbox_id);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -198,6 +207,7 @@ class UserController extends Controller
                 'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
                 'cboUserTypes'      => $this->generateCboGeneral(UserType::class, 'name', 'id', 'Seleccione una opción'),
                 'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
+                'cboCashboxes'      => CashBox::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -211,8 +221,15 @@ class UserController extends Controller
         try {
             $error = DB::transaction(function () use ($request, $id) {
                 $user = $this->model->find($id);
-                $user->update($request->all());
+                $data = [
+                    'name'              => $request->name,
+                    'email'             => $request->email,
+                    'usertype_id'       => $request->usertype_id,
+                    'people_id'         => $request->people_id,
+                ];
+                $user->update(empty($request->password) ? $data : array_merge($data, ['password' => $request->password]));
                 $user->branches()->sync($request->branch_id);
+                $user->cashboxes()->sync($request->cashbox_id);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {

@@ -160,7 +160,13 @@ class BranchController extends Controller
     {
         try {
             $error = DB::transaction(function () use ($request) {
-                $this->model::create($request->all());
+                $branch = $this->model::create($request->all());
+                $this->model->cashboxes()->insert([
+                    'branch_id' => $branch->id,
+                    'name' => 'Caja Principal',
+                    'phone' => $branch->phone,
+                    'business_id' => $branch->business_id,
+                ]);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {

@@ -28,7 +28,8 @@ return [
             'person' => 'Persona',
             'usertype' => 'Tipo de Usuario',
             'title' => 'Usuario',
-            'branch' => 'Sucursal',
+            'branch' => 'Sucursales',
+            'cashbox' => 'Cajas',
         ],
         'menugroup' => [
             'name' => 'Nombre del Grupo de Menú',

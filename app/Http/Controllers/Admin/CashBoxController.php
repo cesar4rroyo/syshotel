@@ -85,9 +85,8 @@ class CashBoxController extends Controller
                 $branchId = auth()->user()->branch_id;
             }
 
-            $result = $this->model::search($nombre, $businessId, $branchId);
+            $result = $this->model::search($nombre, $branchId, $businessId);
             $list   = $result->get();
-
             if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
