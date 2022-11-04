@@ -31,4 +31,16 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'reniec' => [
+        'token' => env('RENIEC_TOKEN'),
+        'fe' => 'N',
+        'url' => env('BASE_URL_CLIENT_DNI'),
+    ],
+
+    'sunat' => [
+        'token' => env('SUNAT_TOKEN'),
+        'fe' => 'N',
+        'url' => env('BASE_URL_CLIENT_RUC'),
+    ],
+
 ];
