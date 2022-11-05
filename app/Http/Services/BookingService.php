@@ -22,10 +22,10 @@ class BookingService
     private $today;
     private $firstDayOfYear;
 
-    public function __construct(Booking $booking, Libreria $libreria, int $branch_id, int $business_id)
+    public function __construct(Booking $booking, int $branch_id, int $business_id)
     {
         $this->booking = $booking;
-        $this->libreria = $libreria;
+        $this->libreria = new Libreria();
         $this->checkin_hour = (float) config('constants.checkin_hour');
         $this->checkin_minute = (float) config('constants.checkin_minute');
         $this->checkout_hour = (float) config('constants.checkout_hour');
