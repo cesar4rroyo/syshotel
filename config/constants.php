@@ -17,6 +17,11 @@ return [
         'C' => 'Confirmado',
         'A' => 'Anulado',
     ],
+    'processStatus' => [
+        'P' => 'Pendiente',
+        'C' => 'Confirmado',
+        'A' => 'Anulado',
+    ],
     'checkin_hour' => 14,
     'checkin_minute' => 0,
     'checkout_hour' => 12,

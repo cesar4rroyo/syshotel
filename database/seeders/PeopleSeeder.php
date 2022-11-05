@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Room;
+use App\Models\People;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class RoomSeeder extends Seeder
+class PeopleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,6 @@ class RoomSeeder extends Seeder
      */
     public function run()
     {
-        Room::factory()->count(100)->create();
+        People::factory()->count(50)->create();
     }
 }

@@ -34,6 +34,9 @@ class DatabaseSeeder extends Seeder
             'cashboxes',
             'payments',
             'settings',
+            'people',
+            'bookings',
+            'processes',
         ]);
 
         $this->call([
@@ -55,6 +58,9 @@ class DatabaseSeeder extends Seeder
             CashBoxSeeder::class,
             PaymentSeeder::class,
             SettingSeeder::class,
+            PeopleSeeder::class,
+            BookingSeeder::class,
+            ProcessSeeder::class,
         ]);
     }
 

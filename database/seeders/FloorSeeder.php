@@ -16,13 +16,19 @@ class FloorSeeder extends Seeder
     public function run()
     {
         DB::table('floors')->insert([
-            'name' => 'Floor 1',
+            'name' => 'PISO 1',
             'branch_id' => 1,
             'business_id' => 1,
         ]);
 
         DB::table('floors')->insert([
-            'name' => 'Floor 2',
+            'name' => 'PISO 2',
+            'branch_id' => 1,
+            'business_id' => 1,
+        ]);
+
+        DB::table('floors')->insert([
+            'name' => 'PISO 3',
             'branch_id' => 1,
             'business_id' => 1,
         ]);

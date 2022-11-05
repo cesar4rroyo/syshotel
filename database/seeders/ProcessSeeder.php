@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\Room;
+use App\Models\Process;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class RoomSeeder extends Seeder
+class ProcessSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,6 +15,6 @@ class RoomSeeder extends Seeder
      */
     public function run()
     {
-        Room::factory()->count(100)->create();
+        Process::factory()->count(50)->create();
     }
 }

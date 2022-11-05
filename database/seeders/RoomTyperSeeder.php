@@ -30,5 +30,13 @@ class RoomTyperSeeder extends Seeder
             'branch_id' => 1,
             'business_id' => 1,
         ]);
+
+        DB::table('room_types')->insert([
+            'name' => 'Room Type 3',
+            'capacity' => 4,
+            'price' => 90.00,
+            'branch_id' => 1,
+            'business_id' => 1,
+        ]);
     }
 }
