@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Termwind\Components\Dd;
 
 class Room extends Model
 {
@@ -24,12 +24,13 @@ class Room extends Model
         'room_type_id',
     ];
 
-    public function getStatusRoomAttribute()
+    public function getStatusAttribute($status)
     {
-        return $this->status == 'A' ? 'Activo' : 'Inactivo';
+        $values = config('constants.roomStatus');
+        return $values[$status];
     }
 
-    public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null)
+    public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, array $status = null)
     {
         return $query->when($param, function ($query, $param) {
             return $query->where('name', 'like', "%$param%");
@@ -37,7 +38,9 @@ class Room extends Model
             return $query->where('branch_id', $branch_id);
         })->when($business_id, function ($query, $business_id) {
             return $query->where('business_id', $business_id);
-        })->orderBy('name', 'asc');
+        })->when($status, function ($query, $status) {
+            return $query->whereIn('status', $status);
+        });
     }
 
     public function branch()
@@ -58,5 +61,24 @@ class Room extends Model
     public function roomType()
     {
         return $this->belongsTo(RoomType::class, 'room_type_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    public function process()
+    {
+        return $this->hasOne(Process::class);
+    }
+
+    public function scopeAvailable(Builder $query, string $datefrom, string $dateto)
+    {
+        return $query->whereDoesntHave('bookings', function ($query) use ($datefrom, $dateto) {
+            $query->where('datefrom', '<=', $datefrom)
+                ->where('dateto', '>=', $dateto)
+                ->where('status', '!=', 'C');
+        });
     }
 }

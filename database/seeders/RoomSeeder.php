@@ -18,7 +18,7 @@ class RoomSeeder extends Seeder
         DB::table('rooms')->insert([
             'name' => 'Room 1',
             'number' => 101,
-            'status' => 'A',
+            'status' => 'D',
             'room_type_id' => 1,
             'floor_id' => 1,
             'branch_id' => 1,
@@ -27,7 +27,7 @@ class RoomSeeder extends Seeder
         DB::table('rooms')->insert([
             'name' => 'Room 2',
             'number' => 102,
-            'status' => 'A',
+            'status' => 'D',
             'room_type_id' => 2,
             'floor_id' => 1,
             'branch_id' => 1,
