@@ -27,7 +27,7 @@ class BookingFactory extends Factory
             'notes' => $this->faker->text(),
             'client_id' => $this->faker->numberBetween(1, 50),
             'user_id' => 1,
-            'room_id' => $this->faker->numberBetween(1, 25),
+            'room_id' => $this->faker->numberBetween(1, 50),
             'business_id' => 1,
             'branch_id' => 1,
         ];

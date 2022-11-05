@@ -69,9 +69,9 @@ class Room extends Model
         return $this->hasMany(Booking::class);
     }
 
-    public function process()
+    public function processes()
     {
-        return $this->hasOne(Process::class);
+        return $this->hasMany(Process::class, 'room_id');
     }
 
     public function scopeAvailable(Builder $query, string $datefrom, string $dateto)

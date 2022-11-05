@@ -6,7 +6,7 @@ use App\Librerias\Libreria;
 use App\Models\Booking;
 use App\Models\Room;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class BookingService
 {
@@ -39,19 +39,19 @@ class BookingService
 
     public function getDataToCalendar(): Collection
     {
-        $rooms = Room::search(null, $this->branch_id, $this->business_id, ['O', 'M', 'R'])->get();
+        $rooms = Room::with('processes')->search(null, $this->branch_id, $this->business_id, ['O'])->get();
         $bookings = $this->booking->search(null, $this->firstDayOfYear, null, null, $this->branch_id, $this->business_id, ['P'])->get();
         $data = collect();
         foreach ($rooms as $room) {
             $data->push([
-                'process_id' => $room->process->id,
+                'process_id' => $room->processes->first()->id,
                 'number' => $room->number,
-                'date' => $room->process->date,
-                'start' => $room->process->start_date,
-                'end' => $room->process->end_date,
-                'title' => 'Habitación ' . $room->number . ' - ' . $room->process->client->name,
+                'date' => $room->processes->first()->date,
+                'start' => $room->processes->first()->start_date,
+                'end' => $room->processes->first()->end_date,
+                'title' => 'Habitación ' . $room->number . ' - ' . $room->processes->first()->client->name,
                 'status' => $room->status,
-                'client' => $room->process->client->name,
+                'client' => $room->processes->first()->client->name,
             ]);
         }
         foreach ($bookings as $booking) {

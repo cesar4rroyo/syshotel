@@ -72,7 +72,7 @@ class Booking extends Model
         return str_pad($query->maximum + 1, 11, '0', STR_PAD_LEFT);
     }
 
-    public function scopeSearch(Builder $query, string $param = null, string $date_from = null, string $date_to = null, string $client, int $branch_id = null, int $business_id = null, array $status = null)
+    public function scopeSearch(Builder $query, string $param = null, string $date_from = null, string $date_to = null, string $client = null, int $branch_id = null, int $business_id = null, array $status = null)
     {
         return $query->when($param, function ($query, $param) {
             return $query->where('number', 'like', '%' . $param . '%');

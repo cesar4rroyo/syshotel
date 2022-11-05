@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Room;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,7 +25,7 @@ class ProcessFactory extends Factory
             'status' => $this->faker->randomElement(['P', 'C', 'A']),
             'amount' => $this->faker->randomFloat(2, 100, 1000),
             'days' => $this->faker->numberBetween(1, 30),
-            'room_id' => $this->faker->numberBetween(26, 50),
+            'room_id' => Room::where('status', 'O')->inRandomOrder()->first()->id,
             'client_id' => $this->faker->numberBetween(1, 50),
             'user_id' => 1,
             'business_id' => 1,
