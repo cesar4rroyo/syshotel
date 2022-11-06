@@ -21,6 +21,7 @@ class BusinessService
             'direccion' => 'required',
             'telefono' => 'nullable|numeric',
             'email' => 'nullable|email',
+            'serie' => 'required',
         ];
 
         $messages = [
@@ -33,6 +34,7 @@ class BusinessService
             'direccion.required' => 'El campo Dirección es obligatorio.',
             'telefono.numeric' => 'El campo Teléfono debe ser numérico.',
             'email.email' => 'El campo Email debe ser un email válido.',
+            'serie.required' => 'El campo Serie es obligatorio.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages)->stopOnFirstFailure()->validate();

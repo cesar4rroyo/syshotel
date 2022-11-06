@@ -45,6 +45,11 @@
         <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="email" name="email" id="email"
             value="{{ isset($formData['model']) ? $formData['model']->email : null }}" required>
     </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="serie">{{ trans('maintenance.admin.setting.serie') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="serie" name="serie" id="serie"
+            value="{{ isset($formData['model']) ? $formData['model']->serie : null }}" required>
+    </div>
 </div>
 <div class="flex space-x-6 mt-3">
     <label for="billing" class="inline-flex items-center">

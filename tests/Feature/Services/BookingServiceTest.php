@@ -25,6 +25,7 @@ class BookingServiceTest extends TestCase
     public function testGetDataToCalendar()
     {
         $data = $this->bookingService->getDataToCalendar();
+        dd($data);
         $this->assertIsNotArray($data);
     }
 }

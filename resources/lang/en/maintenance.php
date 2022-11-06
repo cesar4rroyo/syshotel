@@ -67,6 +67,7 @@ return [
             'email' => 'Email',
             'logo' => 'Logo',
             'billing' => 'Facturación',
+            'serie' => 'Serie',
         ],
         'business' => [
             'name' => 'Nombre',
