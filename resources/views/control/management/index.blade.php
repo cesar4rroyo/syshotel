@@ -4,11 +4,11 @@
         @foreach ($floors as $item)
             @if ($item['status'] == 'open')
             <li class="mr-2" role="presentation">
-                <button onclick="cargarRuta('{{ route('management', ['id'=> $item['id']]) }}', 'main-container')" class="inline-block p-4 rounded-t-lg border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500" id="{{ $item['id'] }}-tab" data-tabs-target="#{{ $item['name'] }}" type="button" role="tab" aria-controls="{{ $item['name'] }}" aria-selected="false">{{ $item['name'] }}</button>
+                <button onclick="cargarRuta('{{ route('management', ['id'=> $item['id']]) }}', 'main-container')" class="inline-block p-4 rounded-t-lg border-b-2 text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500 font-bold" id="{{ $item['id'] }}-tab" data-tabs-target="#{{ $item['name'] }}" type="button" role="tab" aria-controls="{{ $item['name'] }}" aria-selected="false">{{ $item['name'] }}</button>
             </li>
             @else
             <li class="mr-2" role="presentation">
-                <button onclick="cargarRuta('{{ route('management', ['id' => $item['id']]) }}', 'main-container')" class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 dark:border-transparent text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700" id="{{ $item['id'] }}-tab" data-tabs-target="#{{ $item['name'] }}" type="button" role="tab" aria-controls="{{ $item['name'] }}" aria-selected="false">{{ $item['name'] }}</button>
+                <button onclick="cargarRuta('{{ route('management', ['id' => $item['id']]) }}', 'main-container')" class="inline-block p-4 rounded-t-lg border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 dark:border-transparent text-gray-500 dark:text-gray-400 border-gray-100 dark:border-gray-700 font-bold" id="{{ $item['id'] }}-tab" data-tabs-target="#{{ $item['name'] }}" type="button" role="tab" aria-controls="{{ $item['name'] }}" aria-selected="false">{{ $item['name'] }}</button>
             </li>
             @endif
         @endforeach
@@ -19,7 +19,6 @@
         $id = $id ?? $floors->first()['id'];
     @endphp
     @foreach ($floors->where('id', $id)->first()['rooms'] as $room)
-        {{-- <h1>{{ $room->name }}</h1> --}}
         @include('control.management.room', ['room' => $room])
     @endforeach
 </div>

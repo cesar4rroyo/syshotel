@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,64 @@ class Room extends Model
         'room_type_id',
     ];
 
+    public function getHasBookingTodayAttribute()
+    {
+        $today = date('Y-m-d');
+        $booking = Booking::where('room_id', $this->id)
+            ->where('status', 'P')
+            ->where('datefrom', '<=', $today)
+            ->where('dateto', '>=', $today)
+            ->whereHas('room', function (Builder $query) {
+                $query->where('status', 'D');
+            })
+            ->first();
+        return $booking ? true : false;
+    }
+
+    public function scopeAvailable(Builder $query, string $datefrom, string $dateto)
+    {
+        return $query->whereDoesntHave('bookings', function ($query) use ($datefrom, $dateto) {
+            $query->where('datefrom', '<=', $datefrom)
+                ->where('dateto', '>=', $dateto)
+                ->where('status', '!=', 'C');
+        });
+    }
+
+    public function getCheckoutDateAttribute()
+    {
+        $today = date('Y-m-d');
+        $process = Process::where('room_id', $this->id)
+            ->where('start_date', '>', $today)
+            ->whereHas('room', function (Builder $query) {
+                $query->where('status', 'O');
+            })
+            ->orderBy('id', 'desc')->first();
+
+        if ($process) {
+            return 'Checkout en: ' . Carbon::parse(Carbon::now())->diffInDays($process->end_date) . ' día(s)';
+        } else {
+            return "";
+        }
+    }
+
+    public function getNextBookingDateAttribute()
+    {
+        $today = date('Y-m-d');
+        $booking = Booking::where('room_id', $this->id)
+            ->where('status', 'P')
+            ->where('datefrom', '>', $today)
+            ->whereHas('room', function (Builder $query) {
+                $query->whereIn('status', ['D', 'M']);
+            })
+            ->orderBy('datefrom', 'asc')->first();
+        if ($booking) {
+            return Carbon::parse(Carbon::now())->diffInDays($booking->datefrom);
+        } else {
+            return "";
+        }
+    }
+
+
     public function getStatusAttribute($status)
     {
         $values = config('constants.roomStatus');
@@ -35,6 +94,23 @@ class Room extends Model
     {
         $values = config('constants.roomStatusColor');
         return $values[$this->status];
+    }
+
+    public function getIconActionButtonAttribute()
+    {
+        $values = config('constants.roomStatusIcon');
+        return $values[$this->status];
+    }
+
+    public function getTextActionButtonAttribute()
+    {
+        $values = config('constants.roomTextStatus');
+        return $values[$this->status];
+    }
+
+    public function getLastProcessAttribute()
+    {
+        return $this->processes()->orderBy('id', 'desc')?->first()->start_date ?? '';
     }
 
     public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, array $status = null)
@@ -78,14 +154,5 @@ class Room extends Model
     public function processes()
     {
         return $this->hasMany(Process::class, 'room_id');
-    }
-
-    public function scopeAvailable(Builder $query, string $datefrom, string $dateto)
-    {
-        return $query->whereDoesntHave('bookings', function ($query) use ($datefrom, $dateto) {
-            $query->where('datefrom', '<=', $datefrom)
-                ->where('dateto', '>=', $dateto)
-                ->where('status', '!=', 'C');
-        });
     }
 }

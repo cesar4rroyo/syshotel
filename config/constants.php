@@ -10,13 +10,21 @@ return [
         'D' => 'Disponible',
         'O' => 'Ocupado',
         'M' => 'Mantenimiento',
-        'R' => 'Reservado',
     ],
     'roomStatusColor' => [
         'Disponible' => 'bg-green-success',
         'Ocupado' => 'bg-red-500',
         'Mantenimiento' => 'bg-yellow-corp',
-        'Reservado' => 'bg-blue-500',
+    ],
+    'roomStatusIcon' => [
+        'Disponible' => 'fas fa-check-circle',
+        'Ocupado' => 'fas fa-sign-out-alt',
+        'Mantenimiento' => 'fas fa-hand-sparkles',
+    ],
+    'roomTextStatus' => [
+        'Disponible' => ' Check-In',
+        'Ocupado' => ' Check-Out',
+        'Mantenimiento' => ' Cambiar Estado',
     ],
     'bookingStatus' => [
         'P' => 'Pendiente',

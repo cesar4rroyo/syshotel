@@ -39,11 +39,13 @@ class Process extends Model
         return $values[$status];
     }
 
-    public function getPaymentTypeAttribute($payment_type)
-    {
-        $values = config('constants.paymentType');
-        return $values[$payment_type];
-    }
+
+    // TO DO: Add a new method to the Process model to get the color of the status
+    // public function getPaymentTypeAttribute($payment_type)
+    // {
+    //     $values = config('constants.paymentType');
+    //     return $values[$payment_type];
+    // }
 
     public function client()
     {
