@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Admin\UserTypeController;
+use App\Http\Controllers\Control\ManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,8 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/management', [ManagementController::class, 'index'])->name('management');
 
     Route::post('business/search', [BusinessController::class, 'search'])->name('business.search');
     Route::get('business/delete/{id}/{listagain}', [BusinessController::class, 'delete'])->name('business.delete');

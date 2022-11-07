@@ -17,7 +17,7 @@ class RoomFactory extends Factory
     public function definition()
     {
         return [
-            'name' => 'Room' . $this->faker->unique()->randomNumber(3),
+            'name' => 'Habitación - ' . $this->faker->unique()->randomNumber(3),
             'number' => $this->faker->unique()->randomNumber(3),
             'status' => $this->faker->randomElement(['D', 'O', 'M', 'R']),
             'room_type_id' => $this->faker->numberBetween(1, 3),

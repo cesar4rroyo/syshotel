@@ -31,6 +31,12 @@ class Room extends Model
         return $values[$status];
     }
 
+    public function getColorAttribute()
+    {
+        $values = config('constants.roomStatusColor');
+        return $values[$this->status];
+    }
+
     public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, array $status = null)
     {
         return $query->when($param, function ($query, $param) {

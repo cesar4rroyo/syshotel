@@ -21,7 +21,7 @@
             </a>
         </div>
         <div class="flex flex-col">
-            <a href="{{ route('dashboard') }}" class="flex py-2.5 px-3.5 items-center group hover:bg-blue-corp rounded-md cursor-pointer w-full">
+            <a  onclick="cargarRuta('{{ URL::to('management') }}', 'main-container')" href="#" class="flex py-2.5 px-3.5 items-center group hover:bg-blue-corp rounded-md cursor-pointer w-full">
                 <div class="flex items-center justify-between w-full text-sm group-hover:text-white text-gray-600">
                     <div class="flex items-center space-x-2">
                         <div class="w-5">
