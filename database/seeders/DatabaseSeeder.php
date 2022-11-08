@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             'payments',
             'settings',
             'people',
+            'processtypes',
             'bookings',
             'processes',
         ]);
@@ -59,6 +60,7 @@ class DatabaseSeeder extends Seeder
             PaymentSeeder::class,
             SettingSeeder::class,
             PeopleSeeder::class,
+            ProcessTypeSeeder::class,
             BookingSeeder::class,
             ProcessSeeder::class,
         ]);

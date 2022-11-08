@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\Room;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class BookingService
 {
@@ -22,9 +23,9 @@ class BookingService
     private $today;
     private $firstDayOfYear;
 
-    public function __construct(Booking $booking, int $branch_id, int $business_id)
+    public function __construct(int $branch_id, int $business_id)
     {
-        $this->booking = $booking;
+        $this->booking = new Booking();
         $this->libreria = new Libreria();
         $this->checkin_hour = (float) config('constants.checkin_hour');
         $this->checkin_minute = (float) config('constants.checkin_minute');
@@ -103,6 +104,7 @@ class BookingService
             'notes' => $data['notes'],
             'client_id' => $data['client_id'],
             'status' => $data['status'],
+            'room_id' => $data['room_id'],
         ]);
         return $booking;
     }

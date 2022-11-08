@@ -124,4 +124,6 @@ Route::middleware([
     /* Access Routes */
     Route::get('access', [AccessController::class, 'index'])->name('access');
     Route::post('access', [AccessController::class, 'store'])->name('access.store');
+    /* Bookings Routes */
+    Route::resource('booking', BookingController::class)->except(['show']);
 });
