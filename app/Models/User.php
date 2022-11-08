@@ -31,6 +31,7 @@ class User extends Authenticatable
         'usertype_id',
         'business_id',
         'people_id',
+        'cashbox_id',
     ];
 
     /**
@@ -88,9 +89,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Branch::class, 'user_branches', 'user_id', 'branch_id');
     }
 
-    public function cashboxes()
+    public function cashbox()
     {
-        return $this->belongsToMany(CashBox::class, 'user_cashboxes', 'user_id', 'cashbox_id');
+        return $this->belongsTo(Cashbox::class);
     }
 
     public function scopesearch(Builder $query, string $param = null, int $usertype_id = null, int $business_id = null, int $branch_id = null)

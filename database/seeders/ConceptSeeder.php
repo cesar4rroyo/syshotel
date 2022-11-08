@@ -35,5 +35,26 @@ class ConceptSeeder extends Seeder
             'branch_id' => 1,
             'business_id' => 1,
         ]);
+
+        DB::table('concepts')->insert([
+            'name' => 'Servicio de Hotel',
+            'type' => 'I',
+            'branch_id' => 1,
+            'business_id' => 1,
+        ]);
+
+        DB::table('concepts')->insert([
+            'name' => 'Otros Ingresos',
+            'type' => 'I',
+            'branch_id' => 1,
+            'business_id' => 1,
+        ]);
+
+        DB::table('concepts')->insert([
+            'name' => 'Otros Egresos',
+            'type' => 'E',
+            'branch_id' => 1,
+            'business_id' => 1,
+        ]);
     }
 }

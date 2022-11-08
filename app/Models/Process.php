@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Process extends Model
 {
@@ -22,6 +23,7 @@ class Process extends Model
         'end_date',
         'status',
         'amount',
+        'amountreal',
         'notes',
         'days',
         'client_id',
@@ -32,6 +34,7 @@ class Process extends Model
         'payment_type',
         'booking_id',
         'concept_id',
+        'cashbox_id',
     ];
 
     public function getStatusAttribute($status)
@@ -88,7 +91,17 @@ class Process extends Model
         return $this->belongsTo(Concept::class);
     }
 
-    public function scopeSearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, string $status = null)
+    public function cashbox()
+    {
+        return $this->belongsTo(Cashbox::class);
+    }
+
+    public function payments()
+    {
+        return $this->belongsToMany(Payment::class, 'paymentprocesses', 'process_id', 'payment_id');
+    }
+
+    public function scopeSearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, string $status = null, int $cashbox_id = null, int $procesType_id = null, int $lastOpenCashRegister = null, int $lastCashRegisterId = null)
     {
         return $query->when($param, function ($query, $param) {
             return $query->where('number', 'like', "%$param%");
@@ -98,6 +111,36 @@ class Process extends Model
             return $query->where('business_id', $business_id);
         })->when($status, function ($query, $status) {
             return $query->where('status', $status);
-        })->orderBy('number', 'asc');
+        })->when($cashbox_id, function ($query, $cashbox_id) {
+            return $query->where('cashbox_id', $cashbox_id);
+        })->when($procesType_id, function ($query, $procesType_id) {
+            return $query->where('processtype_id', $procesType_id);
+        })->when($lastOpenCashRegister, function ($query, $lastOpenCashRegister) {
+            return $query->where('id', '>=', $lastOpenCashRegister);
+        })->when($lastCashRegisterId, function ($query, $lastCashRegisterId) {
+            return $query->where('id', '<=', $lastCashRegisterId);
+        })->orderBy('id', 'asc');
+    }
+
+    public function scopeNextNumber(Builder $query, $year = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
+    {
+        $year = $year ?? date('Y');
+        $rs = $query->where('number', 'like', '%' . $year . '-%')
+            ->where('branch_id', $branch_id)
+            ->where('business_id', $business_id)
+            ->where('cashbox_id', $cashbox_id)
+            ->select(DB::raw("max((CASE WHEN number is NULL THEN 0 ELSE convert(substr(number,6,11),SIGNED integer) END)*1) AS maximum"))->first();
+        return $year . '-' . str_pad($rs->maximum + 1, 6, '0', STR_PAD_LEFT);
+    }
+
+    public function scopeTotalAmountCashFromOpen(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
+    {
+        return $query->where('branch_id', $branch_id)
+            ->where('id', '>=', $lastOpenId)
+            ->where('business_id', $business_id)
+            ->where('cashbox_id', $cashbox_id)
+            ->where('processtype_id', 2)
+            ->where('payment_type', 'E')
+            ->sum('amount');
     }
 }

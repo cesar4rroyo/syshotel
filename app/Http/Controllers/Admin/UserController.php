@@ -71,7 +71,7 @@ class UserController extends Controller
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Cajas',
+                'valor'  => 'Caja',
                 'numero' => '1',
             ],
             [
@@ -178,7 +178,6 @@ class UserController extends Controller
             $error = DB::transaction(function () use ($request) {
                 $user = $this->model::create($request->all());
                 $user->branches()->attach($request->branch_id);
-                $user->cashboxes()->attach($request->cashbox_id);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -229,7 +228,6 @@ class UserController extends Controller
                 ];
                 $user->update(empty($request->password) ? $data : array_merge($data, ['password' => $request->password]));
                 $user->branches()->sync($request->branch_id);
-                $user->cashboxes()->sync($request->cashbox_id);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {

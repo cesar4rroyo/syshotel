@@ -40,4 +40,10 @@ return [
     'checkin_minute' => 0,
     'checkout_hour' => 12,
     'checkout_minute' => 0,
+    'paymentType' => [
+        'E' => 'Efectivo',
+        'T' => 'Tarjeta',
+        'D' => 'Depósito',
+        'C' => 'Crédito',
+    ],
 ];

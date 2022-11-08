@@ -13,6 +13,9 @@
                 @endforeach
             </select>
         </div>
+        <div class="flex flex-col space-y-1 w-full">
+            @include('utils.rangeinput', ['cboRangeFilas' => $cboRangeFilas, 'entidad' => $entidad])
+        </div>
     </div>
     <input type="hidden" name="page" id="page" value="1">
     <input type="hidden" name="accion" id="accion" value="listar">

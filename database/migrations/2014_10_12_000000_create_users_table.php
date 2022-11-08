@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignId('usertype_id')->references('id')->on('usertypes');
             $table->foreignId('business_id')->references('id')->on('business');
             $table->foreignId('people_id')->nullable()->references('id')->on('people');
+            $table->foreignId('cashbox_id')->nullable()->references('id')->on('cashboxes');
             $table->timestamps();
             $table->softDeletes();
         });

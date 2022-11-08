@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Control;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CashRegisterRequest;
 use App\Http\Services\CashRegisterService;
 use App\Librerias\Libreria;
+use App\Models\Concept;
+use App\Models\People;
 use App\Models\Process;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CashRegisterController extends Controller
 {
@@ -15,20 +19,39 @@ class CashRegisterController extends Controller
     protected CashRegisterService $cashRegisterService;
     protected int $businessId;
     protected int $branchId;
+    protected string $newCashRegisterTitle;
+    protected string $openCashRegisterTitle;
+    protected string $closeCashRegisterTitle;
+    protected string $editCashRegisterTitle;
+    protected string $deleteCashRegisterTitle;
+    protected array $titles;
 
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
             $this->businessId = $request->session()->get('businessId');
             $this->branchId = $request->session()->get('branchId');
-            $this->cashRegisterService  = new CashRegisterService($this->businessId, $this->branchId);
+            $this->cashboxId = $request->session()->get('cashboxId');
+            $this->cashRegisterService  = new CashRegisterService($this->businessId, $this->branchId, $this->cashboxId);
             return $next($request);
         });
 
         $this->model = new Process();
 
+        $this->newCashRegisterTitle     = __('maintenance.control.new');
+        $this->openCashRegisterTitle    = __('maintenance.control.open');
+        $this->closeCashRegisterTitle   = __('maintenance.control.close');
+        $this->editCashRegisterTitle    = __('maintenance.control.edit');
+        $this->deleteCashRegisterTitle  = __('maintenance.control.delete');
 
-        $this->folderView   = 'control.cashregister';
+        $this->titles = [
+            'new'   => $this->newCashRegisterTitle,
+            'open'  => $this->openCashRegisterTitle,
+            'close' => $this->closeCashRegisterTitle,
+            'edit'  => $this->editCashRegisterTitle,
+            'delete' => $this->deleteCashRegisterTitle,
+        ];
+
         $this->adminTitle   = __('maintenance.admin.cashregister.title');
         $this->routes = [
             'search'  => 'cashregister.search',
@@ -48,19 +71,27 @@ class CashRegisterController extends Controller
 
         $this->headers = [
             [
-                'valor'  => 'Nombre',
+                'valor'  => 'Fecha',
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Teléfono',
+                'valor'  => 'Número',
+                'numero' => '1',
+            ],
+            [
+                'valor'  => 'Concepto',
+                'numero' => '1',
+            ],
+            [
+                'valor'  => 'Total',
+                'numero' => '1',
+            ],
+            [
+                'valor'  => 'Cliente',
                 'numero' => '1',
             ],
             [
                 'valor'  => 'Observación',
-                'numero' => '1',
-            ],
-            [
-                'valor'  => 'Sucursal',
                 'numero' => '1',
             ],
             [
@@ -78,13 +109,17 @@ class CashRegisterController extends Controller
             $name = $this->getParam($request->name);
             $businessId  = $this->getParam($request->businessId);
             $branchId = $this->getParam($request->branch_id);
-            $result = $this->model::search($name, $branchId, $businessId);
+            $processTypeId = 2; //ID MOVIMIENTO DE CAJA
+            $lastOpenCashRegister = $this->cashRegisterService->getLastOpenCashRegisterId();
+            $lastCloseCashRegister = $this->cashRegisterService->getLastCloseCashRegisterId();
+            $lastCashRegisterId = $this->cashRegisterService->getLastProccessCashRegisterId();
+            $result = $this->model::search($name, $branchId, $businessId, null, $this->cashboxId, $processTypeId, $lastOpenCashRegister, null);
             $list   = $result->get();
             if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
                 $request->replace(array('page' => $paramPaginacion['nuevapagina']));
-                return view($this->folderview . '.list')->with([
+                return view('control.cashregister.list')->with([
                     'lista'             => $list,
                     'cabecera'          => $this->headers,
                     'titulo_admin'      => $this->adminTitle,
@@ -95,9 +130,10 @@ class CashRegisterController extends Controller
                     'fin'               => $paramPaginacion['fin'],
                     'ruta'              => $this->routes,
                     'entidad'           => $this->entity,
+                    'titles'            => $this->titles,
                 ]);
             }
-            return view($this->folderview . '.list')->with('lista', $list)->with([
+            return view('control.cashregister.list')->with('lista', $list)->with([
                 'entidad'           => $this->entity,
             ]);
         } catch (\Throwable $th) {
@@ -115,6 +151,7 @@ class CashRegisterController extends Controller
                 'titulo_modificar'  => $this->updateTitle,
                 'titulo_registrar'  => $this->addTitle,
                 'ruta'              => $this->routes,
+                'titles'            => $this->titles,
                 'cboRangeFilas'     => $this->cboRangeFilas(),
                 'status'            => $this->cashRegisterService->getStatus(),
                 'cboTypes'          => ['' => 'Todos', 'I' => 'Ingreso', 'E' => 'Egreso'],
@@ -127,7 +164,6 @@ class CashRegisterController extends Controller
     public function create(Request $request)
     {
         try {
-            $businessId = $request->businessId ?? auth()->user()->business_id;
             $formData = [
                 'route'             => $this->routes['store'],
                 'method'            => 'POST',
@@ -137,20 +173,22 @@ class CashRegisterController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
-                'businessId'        => $businessId,
+                'cboConcepts'       => $this->generateCboGeneral(Concept::class, 'name', 'id', 'Seleccione una opción'),
+                'cboClients'        => $this->generateCboGeneral(People::class, 'name', 'id', 'Seleccione una opción'),
+                'number'            => $this->cashRegisterService->getCashRegisterNumber(),
+                'today'             => date('Y-m-d'),
             ];
-            return view($this->folderview . '.create')->with(compact('formData'));
+            return view('control.cashregister.create')->with(compact('formData'));
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
     }
 
-    public function store(CashBoxRequest $request)
+    public function store(CashRegisterRequest $request)
     {
         try {
             $error = DB::transaction(function () use ($request) {
-                $this->model::create($request->all());
+                $this->cashRegisterService->storeCashRegister($request);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -226,31 +264,30 @@ class CashRegisterController extends Controller
         }
     }
 
-    public function maintenance($action, $businessId, $userId = null)
+    public function maintenance(Request $request)
     {
         try {
+            $action = $request->action;
             $listar = 'SI';
             $formData = [
-                'route'         => array($this->routes['update'], $this->model->find($businessId)),
-                'method'        => 'PUT',
+                'route'         => $this->routes['store'],
+                'method'        => 'POST',
                 'class'         => 'form-horizontal',
                 'id'            => $this->idForm,
                 'autocomplete'  => 'off',
                 'boton'         => 'Guardar',
                 'entidad'       => $this->entity,
                 'listar'        => $listar,
-                'model'         => $this->model,
+                'model'         => null,
                 'action'        => $action,
-                'businessId'    => $businessId,
+                'number'        => $this->cashRegisterService->getCashRegisterNumber(),
+                'today'         => date('Y-m-d'),
+                'amountreal'    => $this->cashRegisterService->getCashAmountTotal(),
             ];
-            switch ($action) {
-                case 'LIST':
-                    return $this->index($businessId);
-                    break;
-                default:
-                    return view('utils.comfirndelete')->with(compact('formData'));
-                    break;
+            if ($action == 'OPEN') {
+                return view('control.cashregister.open')->with(compact('formData'));
             }
+            return view('control.cashregister.close')->with(compact('formData'));
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }

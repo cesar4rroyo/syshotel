@@ -45,6 +45,6 @@ class CashBox extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_cashboxes', 'cashbox_id', 'user_id');
+        return $this->belongsTo(User::class);
     }
 }

@@ -187,11 +187,22 @@ return [
     ],
 
     'control' => [
+        'cashregister' => [
+            'number' => 'Número',
+            'date' => 'Fecha',
+            'client' => 'Cliente',
+            'concept' => 'Concepto',
+            'amount' => 'Monto',
+            'notes' => 'Comentarios',
+            'amountreal' => 'Monto Real',
+        ],
         'new' => 'Nuevo Movimiento',
-        'open' => 'Abrir Caja',
+        'open' => 'Aperturar Caja',
         'close' => 'Cerrar Caja',
         'printA4' => 'Imprimir A4',
         'printTicket' => 'Imprimir Ticket',
+        'edit' => 'Editar Movimiento',
+        'delete' => 'Eliminar Movimiento',
     ],
 
     'utils' => [

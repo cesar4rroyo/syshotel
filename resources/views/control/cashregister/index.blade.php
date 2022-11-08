@@ -12,20 +12,20 @@
             </div>
         </div>
         <div class="flex flex-col w-full space-y-6">
-            @include('control.cashregister.buttons', ['ruta' => $ruta, 'entidad' => $entidad, 'status' => $status])
+            @include('control.cashregister.buttons', ['ruta' => $ruta, 'entidad' => $entidad, 'status' => $status, 'titles' => $titles])
         </div>
         <div class="overflow-x-auto relative py-8 px-12 rounded-xl bg-white" id="listado{{ $entidad }}"></div>
     </div>
 </div>
 <script>
-    // $(document).ready(function() {
-    //     buscar('{{ $entidad }}');
-    //     init(IDFORMBUSQUEDA + '{{ $entidad }}', 'B', '{{ $entidad }}');
-    //     $(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="nombre"]').keyup(function (e) {
-	// 		var key = window.event ? e.keyCode : e.which;
-	// 		if (key == '13') {
-	// 			buscar('{{ $entidad }}');
-	// 		}
-	// 	});
-    // });
+    $(document).ready(function() {
+        buscar('{{ $entidad }}');
+        init(IDFORMBUSQUEDA + '{{ $entidad }}', 'B', '{{ $entidad }}');
+        $(IDFORMBUSQUEDA + '{{ $entidad }} :input[id="name"]').keyup(function (e) {
+			var key = window.event ? e.keyCode : e.which;
+			if (key == '13') {
+				buscar('{{ $entidad }}');
+			}
+		});
+    });
 </script>

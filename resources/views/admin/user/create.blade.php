@@ -48,22 +48,17 @@
     @php
         if (isset($formData['model'])) {
             $branches_id = [];
-            $cashbox_id = [];
             $branches = $formData['model']->branches;
-            $cashboxes = $formData['model']->cashboxes;
             foreach ($branches as $branch) {
                 array_push($branches_id, $branch->id);
-            }
-            foreach ($cashboxes as $cashbox) {
-                array_push($cashbox_id, $cashbox->id);
             }
         }
     @endphp
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="cashbox_id">{{ trans('maintenance.admin.user.cashbox') }}</label>
-        <select class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="cashbox_id[]" id="cashbox_id" required multiple>
+        <select class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="cashbox_id" id="cashbox_id" required>
             @foreach ($formData['cboCashboxes'] as $key => $value)
-                <option value="{{ $key }}" {{ isset($formData['model']) && in_array($key,  $cashbox_id) ? 'selected' : null }}>{{ $value }}</option>
+                <option value="{{ $key }}" {{ isset($formData['model']) && $formData['model']->cashbox_id == $key ? 'selected' : null }}>{{ $value }}</option>
             @endforeach
         </select>
     </div>

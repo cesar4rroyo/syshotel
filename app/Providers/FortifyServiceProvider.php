@@ -43,6 +43,7 @@ class FortifyServiceProvider extends ServiceProvider
             if ($user) {
                 $request->session()->put('branchId', $user->business->branches->first()->id);
                 $request->session()->put('businessId', $user->business->id);
+                $request->session()->put('cashboxId', $user->cashbox_id);
             }
             return $user;
         });

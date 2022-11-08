@@ -27,9 +27,13 @@ class ProcessFactory extends Factory
             'days' => $this->faker->numberBetween(1, 30),
             'room_id' => Room::where('status', 'O')->inRandomOrder()->first()->id,
             'client_id' => $this->faker->numberBetween(1, 50),
+            'concept_id' => 3,
             'user_id' => 1,
             'business_id' => 1,
             'branch_id' => 1,
+            'cashbox_id' => 1,
+            'processtype_id' => $this->faker->numberBetween(1, 3),
+            'payment_type' => $this->faker->randomElement(['E', 'T']),
             'notes' => $this->faker->text(),
         ];
     }

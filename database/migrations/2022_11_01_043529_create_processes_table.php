@@ -21,8 +21,9 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
-            $table->decimal('amount', 10, 2);
-            $table->decimal('days', 10, 2);
+            $table->decimal('amount', 10, 2)->nullable();
+            $table->decimal('amountreal', 10, 2)->nullable();
+            $table->decimal('days', 10, 2)->nullable();
             $table->string('payment_type')->nullable();
             $table->foreignId('room_id')->nullable()->references('id')->on('rooms');
             $table->foreignId('client_id')->nullable()->references('id')->on('people');
@@ -31,6 +32,7 @@ return new class extends Migration
             $table->foreignId('branch_id')->nullable()->references('id')->on('branches');
             $table->foreignId('business_id')->nullable()->references('id')->on('business');
             $table->foreignId('concept_id')->nullable()->references('id')->on('concepts');
+            $table->foreignId('cashbox_id')->nullable()->references('id')->on('cashboxes');
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

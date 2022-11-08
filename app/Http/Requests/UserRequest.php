@@ -30,6 +30,7 @@ class UserRequest extends FormRequest
             'people_id' => 'nullable|integer',
             'branch_id' => 'required|array',
             'usertype_id' => 'required|integer',
+            'cashbox_id' => 'required|integer',
         ];
 
         if ($this->method() == 'PUT') {
@@ -55,6 +56,7 @@ class UserRequest extends FormRequest
             'password.min' => 'El campo contraseña debe tener al menos 6 caracteres',
             'branch_id.required' => 'El campo sucursal es obligatorio',
             'usertype_id.required' => 'El campo tipo de usuario es obligatorio',
+            'cashbox_id.required' => 'El campo Caja es obligatorio',
         ];
     }
 }
