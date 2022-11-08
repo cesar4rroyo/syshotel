@@ -27,7 +27,6 @@ class BookingRequest extends FormRequest
             'datefrom' => 'required|date',
             'dateto' => 'required|date',
             'room_id' => 'required|integer',
-            'user_id' => 'required|integer',
             'amount' => 'required|decimal',
             'notes' => 'nullable|string',
         ];
@@ -47,8 +46,6 @@ class BookingRequest extends FormRequest
             'dateto.date' => 'El campo fecha hasta debe ser una fecha válida',
             'room_id.required' => 'El campo habitación es obligatorio',
             'room_id.integer' => 'El campo habitación debe ser un número entero',
-            'user_id.required' => 'El campo usuario es obligatorio',
-            'user_id.integer' => 'El campo usuario debe ser un número entero',
             'amount.required' => 'El campo monto es obligatorio',
             'amount.decimal' => 'El campo monto debe ser un número decimal',
             'notes.string' => 'El campo notas debe ser una cadena de caracteres',
