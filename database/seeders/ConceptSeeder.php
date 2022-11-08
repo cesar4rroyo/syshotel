@@ -16,15 +16,22 @@ class ConceptSeeder extends Seeder
     public function run()
     {
         DB::table('concepts')->insert([
-            'name' => 'Concept 1',
+            'name' => 'Apertura de caja',
             'type' => 'I',
             'branch_id' => 1,
             'business_id' => 1,
         ]);
 
         DB::table('concepts')->insert([
-            'name' => 'Concept 2',
+            'name' => 'Cierre de caja',
             'type' => 'E',
+            'branch_id' => 1,
+            'business_id' => 1,
+        ]);
+
+        DB::table('concepts')->insert([
+            'name' => 'Venta a Cliente',
+            'type' => 'I',
             'branch_id' => 1,
             'business_id' => 1,
         ]);

@@ -30,6 +30,7 @@ return new class extends Migration
             $table->foreignId('booking_id')->nullable()->references('id')->on('bookings');
             $table->foreignId('branch_id')->nullable()->references('id')->on('branches');
             $table->foreignId('business_id')->nullable()->references('id')->on('business');
+            $table->foreignId('concept_id')->nullable()->references('id')->on('concepts');
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();

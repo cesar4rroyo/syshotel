@@ -31,6 +31,7 @@ class Process extends Model
         'business_id',
         'payment_type',
         'booking_id',
+        'concept_id',
     ];
 
     public function getStatusAttribute($status)
@@ -82,6 +83,10 @@ class Process extends Model
         return $this->belongsTo(Booking::class);
     }
 
+    public function concept()
+    {
+        return $this->belongsTo(Concept::class);
+    }
 
     public function scopeSearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, string $status = null)
     {

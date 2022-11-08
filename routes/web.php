@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Admin\UserTypeController;
+use App\Http\Controllers\Control\CashRegisterController;
 use App\Http\Controllers\Control\ManagementController;
 
 /*
@@ -46,6 +47,11 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/management', [ManagementController::class, 'index'])->name('management');
+
+    Route::get('cashregister/print', [CashRegisterController::class, 'print'])->name('cashregister.print');
+    Route::post('cashregister/search', [CashRegisterController::class, 'search'])->name('cashregister.search');
+    Route::get('cashregister/delete/{id}/{listagain}', [CashRegisterController::class, 'delete'])->name('cashregister.delete');
+    Route::resource('cashregister', CashRegisterController::class)->except(['show']);
 
     Route::post('business/search', [BusinessController::class, 'search'])->name('business.search');
     Route::get('business/delete/{id}/{listagain}', [BusinessController::class, 'delete'])->name('business.delete');

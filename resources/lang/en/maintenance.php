@@ -174,6 +174,24 @@ return [
             'type'     => 'Tipo',
             'notes'    => 'Comentarios',
         ],
+        'cashregister' => [
+            'title'    => 'Control Flujo de Caja',
+            'name'     => 'Nombre',
+            'branch'   => 'Sucursal',
+            'business' => 'Empresa',
+            'phone'    => 'Teléfono',
+            'comments' => 'Comentarios',
+            'search'   => 'Buscar',
+            'type'     => 'Tipo',
+        ],
+    ],
+
+    'control' => [
+        'new' => 'Nuevo Movimiento',
+        'open' => 'Abrir Caja',
+        'close' => 'Cerrar Caja',
+        'printA4' => 'Imprimir A4',
+        'printTicket' => 'Imprimir Ticket',
     ],
 
     'utils' => [
