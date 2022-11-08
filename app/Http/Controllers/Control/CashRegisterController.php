@@ -131,6 +131,7 @@ class CashRegisterController extends Controller
                     'ruta'              => $this->routes,
                     'entidad'           => $this->entity,
                     'titles'            => $this->titles,
+                    'status'            => $this->cashRegisterService->getStatus(),
                 ]);
             }
             return view('control.cashregister.list')->with('lista', $list)->with([

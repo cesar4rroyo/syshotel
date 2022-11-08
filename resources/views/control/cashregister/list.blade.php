@@ -1,6 +1,9 @@
 @if(count($lista) == 0)
 @include('utils.noresult')
 @else
+<div class="flex flex-col w-full space-y-6 mb-4 mt-3">
+	@include('control.cashregister.buttons', ['ruta' => $ruta, 'entidad' => $entidad, 'status' => $status, 'titles' => $titles])
+</div>
 <table id="example1" class="w-full text-base font-medium text-left text-gray-500">
 	@include('utils.theader', ['cabecera' => $cabecera])
 	<tbody class="border-b border-gray-300">
