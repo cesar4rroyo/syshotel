@@ -140,5 +140,12 @@ class MenuOptionSeeder extends Seeder
             'order' => 7,
             'menugroup_id' => 1
         ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Clientes',
+            'icon' => 'fas fa-male',
+            'link' => 'people',
+            'order' => 8,
+            'menugroup_id' => 1
+        ]);
     }
 }

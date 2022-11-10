@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class People extends Model
 {
@@ -30,6 +32,16 @@ class People extends Model
         'notes',
     ];
 
+    public function scopeCompanies(Builder $builder)
+    {
+        return $builder->where('ruc', '!=', null)->where('social_reason', '!=', null);
+    }
+
+    public function scopePeopleClient(Builder $builder)
+    {
+        return $builder->where('dni', '!=', null)->where('name', '!=', null);
+    }
+
     public function district()
     {
         return $this->belongsTo(District::class);
@@ -48,5 +60,22 @@ class People extends Model
     public function country()
     {
         return $this->belongsTo(Country::class);
+    }
+
+    public function scopeSearch(Builder $builder, string $name = null)
+    {
+        $clients = DB::table('people')
+            ->when($name, function ($query, $name) {
+                return $query->where('name', 'like', '%' . $name . '%')
+                    ->orWhere('dni', 'like', '%' . $name . '%');
+            });
+
+        $companies = DB::table('people')
+            ->when($name, function ($query, $name) {
+                return $query->where('social_reason', 'like', '%' . $name . '%')
+                    ->orWhere('ruc', 'like', '%' . $name . '%');
+            });
+
+        return $clients->union($companies)->orderBy('name', 'asc');
     }
 }

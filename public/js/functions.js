@@ -587,6 +587,7 @@ function solo_numero(evt) {
 }
 
 function configurarAnchoModal (ancho) {
+	console.log(ancho);
 	var nuevoancho = ancho + 'px';
 	if (contadorModal === 1) {
 		var divModal = '.modal' + (contadorModal - 1);

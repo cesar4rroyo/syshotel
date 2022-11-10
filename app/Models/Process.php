@@ -133,6 +133,16 @@ class Process extends Model
         return $year . '-' . str_pad($rs->maximum + 1, 6, '0', STR_PAD_LEFT);
     }
 
+    public function scopeNextNumberCheckIn(Builder $query, $year = null, int $branch_id = null, int $business_id = null)
+    {
+        $year = $year ?? date('Y');
+        $rs = $query->where('number', 'like', '%' . $year . '-%')
+            ->where('branch_id', $branch_id)
+            ->where('business_id', $business_id)
+            ->select(DB::raw("max((CASE WHEN number is NULL THEN 0 ELSE convert(substr(number,6,11),SIGNED integer) END)*1) AS maximum"))->first();
+        return $year . '-' . str_pad($rs->maximum + 1, 6, '0', STR_PAD_LEFT);
+    }
+
     public function scopeTotalAmountCashFromOpen(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
     {
         return $query->where('branch_id', $branch_id)

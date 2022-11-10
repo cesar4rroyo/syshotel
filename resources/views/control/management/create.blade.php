@@ -1,0 +1,148 @@
+@include('utils.errordiv', ['entidad' => $formData['entidad']])
+@include('utils.formcrud', [
+    'entidad' => $formData['entidad'],
+    'formData' => $formData,
+    'method' => $formData['method'],
+    'route' => $formData['route'],
+    'model' => isset($formData['model']) ? $formData['model'] : null,
+])
+<h1 class=" font-bold">{{ __('maintenance.control.management.general') }}</h1>
+<hr>
+<div class="flex space-x-5">
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="number">{{ trans('maintenance.control.management.number') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="number" id="number" readonly
+            value="{{ isset($formData['model']) ? $formData['model']->number : $formData['number'] }}" required>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="date">{{ trans('maintenance.control.management.date') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="date" name="date" id="date" readonly
+            value="{{ isset($formData['model']) ? $formData['model']->created_at : $formData['today'] }}" required>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="start_date">{{ trans('maintenance.control.management.start_date') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="datetime-local" name="start_date" id="start_date"
+            value="{{ isset($formData['model']) ? $formData['model']->start_date : $formData['today'] }}" required>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="end_date">{{ trans('maintenance.control.management.end_date') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="datetime-local" name="end_date" id="end_date"
+            value="{{ isset($formData['model']) ? $formData['model']->end_date : $formData['today'] }}" required>
+    </div>
+</div>
+<div class="flex space-x-6 mt-3">
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="room_id">{{ trans('maintenance.control.management.room') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="room_id" id="room_id"
+            value="{{ isset($formData['model']) ? $formData['model']->room->name : $room->name }}" readonly>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="price">{{ trans('maintenance.control.management.room') }}</label>
+        <input onchange="handleChangePrice()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="price" id="price"
+            value="{{ isset($formData['model']) ? $formData['model']->room->roomType->price : $room->roomType->price }}" required>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="days">{{ trans('maintenance.control.management.days') }}</label>
+        <input onchange="handleChangeDays()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="days" id="days"
+            value="{{ isset($formData['model']) ? $formData['model']->days : null }}" required>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="amount">{{ trans('maintenance.control.management.amount') }}</label>
+        <input onchange="handleChangeTotal()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="amount" id="amount"
+            value="{{ isset($formData['model']) ? $formData['model']->amount : null }}" required>
+    </div>
+</div>
+<div class="flex space-x-6 mt-3">
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="client_id">{{ trans('maintenance.control.management.client') }}
+            <span onclick="modal('{{URL::route($routes['create'], ['status'=>$room['status'], 'id' => $room['id']])}}', '{{ $room['textActionButton'] }}', this);" class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded mr-2 dark:bg-gray-700 dark:text-gray-300 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                </svg>
+                {{ __('maintenance.utils.new') }}
+              </span>
+        </label>
+        <select class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="client_id" id="client_id">
+            @foreach ($cboClients as $key => $value)
+                <option value="{{ $key }}" {{ isset($formData['model']) && $formData['model']->client_id == $key ? 'selected' : null }}>{{ $value }}</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="notes">{{ trans('maintenance.control.management.notes') }}</label>
+        <textarea class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="notes" id="notes"
+            value="{{ isset($formData['model']) ? $formData['model']->notes : null }}" required>
+        </textarea>
+    </div>
+</div>
+<div class="flex space-x-6 mt-3 ml-5 pl-4" >
+    <input onchange="handleChangePayment()" class="form-check-input appearance-none w-9 -ml-10 rounded-full h-5 align-top bg-white bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" id="billingToggle">
+    <label class="form-check-label inline-block text-gray-800" for="billingToggle">{{ __('maintenance.control.management.charge') }}</label>
+</div>
+<div id="divBilling" style="display: none">
+    <h1 class=" font-bold">{{ __('maintenance.control.management.billing') }}</h1>
+    <hr>
+</div>
+
+<div class="flex w-full mt-3">
+    @include('utils.modalbuttons', ['entidad' => $formData['entidad'], 'boton' => $formData['boton']])
+</div>
+
+</form>
+<script type="text/javascript">
+    $(document).ready(function() {
+        configurarAnchoModal('600');
+        init(IDFORMMANTENIMIENTO + '{!! $formData['entidad'] !!}', 'M', '{!! $formData['entidad'] !!}');
+        document.getElementById('amount').readOnly = true;
+        document.getElementById('billingToggle').disabled = true;
+    });
+
+    function handleChangeDays(){
+        var days = document.getElementById('days').value;
+        if(days != '' && days != null && days != undefined && days > 0){
+            var price = document.getElementById('price').value;
+            var amount = days * price;
+            document.getElementById('amount').value = amount;
+            document.getElementById('amount').readOnly = false;
+            document.getElementById('billingToggle').disabled = false;
+        }else{
+            document.getElementById('days').value = 0;
+            document.getElementById('amount').value = 0;
+            document.getElementById('billingToggle').disabled = true;
+        }
+    }
+
+    function handleChangePrice(){
+        var price = document.getElementById('price').value;
+        if(price != '' && price != null && price != undefined && price > 0){
+            var days = document.getElementById('days').value;
+            var amount = days * price;
+            document.getElementById('amount').value = amount;
+            document.getElementById('amount').readOnly = false;
+        }else{
+            document.getElementById('amount').value = 0;
+            document.getElementById('price').value = 0;
+        }
+    }
+
+    function handleChangeTotal()
+    {
+        var amount = document.getElementById('amount').value;
+        if(amount != '' && amount != null && amount != undefined && amount > 0){
+            document.getElementById('billingToggle').disabled = false;
+        }else{
+            document.getElementById('billingToggle').disabled = true;
+        }
+        handleChangePayment();
+    }
+
+    function handleChangePayment()
+    {
+        var divBilling = document.getElementById('divBilling');
+        if(divBilling.style.display == 'none'){
+            divBilling.style.display = 'block';
+        }else{
+            divBilling.style.display = 'none';
+        }
+    }
+</script>

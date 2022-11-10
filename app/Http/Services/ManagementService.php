@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Models\Floor;
+use App\Models\Process;
 use Illuminate\Support\Collection;
 
 class ManagementService
@@ -32,5 +33,10 @@ class ManagementService
         }
 
         return collect($data);
+    }
+
+    public function generateCheckInNumber(): string
+    {
+        return Process::NextNumberCheckIn(null, $this->businessId, $this->branchId);
     }
 }

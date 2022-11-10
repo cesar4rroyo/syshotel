@@ -26,6 +26,11 @@ class ProcessTypeSeeder extends Seeder
             'abbreviation' => 'MC',
         ]);
         DB::table('processtypes')->insert([
+            'name' => 'SERVICIO HOTEL',
+            'description' => 'Servicio de Hotel',
+            'abbreviation' => 'H',
+        ]);
+        DB::table('processtypes')->insert([
             'name' => 'COMPRA',
             'description' => 'Compra de Productos/Servicios',
             'abbreviation' => 'C',

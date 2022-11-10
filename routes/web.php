@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\FloorsController;
 use App\Http\Controllers\Admin\MenuGroupController;
 use App\Http\Controllers\Admin\MenuOptionController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PeopleController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\RoomsController;
@@ -47,6 +48,8 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/management', [ManagementController::class, 'index'])->name('management');
+    Route::post('/management', [ManagementController::class, 'store'])->name('management.store');
+    Route::get('/management/create', [ManagementController::class, 'create'])->name('management.create');
 
     Route::get('cashregister/print', [CashRegisterController::class, 'print'])->name('cashregister.print');
     Route::get('cashregister/details', [CashRegisterController::class, 'details'])->name('cashregister.details');
@@ -81,6 +84,10 @@ Route::middleware([
     Route::get('payment/maintenance/{action}/{businessId}/{paymentId?}', [PaymentController::class, 'maintenance'])->name('payment.maintenance');
     Route::resource('payment', PaymentController::class)->except(['show']);
 
+    /* people routes */
+    Route::post('people/search', [PeopleController::class, 'search'])->name('people.search');
+    Route::get('people/delete/{id}/{listagain}', [PeopleController::class, 'delete'])->name('people.delete');
+    Route::resource('people', PeopleController::class)->except(['show']);
     /* floor routes */
     Route::post('floor/search', [FloorsController::class, 'search'])->name('floor.search');
     Route::get('floor/delete/{id}/{listagain}', [FloorsController::class, 'delete'])->name('floor.delete');

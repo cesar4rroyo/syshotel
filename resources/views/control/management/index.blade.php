@@ -19,7 +19,7 @@
         $id = $id ?? $floors->first()['id'];
     @endphp
     @foreach ($floors->where('id', $id)->first()['rooms'] as $room)
-        @include('control.management.room', ['room' => $room])
+        @include('control.management.room', ['room' => $room, 'routes' => $routes])
     @endforeach
 </div>
 <script>
