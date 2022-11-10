@@ -34,3 +34,6 @@
     </caption>
 </table>
 @endif
+<div class="flex flex-col w-full space-y-6 mb-4 mt-3">
+@include('control.cashregister.totals', ['resumeData' => $resumeData, 'routes' => $ruta])'
+</div>

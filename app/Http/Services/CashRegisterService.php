@@ -115,4 +115,24 @@ class CashRegisterService
     {
         return Process::TotalAmountCashFromOpen($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
     }
+
+    public function getTotalIncomes(): float
+    {
+        return Process::TotalAmountIncomes($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
+    }
+
+    public function getTotalExpenses(): float
+    {
+        return Process::TotalAmountExpenses($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
+    }
+
+    public function getTotalCards(string $type = null): float
+    {
+        return Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type);
+    }
+
+    public function getTotalDeposits(string $type = null): float
+    {
+        return Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type);
+    }
 }

@@ -64,6 +64,7 @@ class CashRegisterController extends Controller
             'destroy' => 'cashregister.destroy',
             'maintenance' => 'cashregister.maintenance',
             'print' => 'cashregister.print',
+            'details' => 'cashregister.details',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
 
@@ -115,6 +116,13 @@ class CashRegisterController extends Controller
             $lastCashRegisterId = $this->cashRegisterService->getLastProccessCashRegisterId();
             $result = $this->model::search($name, $branchId, $businessId, null, $this->cashboxId, $processTypeId, $lastOpenCashRegister, null);
             $list   = $result->get();
+            $resumeData = [
+                'incomes' => $this->cashRegisterService->getTotalIncomes(),
+                'expenses' => $this->cashRegisterService->getTotalExpenses(),
+                'cash' => $this->cashRegisterService->getCashAmountTotal(),
+                'cards' => $this->cashRegisterService->getTotalCards(),
+                'deposits' => $this->cashRegisterService->getTotalDeposits(),
+            ];
             if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
                 $list = $result->paginate($filas);
@@ -132,6 +140,7 @@ class CashRegisterController extends Controller
                     'entidad'           => $this->entity,
                     'titles'            => $this->titles,
                     'status'            => $this->cashRegisterService->getStatus(),
+                    'resumeData'        => $resumeData,
                 ]);
             }
             return view('control.cashregister.list')->with('lista', $list)->with([
@@ -309,5 +318,32 @@ class CashRegisterController extends Controller
     public function print(Request $request)
     {
         dd($request->all());
+    }
+
+    public function details(Request $request)
+    {
+        $type = $request->type;
+        dd('TO DO');
+        switch ($type) {
+            case 'expenses':
+                # code...
+                break;
+            case 'incomes':
+                # code...
+                break;
+            case 'cash':
+                # code...
+                break;
+            case 'cards':
+                # code...
+                break;
+            case 'deposits':
+                # code...
+                break;
+
+            default:
+                # code...
+                break;
+        }
     }
 }

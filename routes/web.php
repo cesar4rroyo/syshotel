@@ -49,6 +49,7 @@ Route::middleware([
     Route::get('/management', [ManagementController::class, 'index'])->name('management');
 
     Route::get('cashregister/print', [CashRegisterController::class, 'print'])->name('cashregister.print');
+    Route::get('cashregister/details', [CashRegisterController::class, 'details'])->name('cashregister.details');
     Route::get('cashregister/maintenance', [CashRegisterController::class, 'maintenance'])->name('cashregister.maintenance');
     Route::post('cashregister/search', [CashRegisterController::class, 'search'])->name('cashregister.search');
     Route::get('cashregister/delete/{id}/{listagain}', [CashRegisterController::class, 'delete'])->name('cashregister.delete');

@@ -143,4 +143,64 @@ class Process extends Model
             ->where('payment_type', 'E')
             ->sum('amount');
     }
+
+    public function scopeTotalAmountIncomes(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
+    {
+        return $query->where('branch_id', $branch_id)
+            ->where('id', '>=', $lastOpenId)
+            ->where('business_id', $business_id)
+            ->where('cashbox_id', $cashbox_id)
+            ->where('processtype_id', 2)
+            ->whereHas('concept', function ($query) {
+                $query->where('type', 'I');
+            })
+            ->sum('amount');
+    }
+
+    public function scopeTotalAmountExpenses(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
+    {
+        return $query->where('branch_id', $branch_id)
+            ->where('id', '>=', $lastOpenId)
+            ->where('business_id', $business_id)
+            ->where('cashbox_id', $cashbox_id)
+            ->where('processtype_id', 2)
+            ->whereHas('concept', function ($query) {
+                $query->where('type', 'E');
+            })
+            ->sum('amount');
+    }
+
+    public function scopeTotalAmountCards(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
+    {
+        return DB::table('paymentprocesses')
+            ->join('payments', 'paymentprocesses.payment_id', '=', 'payments.id')
+            ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
+            ->where('processes.branch_id', $branch_id)
+            ->where('processes.id', '>=', $lastOpenId)
+            ->where('processes.business_id', $business_id)
+            ->where('processes.cashbox_id', $cashbox_id)
+            ->where('processes.processtype_id', 2)
+            ->where('payments.type', $type)
+            ->when($subtype, function ($query, $subtype) {
+                return $query->where('payments.subtype', $subtype);
+            })
+            ->sum('paymentprocesses.amount');
+    }
+
+    public function scopeTotalAmountDeposits(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
+    {
+        return DB::table('paymentprocesses')
+            ->join('payments', 'paymentprocesses.payment_id', '=', 'payments.id')
+            ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
+            ->where('processes.branch_id', $branch_id)
+            ->where('processes.id', '>=', $lastOpenId)
+            ->where('processes.business_id', $business_id)
+            ->where('processes.cashbox_id', $cashbox_id)
+            ->where('processes.processtype_id', 2)
+            ->where('payments.type', $type)
+            ->when($subtype, function ($query, $subtype) {
+                return $query->where('payments.name', $subtype);
+            })
+            ->sum('paymentprocesses.amount');
+    }
 }
