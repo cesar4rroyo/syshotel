@@ -22,6 +22,7 @@ class Setting extends Model
         'logo',
         'business_id',
         'branch_id',
+        'serie'
     ];
 
     public function business()

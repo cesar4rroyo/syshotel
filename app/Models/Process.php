@@ -98,7 +98,7 @@ class Process extends Model
 
     public function payments()
     {
-        return $this->belongsToMany(Payment::class, 'paymentprocesses', 'process_id', 'payment_id');
+        return $this->belongsToMany(Payments::class, 'paymentprocesses', 'process_id', 'payment_id');
     }
 
     public function scopeSearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, string $status = null, int $cashbox_id = null, int $procesType_id = null, int $lastOpenCashRegister = null, int $lastCashRegisterId = null)

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Payments extends Model
 {
@@ -51,14 +52,21 @@ class Payments extends Model
         return $this->belongsTo(Business::class, 'business_id');
     }
 
+    public function processes()
+    {
+        return $this->belongsToMany(Process::class, 'paymentprocesses', 'payment_id', 'process_id');
+    }
+
     public function scopesearch(Builder $builder, string $param = null, $branch_id, $business_id)
     {
-        return $builder->when($param, function ($query) use ($param) {
-            return $query->where('name', 'like', '%' . $param . '%');
-        })->when($branch_id, function ($query) use ($branch_id) {
+        $generalPaymetns = DB::table('payments')->whereIn('id', config('constants.generalPayments'));
+
+        return $builder->when($param, function ($query, $param) {
+            return $query->where('name', 'like', "%$param%");
+        })->when($branch_id, function ($query, $branch_id) {
             return $query->where('branch_id', $branch_id);
-        })->when($business_id, function ($query) use ($business_id) {
+        })->when($business_id, function ($query, $business_id) {
             return $query->where('business_id', $business_id);
-        });
+        })->union($generalPaymetns)->orderBy('name', 'asc');
     }
 }

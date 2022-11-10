@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Branch;
 use App\Models\Business;
+use App\Models\CashBox;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class BusinessService
         $rules = [
             'razon_social' => 'required',
             'nombre_comercial' => 'required',
-            'ruc' => 'required|numeric|digits:11|unique:settings,ruc,' . $id,
+            'ruc' => 'required|numeric|digits:11|unique:settings,id,' . $request->branch_id,
             'direccion' => 'required',
             'telefono' => 'nullable|numeric',
             'email' => 'nullable|email',
@@ -51,6 +52,7 @@ class BusinessService
                 'direccion' => $request->direccion,
                 'telefono' => $request->telefono,
                 'email' => $request->email,
+                'serie' => $request->serie,
             ]
         );
     }
@@ -63,9 +65,9 @@ class BusinessService
     {
     }
 
-    public function storeOrUpdateBusinessBranches(Business $business, bool $is_main): void
+    public function storeOrUpdateBusinessBranches(Business $business, bool $is_main): Branch
     {
-        Branch::updateOrCreate([
+        return Branch::updateOrCreate([
             'business_id' => $business->id,
             'name' => $business->name,
             'address' => $business->address,
@@ -73,6 +75,16 @@ class BusinessService
             'email' => $business->email,
             'city' => $business->city,
             'is_main' => $is_main,
+        ]);
+    }
+
+    public function storeOrUpdateBusinessCashboxes(Business $business, Branch $branch, string $name = 'CAJA 1'): CashBox
+    {
+        return CashBox::updateOrCreate([
+            'business_id' => $business->id,
+            'branch_id' => $branch->id,
+            'name' => $name,
+            'phone' => $business->phone,
         ]);
     }
 

@@ -15,7 +15,9 @@
             <td class="py-3 px-4">{{ $value->business->name }}</td>
 			<td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">
-					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
+					@if (!$value->IsGeneralConcept)
+						@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
+					@endif
 				</div>
 			</td>
 		</tr>

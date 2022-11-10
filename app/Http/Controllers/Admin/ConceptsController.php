@@ -73,6 +73,9 @@ class ConceptsController extends Controller
             if ($branchId == null && auth()->user()->usertype_id != 1) {
                 $branchId = auth()->user()->branch_id;
             }
+            if (auth()->user()->usertype_id == 1) {
+                $branchId = null;
+            }
             $result   = $this->model::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 

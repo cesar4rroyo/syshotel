@@ -147,7 +147,8 @@ class BusinessController extends Controller
         try {
             $error = DB::transaction(function () use ($request) {
                 $business = $this->model->create($request->all());
-                $this->businessService->storeOrUpdateBusinessBranches($business, true);
+                $branch = $this->businessService->storeOrUpdateBusinessBranches($business, true);
+                $cashbox = $this->businessService->storeOrUpdateBusinessCashboxes($business, $branch);
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {

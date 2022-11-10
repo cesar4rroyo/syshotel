@@ -46,4 +46,7 @@ return [
         'D' => 'Depósito',
         'C' => 'Crédito',
     ],
+
+    'generalConcepts' => [1, 2, 3, 4, 5, 6],
+    'generalPayments' => [1, 2, 3, 4]
 ];
