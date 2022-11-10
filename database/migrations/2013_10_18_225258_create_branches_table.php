@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('city')->nullable();
             $table->string('status')->default('A');
+            $table->boolean('is_main')->default(false);
             $table->foreignId('business_id')->references('id')->on('business');
             $table->timestamps();
             $table->softDeletes();

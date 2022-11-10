@@ -21,10 +21,17 @@ class Setting extends Model
         'email',
         'logo',
         'business_id',
+        'branch_id',
+        'serie'
     ];
 
     public function business()
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

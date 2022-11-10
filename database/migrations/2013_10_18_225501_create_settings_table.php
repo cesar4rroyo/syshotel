@@ -19,10 +19,13 @@ return new class extends Migration
             $table->string('nombre_comercial');
             $table->string('ruc');
             $table->string('direccion');
-            $table->string('telefono');
-            $table->string('email');
+            $table->string('telefono')->nullable();
+            $table->string('email')->nullable();
             $table->string('logo')->nullable();
+            $table->string('checkin')->nullable();
+            $table->string('checkout')->nullable();
             //TO DO - Agregar campos para configurar el sistema con facturación electrónica
+            $table->string('serie')->nullable();
             $table->foreignId('business_id')->references('id')->on('business');
             $table->foreignId('branch_id')->references('id')->on('branches');
             $table->timestamps();

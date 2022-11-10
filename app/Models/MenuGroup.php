@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,14 +24,10 @@ class MenuGroup extends Model
         return $this->hasMany(MenuOption::class, 'menugroup_id');
     }
 
-    public function scopesearch($query, $name)
+    public function scopesearch(Builder $query, string $param = null)
     {
-        return $query
-            ->where(function ($subquery) use ($name) {
-                if (!is_null($name) && strlen($name) > 0) {
-                    $subquery->where('name', 'LIKE', '%' . $name . '%');
-                }
-            })
-            ->orderBy('name', 'DESC');
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', "%$param%");
+        })->orderBy('order', 'asc');
     }
 }

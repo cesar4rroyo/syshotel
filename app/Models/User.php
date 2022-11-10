@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -30,7 +30,8 @@ class User extends Authenticatable
         'password',
         'usertype_id',
         'business_id',
-        'people_id'
+        'people_id',
+        'cashbox_id',
     ];
 
     /**
@@ -63,6 +64,11 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
     public function business()
     {
         return $this->belongsTo(Business::class);
@@ -83,17 +89,25 @@ class User extends Authenticatable
         return $this->belongsToMany(Branch::class, 'user_branches', 'user_id', 'branch_id');
     }
 
-    public function cashboxes()
+    public function cashbox()
     {
-        return $this->belongsToMany(CashBox::class, 'user_cashboxes', 'user_id', 'cashbox_id');
+        return $this->belongsTo(Cashbox::class);
     }
 
-    public function scopesearch(Builder $query, string $param, int $usertype_id = null, int $business_id = null)
+    public function scopesearch(Builder $query, string $param = null, int $usertype_id = null, int $business_id = null, int $branch_id = null)
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('email', 'like', "%$param%")
-            ->where('usertype_id', $usertype_id)
-            ->where('business_id', $business_id)
-            ->orderBy('name', 'asc');
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', '%' . $param . '%')
+                ->orWhere('email', 'like', '%' . $param . '%');
+        })
+            ->when($usertype_id, function ($query, $usertype_id) {
+                return $query->where('usertype_id', $usertype_id);
+            })
+            ->when($business_id, function ($query, $business_id) {
+                return $query->where('business_id', $business_id);
+            })
+            ->when($branch_id, function ($query, $branch_id) {
+                return $query->where('branch_id', $branch_id);
+            });
     }
 }

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BusinessRequest;
 use App\Http\Services\BusinessService;
 use App\Librerias\Libreria;
 use App\Models\Business;
 use App\Traits\CRUDTrait;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,9 +15,6 @@ class BusinessController extends Controller
 {
     use CRUDTrait;
 
-    public string $settingsTitle;
-    public string $branchesTitle;
-    public string $usersTitle;
     public BusinessService $businessService;
 
     public function __construct()
@@ -31,9 +28,6 @@ class BusinessController extends Controller
         $this->addTitle     = __('maintenance.general.add', ['entity' => $this->adminTitle]);
         $this->updateTitle  = __('maintenance.general.edit', ['entity' => $this->adminTitle]);
         $this->deleteTitle  = __('maintenance.general.delete', ['entity' => $this->adminTitle]);
-        $this->settingsTitle = __('maintenance.admin.business.settings');
-        $this->branchesTitle = __('maintenance.admin.business.branches');
-        $this->usersTitle    = __('maintenance.admin.business.users');
         $this->routes = [
             'search'  => 'business.search',
             'index'   => 'business.index',
@@ -43,7 +37,10 @@ class BusinessController extends Controller
             'edit'    => 'business.edit',
             'update'  => 'business.update',
             'destroy' => 'business.destroy',
-            'maintenance' => 'business.maintenance',
+            'branches' => 'branch.maintenance',
+            'users' => 'user.maintenance',
+            'cashboxes' => 'cashbox.maintenance',
+            'payments' => 'payment.maintenance',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
 
@@ -98,16 +95,10 @@ class BusinessController extends Controller
                     'fin'               => $paramPaginacion['fin'],
                     'ruta'              => $this->routes,
                     'entidad'           => $this->entity,
-                    'settings_title'    => $this->settingsTitle,
-                    'branches_title'    => $this->branchesTitle,
-                    'users_title'       => $this->usersTitle,
                 ]);
             }
             return view($this->folderview . '.list')->with('lista', $list)->with([
                 'entidad'           => $this->entity,
-                'settings_title'    => $this->settingsTitle,
-                'branches_title'    => $this->branchesTitle,
-                'users_title'       => $this->usersTitle,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -143,8 +134,7 @@ class BusinessController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboTipoUsuario'    => $this->generateCboGeneral(UserType::class, 'name', 'id', 'Seleccione una opción'),
-                'cboPersona'        => $this->generateCboGeneral(People::class, 'fullName', 'id', 'Seleccione una opción'),
+                'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -152,14 +142,14 @@ class BusinessController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(BusinessRequest $request)
     {
         try {
-
             $error = DB::transaction(function () use ($request) {
-                $model = $this->model->create($request->all());
+                $business = $this->model->create($request->all());
+                $branch = $this->businessService->storeOrUpdateBusinessBranches($business, true);
+                $cashbox = $this->businessService->storeOrUpdateBusinessCashboxes($business, $branch);
             });
-            // event(new BinnacleEvent(auth()->user()->id, 'STORE', 'Stored new ' . $this->entity));
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -169,12 +159,10 @@ class BusinessController extends Controller
     public function edit(Request $request, $id)
     {
         try {
-
             $exist = $this->verificarExistencia($id, $this->entity);
             if ($exist !== true) {
                 return $exist;
             }
-
             $formData = [
                 'route'             => array($this->routes['update'], $id),
                 'method'            => 'PUT',
@@ -185,10 +173,8 @@ class BusinessController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboTipoUsuario'    => $this->generateCboGeneral(UserType::class, 'name', 'id', 'Seleccione una opción'),
-                'cboPersona'        => $this->generateCboGeneral(People::class, 'fullName', 'id', 'Seleccione una opción'),
+                'cboStatus'         => ['A' => 'Activo', 'I' => 'Inactivo'],
             ];
-
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -199,25 +185,8 @@ class BusinessController extends Controller
     {
         try {
             $error = DB::transaction(function () use ($request, $id) {
-                switch ($request->action) {
-                    case 'SETTINGS':
-                        $this->businessService->storeOrUpdateBussinessSettings($request, $id);
-                        break;
-                    case 'BRANCHES':
-                        # code...
-                        break;
-                    case 'USERS':
-                        # code...
-                        break;
-                    case 'PROFILEPHOTO':
-                        # code...
-                        break;
-                    default:
-                        # code...
-                        break;
-                }
+                $this->model->find($id)->update($request->all());
             });
-            // event(new BinnacleEvent(auth()->user()->id, 'UPDATE', 'Updated ' . $this->entity));
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -252,79 +221,12 @@ class BusinessController extends Controller
         }
     }
 
-    public function maintenance($id, $action)
-    {
-        try {
-            $exist = $this->verificarExistencia($id, $this->entity);
-            if ($exist !== true) {
-                return $exist;
-            }
-            $listar = 'SI';
-            $model = $this->model->find($id);
-            $formData = [
-                'route'         => array($this->routes['update'], $this->model->find($id)),
-                'method'        => 'PUT',
-                'class'         => 'form-horizontal',
-                'id'            => $this->idForm,
-                'autocomplete'  => 'off',
-                'boton'         => 'Guardar',
-                'entidad'       => $this->entity,
-                'listar'        => $listar,
-                'model'         => $model,
-                'action'        => $action,
-            ];
-            switch ($action) {
-                case 'SETTINGS':
-                    return view($this->folderview . '.settings')->with(compact('formData'));
-                    break;
-                case 'BRANCHES':
-                    $branches = $model->branches;
-                    $cabecera = [
-                        [
-                            'valor' => 'Nombre',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Dirección',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Ciudad',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Teléfono',
-                            'numero' => 1,
-                        ],
-                        [
-                            'valor' => 'Email',
-                            'numero' => 1,
-                        ],
-                    ];
-                    return view($this->folderview . '.branches')->with(compact('formData', 'branches', 'cabecera'));
-                    break;
-                case 'USERS':
-                    return view($this->folderview . '.users')->with(compact('formData'));
-                    break;
-                case 'PROFILEPHOTO':
-                    # code...
-                    break;
-                default:
-                    return view('utils.comfirndelete')->with(compact('formData'));
-                    break;
-            }
-        } catch (\Throwable $th) {
-            return $this->MessageResponse($th->getMessage(), 'danger');
-        }
-    }
-
     public function destroy($id)
     {
         try {
             $error = DB::transaction(function () use ($id) {
                 $this->model->find($id)->delete();
             });
-            event(new BinnacleEvent(auth()->user()->id, 'DELETE', 'Deleted ' . $this->entity));
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');

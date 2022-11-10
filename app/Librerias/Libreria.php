@@ -500,4 +500,16 @@ class Libreria
     {
         return Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($date));
     }
+
+    public function formatDateWithAddingTime($date, $years = null, $months = null, $days = null, $hours = null, $minutes = null, $seconds = null): Carbon
+    {
+        return Carbon::parse($date)->addYears($years)->addMonths($months)->addDays($days)->addHours($hours)->addMinutes($minutes)->addSeconds($seconds);
+    }
+
+    public function getDaysBetweenDates($date1, $date2)
+    {
+        $date1 = Carbon::parse($date1);
+        $date2 = Carbon::parse($date2);
+        return $date1->diffInDays($date2);
+    }
 }

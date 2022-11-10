@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,14 +27,11 @@ class UserType extends Model
         return $this->belongsToMany(MenuOption::class, 'access', 'usertype_id', 'menuoption_id');
     }
 
-    public function scopesearch($query, $name)
+    public function scopesearch(Builder $query, $name = null)
     {
         return $query
-            ->where(function ($subquery) use ($name) {
-                if (!is_null($name) && strlen($name) > 0) {
-                    $subquery->where('name', 'LIKE', '%' . $name . '%');
-                }
-            })
-            ->orderBy('name', 'DESC');
+            ->when($name, function ($query, $name) {
+                return $query->where('name', 'like', "%$name%");
+            })->orderBy('name');
     }
 }

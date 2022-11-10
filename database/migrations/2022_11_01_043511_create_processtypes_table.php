@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_cashboxes', function (Blueprint $table) {
+        Schema::create('processtypes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->foreignId('cashbox_id')->references('id')->on('cashboxes');
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->string('abbreviation')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_cash_boxes');
+        Schema::dropIfExists('processtypes');
     }
 };

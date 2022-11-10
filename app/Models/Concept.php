@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class Concept extends Model
 {
@@ -15,27 +16,40 @@ class Concept extends Model
 
     protected $fillable = [
         'name',
-        'description',
+        'type',
         'branch_id',
         'business_id',
     ];
 
-    public function scopesearch(Builder $query, string $param, int $branch_id = null, int $business_id = null)
+    public function getIsGeneralConceptAttribute()
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('description', 'like', "%$param%")
-            ->where('branch_id', $branch_id)
-            ->where('business_id', $business_id)
-            ->orderBy('name', 'asc');
+        return in_array($this->id, config('constants.generalConcepts'));
+    }
+
+    public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null)
+    {
+        $generalConcepts = DB::table('concepts')->whereIn('id', config('constants.generalConcepts'));
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', "%$param%");
+        })->when($branch_id, function ($query, $branch_id) {
+            return $query->where('branch_id', $branch_id);
+        })->when($business_id, function ($query, $business_id) {
+            return $query->where('business_id', $business_id);
+        })->union($generalConcepts)->orderBy('name', 'asc');
     }
 
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function business()
     {
         return $this->belongsTo(Business::class);
+    }
+
+    public function getTypeAttribute($value)
+    {
+        return $value == 'I' ? 'Ingreso' : 'Egreso';
     }
 }

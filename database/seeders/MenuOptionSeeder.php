@@ -86,9 +86,65 @@ class MenuOptionSeeder extends Seeder
         //administracion menu
         DB::table('menu_options')->insert([
             'name' => 'Pisos',
-            'icon' => 'fas fa-hotel',
+            'icon' => 'fas fa-h-square',
             'link' => 'floor',
             'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Tipos de Habitación',
+            'icon' => 'fas fa-door-open',
+            'link' => 'roomtype',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Habitaciones',
+            'icon' => 'fas fa-hotel',
+            'link' => 'room',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Servicios',
+            'icon' => 'fas fa-concierge-bell',
+            'link' => 'service',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Categorías',
+            'icon' => 'fas fa-layer-group',
+            'link' => 'category',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Unidades',
+            'icon' => 'fas fa-dollar-sign',
+            'link' => 'unit',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Productos',
+            'icon' => 'fas fa-shopping-cart',
+            'link' => 'product',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Conceptos',
+            'icon' => 'fas fa-list-ol',
+            'link' => 'concept',
+            'order' => 7,
+            'menugroup_id' => 1
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Clientes',
+            'icon' => 'fas fa-male',
+            'link' => 'people',
+            'order' => 8,
             'menugroup_id' => 1
         ]);
     }

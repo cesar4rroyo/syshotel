@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\Builder;
 
 class CashBox extends Model
 {
@@ -18,15 +18,24 @@ class CashBox extends Model
         'phone',
         'comments',
         'branch_id',
+        'business_id'
     ];
 
-    public function scopesearch(Builder $query, string $param, int $branch_id = null)
+    public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null)
     {
-        return $query->where('name', 'like', "%$param%")
-            ->where('phone', 'like', "%$param%")
-            ->where('comments', 'like', "%$param%")
-            ->where('branch_id', $branch_id)
-            ->orderBy('name', 'asc');
+        return $query->when($param, function ($query, $param) {
+            return $query->where('name', 'like', '%' . $param . '%')
+                ->orWhere('phone', 'like', '%' . $param . '%')
+                ->orWhere('comments', 'like', '%' . $param . '%');
+        })
+            ->when($branch_id, function ($query, $branch_id) {
+                return $query->where('branch_id', $branch_id);
+            })
+            ->when($business_id, function ($query, $business_id) {
+                return $query->whereHas('branch', function ($query) use ($business_id) {
+                    return $query->where('business_id', $business_id);
+                });
+            });
     }
 
     public function branch()
@@ -36,6 +45,6 @@ class CashBox extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_cashboxes', 'cashbox_id', 'user_id');
+        return $this->belongsTo(User::class);
     }
 }

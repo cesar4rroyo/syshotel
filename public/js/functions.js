@@ -210,7 +210,7 @@ function guardar (entidad, idboton, entidad2) {
 		respuesta = msg;
 	}).fail(function(xhr, textStatus, errorThrown) {
 		respuesta = xhr.responseText;
-		if(JSON.parse(respuesta).message.trim() == 'The given data was invalid.'){
+		if(JSON.parse(respuesta).message.trim()){
 			mostrarErrores(xhr.responseText, idformulario, entidad, 1);
 		}
 		respuesta = 'ERROR';
@@ -246,7 +246,8 @@ function guardarArchivo(entidad, idboton, entidad2)
 	};
 	var request = $.ajax({
 		url     : $(idformulario).attr('action'),
-		method  : "POST",
+		method  : $(idformulario).attr('method'),
+		headers : {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
 		data    : formData,
 		processData: false,
 		contentType: false,
@@ -586,6 +587,7 @@ function solo_numero(evt) {
 }
 
 function configurarAnchoModal (ancho) {
+	console.log(ancho);
 	var nuevoancho = ancho + 'px';
 	if (contadorModal === 1) {
 		var divModal = '.modal' + (contadorModal - 1);
