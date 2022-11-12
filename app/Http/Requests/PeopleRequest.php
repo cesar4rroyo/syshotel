@@ -24,7 +24,9 @@ class PeopleRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'dni' => 'nullable|numeric|digits:8|unique:people,id,' . $this->id,
+            'ruc' => 'nullable|numeric|digits:11|unique:people,id,' . $this->id,
+            'name' => 'required',
         ];
     }
 }

@@ -85,7 +85,10 @@ Route::middleware([
     Route::resource('payment', PaymentController::class)->except(['show']);
 
     /* people routes */
+    Route::get('people/createFast', [PeopleController::class, 'createFast'])->name('people.createFast');
+    Route::post('people/storeFast', [PeopleController::class, 'storeFast'])->name('people.storeFast');
     Route::post('people/search', [PeopleController::class, 'search'])->name('people.search');
+    Route::get('people/searchClient', [PeopleController::class, 'searchClient'])->name('people.searchClient');
     Route::get('people/delete/{id}/{listagain}', [PeopleController::class, 'delete'])->name('people.delete');
     Route::resource('people', PeopleController::class)->except(['show']);
     /* floor routes */

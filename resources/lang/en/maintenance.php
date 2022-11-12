@@ -186,9 +186,9 @@ return [
         ],
         'people' => [
             'title'    => 'Personas',
-            'name'     => 'Nombre',
+            'name'     => 'Nombres / Razón Social',
             'lastname' => 'Apellido',
-            'dni'      => 'DNI',
+            'dni'      => 'DNI / RUC',
             'phone'    => 'Teléfono',
             'email'    => 'Email',
             'address'  => 'Dirección',
@@ -241,6 +241,7 @@ return [
         'import'  => 'Importar',
         'file'   => 'Archivo',
         'back'   => 'Regresar',
+        'search' => 'Buscar',
     ],
 
 ];

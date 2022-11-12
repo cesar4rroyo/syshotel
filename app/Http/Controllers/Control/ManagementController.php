@@ -35,7 +35,8 @@ class ManagementController extends Controller
             'edit' => 'management.edit',
             'update' => 'management.update',
             'destroy' => 'management.destroy',
-            'people' => 'people.create',
+            'client' => 'people.createFast',
+            'back' => 'management',
         ];
     }
 

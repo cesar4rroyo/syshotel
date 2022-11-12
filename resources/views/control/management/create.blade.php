@@ -1,3 +1,8 @@
+<div class="w-full py-8 px-12 rounded-xl bg-white">
+<button style="width: 120px; float:right" class="text-white bg-blue-500 hover:bg-yellow-500 focus:outline-none focus:ring-0 font-medium rounded-lg text-sm px-3.5 py-2.5 flex items-center space-x-2 mb-4" id="btnNuevo" onclick="cargarRuta('{{ URL::to($routes['back']) }}', 'main-container')">
+    <i class="fas fa-undo"></i>
+    <p>{{ trans('maintenance.utils.back') }}</p>
+</button>
 @include('utils.errordiv', ['entidad' => $formData['entidad']])
 @include('utils.formcrud', [
     'entidad' => $formData['entidad'],
@@ -6,9 +11,9 @@
     'route' => $formData['route'],
     'model' => isset($formData['model']) ? $formData['model'] : null,
 ])
-<h1 class=" font-bold">{{ __('maintenance.control.management.general') }}</h1>
+<h1 class=" font-bold mt-5">{{ __('maintenance.control.management.general') }}</h1>
 <hr>
-<div class="flex space-x-5">
+<div class="flex space-x-5 mt-5">
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="number">{{ trans('maintenance.control.management.number') }}</label>
         <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="number" id="number" readonly
@@ -55,7 +60,7 @@
 <div class="flex space-x-6 mt-3">
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="client_id">{{ trans('maintenance.control.management.client') }}
-            <span onclick="modal('{{URL::route($routes['create'], ['status'=>$room['status'], 'id' => $room['id']])}}', '{{ $room['textActionButton'] }}', this);" class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded mr-2 dark:bg-gray-700 dark:text-gray-300 cursor-pointer">
+            <span onclick="modal('{{URL::route($routes['client'], ['status'=>$room['status'], 'room_id' => $room['id']])}}', 'Agregar Nuevo Cliente', this);" class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded mr-2 dark:bg-gray-700 dark:text-gray-300 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
                 </svg>
@@ -83,12 +88,9 @@
     <h1 class=" font-bold">{{ __('maintenance.control.management.billing') }}</h1>
     <hr>
 </div>
-
-<div class="flex w-full mt-3">
-    @include('utils.modalbuttons', ['entidad' => $formData['entidad'], 'boton' => $formData['boton']])
 </div>
-
 </form>
+
 <script type="text/javascript">
     $(document).ready(function() {
         configurarAnchoModal('600');
