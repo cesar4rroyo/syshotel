@@ -48,6 +48,7 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/management', [ManagementController::class, 'index'])->name('management');
+    Route::get('/management/document', [ManagementController::class, 'documentNumber'])->name('management.documentNumber');
     Route::post('/management', [ManagementController::class, 'store'])->name('management.store');
     Route::get('/management/create', [ManagementController::class, 'create'])->name('management.create');
 

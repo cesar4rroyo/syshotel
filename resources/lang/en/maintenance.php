@@ -222,7 +222,10 @@ return [
             'price' => 'Precio Habitación',
             'general' => 'Datos Generales',
             'billing' => 'Cobro y Facturación',
-            'charge' => 'Cobrar'
+            'charge' => 'Cobrar',
+            'paymentType' => 'Forma de Pago',
+            'documentType' => 'Tipo de Documento',
+            'documentNumber' => 'Número de Documento',
         ],
         'new' => 'Nuevo Movimiento',
         'open' => 'Aperturar Caja',

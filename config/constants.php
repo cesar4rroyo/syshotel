@@ -42,9 +42,11 @@ return [
     'checkout_minute' => 0,
     'paymentType' => [
         'E' => 'Efectivo',
-        'T' => 'Tarjeta',
-        'D' => 'Depósito',
-        'C' => 'Crédito',
+        'V' => 'Visa',
+        'D' => 'Depósito o Transferencia',
+        'P' => 'PLIN',
+        'Y' => 'YAPE',
+        'O' => 'Otros',
     ],
 
     'generalConcepts' => [1, 2, 3, 4, 5, 6],

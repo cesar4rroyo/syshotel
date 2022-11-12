@@ -2,8 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Models\Billing;
 use App\Models\Floor;
 use App\Models\Process;
+use App\Models\Setting;
 use Illuminate\Support\Collection;
 
 class ManagementService
@@ -38,5 +40,15 @@ class ManagementService
     public function generateCheckInNumber(): string
     {
         return Process::NextNumberCheckIn(null, $this->businessId, $this->branchId);
+    }
+
+    public function generateDocumentNumber(string $type): string
+    {
+        return Billing::NextNumberDocument($type, $this->getSerie(), $this->businessId, $this->branchId);
+    }
+
+    public function getSerie(): string
+    {
+        return Setting::where('business_id', $this->businessId)->where('branch_id', $this->branchId)->first()->serie;
     }
 }

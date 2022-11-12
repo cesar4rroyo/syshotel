@@ -138,7 +138,7 @@ class PaymentController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboTypes'          => ['cash' => 'Efectivo', 'card' => 'Tarjeta', 'transfer' => 'Transferencia'],
+                'cboTypes'          => ['cash' => 'Efectivo', 'card' => 'Tarjeta', 'transfer' => 'Transferencia', 'others' => 'Otros'],
                 'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -177,7 +177,7 @@ class PaymentController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboTypes'          => ['cash' => 'Efectivo', 'card' => 'Tarjeta', 'transfer' => 'Transferencia'],
+                'cboTypes'          => ['cash' => 'Efectivo', 'card' => 'Tarjeta', 'transfer' => 'Transferencia', 'others' => 'Otros'],
                 'businessId'        => $businessId,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));

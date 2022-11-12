@@ -84,10 +84,7 @@
     <input onchange="handleChangePayment()" class="form-check-input appearance-none w-9 -ml-10 rounded-full h-5 align-top bg-white bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" id="billingToggle">
     <label class="form-check-label inline-block text-gray-800" for="billingToggle">{{ __('maintenance.control.management.charge') }}</label>
 </div>
-<div id="divBilling" style="display: none">
-    <h1 class=" font-bold">{{ __('maintenance.control.management.billing') }}</h1>
-    <hr>
-</div>
+@include('control.management.billing', ['formData' => $formData, 'cboPaymentTypes' => $cboPaymentTypes, 'cboDocumentTypes' => $cboDocumentTypes, 'routes' => $routes])
 </div>
 </form>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Control;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ManagementService;
 use App\Librerias\Libreria;
+use App\Models\Payments;
 use App\Models\People;
 use App\Models\Room;
 use App\Traits\CRUDTrait;
@@ -37,6 +38,7 @@ class ManagementController extends Controller
             'destroy' => 'management.destroy',
             'client' => 'people.createFast',
             'back' => 'management',
+            'documentType' => 'management.documentNumber',
         ];
     }
 
@@ -75,6 +77,14 @@ class ManagementController extends Controller
             'cboClients' => ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all(),
             'formData' => $formData,
             'room' => $room,
+            'cboPaymentTypes' => $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción'),
+            'cboDocumentTypes' => ['' => 'Seleccione una opción'] + ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'],
         ]));
+    }
+
+    public function documentNumber(Request $request)
+    {
+        $documentNumber = $this->service->generateDocumentNumber($request->type);
+        return response()->json(['documentNumber' => $documentNumber]);
     }
 }
