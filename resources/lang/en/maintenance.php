@@ -234,6 +234,7 @@ return [
         'printTicket' => 'Imprimir Ticket',
         'edit' => 'Editar Movimiento',
         'delete' => 'Eliminar Movimiento',
+        'check-in' => 'Check-In',
     ],
 
     'utils' => [

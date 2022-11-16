@@ -58,6 +58,7 @@
         configurarAnchoModal('450');
         init(IDFORMMANTENIMIENTO + '{!! $formData['entidad'] !!}', 'M', '{!! $formData['entidad'] !!}');
     });
+
     function guardar (entidad, idboton, entidad2) {
         var idformulario = IDFORMMANTENIMIENTO + entidad;
         var data         = submitForm(idformulario);

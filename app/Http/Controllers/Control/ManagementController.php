@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Control;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ManagementRequest;
 use App\Http\Services\ManagementService;
 use App\Librerias\Libreria;
 use App\Models\Payments;
@@ -40,6 +41,7 @@ class ManagementController extends Controller
             'back' => 'management',
             'documentType' => 'management.documentNumber',
         ];
+        $this->idForm = 'formMantenimiento' . $this->entity;
     }
 
     public function index(Request $request)
@@ -79,7 +81,13 @@ class ManagementController extends Controller
             'room' => $room,
             'cboPaymentTypes' => $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción'),
             'cboDocumentTypes' => ['' => 'Seleccione una opción'] + ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'],
+            'status' => $request->status,
         ]));
+    }
+
+    public function store(ManagementRequest $request)
+    {
+        dd($request->all());
     }
 
     public function documentNumber(Request $request)

@@ -158,7 +158,7 @@ class PeopleController extends Controller
         }
     }
 
-    public function storeFast(Request $request)
+    public function storeFast(PeopleRequest $request)
     {
         try {
             $error = DB::transaction(function () use ($request) {

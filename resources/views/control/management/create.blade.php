@@ -11,6 +11,8 @@
     'route' => $formData['route'],
     'model' => isset($formData['model']) ? $formData['model'] : null,
 ])
+<input type="hidden" name="status" id="status" value="{{ $status }}">
+<input type="hidden" name="room_id" value="{{ isset($formData['model']) ? $formData['model']->room->id : $room->id }}">
 <h1 class=" font-bold mt-5">{{ __('maintenance.control.management.general') }}</h1>
 <hr>
 <div class="flex space-x-5 mt-5">
@@ -37,8 +39,8 @@
 </div>
 <div class="flex space-x-6 mt-3">
     <div class="flex flex-col space-y-1 w-full">
-        <label class="font-medium text-sm text-gray-600" for="room_id">{{ trans('maintenance.control.management.room') }}</label>
-        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="room_id" id="room_id"
+        <label class="font-medium text-sm text-gray-600" for="room">{{ trans('maintenance.control.management.room') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="room" id="room"
             value="{{ isset($formData['model']) ? $formData['model']->room->name : $room->name }}" readonly>
     </div>
     <div class="flex flex-col space-y-1 w-full">
@@ -81,10 +83,16 @@
     </div>
 </div>
 <div class="flex space-x-6 mt-3 ml-5 pl-4" >
-    <input onchange="handleChangePayment()" class="form-check-input appearance-none w-9 -ml-10 rounded-full h-5 align-top bg-white bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" id="billingToggle">
+    <input onchange="handleChangePayment()" name="billingToggle" class="form-check-input appearance-none w-9 -ml-10 rounded-full h-5 align-top bg-white bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" id="billingToggle">
     <label class="form-check-label inline-block text-gray-800" for="billingToggle">{{ __('maintenance.control.management.charge') }}</label>
 </div>
 @include('control.management.billing', ['formData' => $formData, 'cboPaymentTypes' => $cboPaymentTypes, 'cboDocumentTypes' => $cboDocumentTypes, 'routes' => $routes])
+<div class="flex items-center justify-end space-x-5 py-3 w-full">
+    <button class="px-5 py-2 rounded-lg bg-blue-corp text-white flex items-center space-x-2" id="btnGuardar" onclick="guardar('{{$formData['entidad']}}', this);">
+        <i class="far fa-save"></i>
+        <p>{{__('maintenance.control.check-in')}}</p>
+    </button>
+</div>
 </div>
 </form>
 
