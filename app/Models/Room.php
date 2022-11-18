@@ -40,12 +40,14 @@ class Room extends Model
         return $booking ? true : false;
     }
 
-    public function scopeAvailable(Builder $query, string $datefrom, string $dateto)
+    public function scopeAvailable(Builder $query, string $datefrom, string $dateto, int $branch_id, int $business_id)
     {
-        return $query->whereDoesntHave('bookings', function ($query) use ($datefrom, $dateto) {
+        return $query->whereDoesntHave('bookings', function ($query) use ($datefrom, $dateto, $branch_id, $business_id) {
             $query->where('datefrom', '<=', $datefrom)
                 ->where('dateto', '>=', $dateto)
-                ->where('status', '!=', 'C');
+                ->where('branch_id', $branch_id)
+                ->where('business_id', $business_id)
+                ->whereNotIn('status', ['C', 'P']);
         });
     }
 

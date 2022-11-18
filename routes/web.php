@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Admin\UserTypeController;
+use App\Http\Controllers\Control\BookingController;
 use App\Http\Controllers\Control\CashRegisterController;
 use App\Http\Controllers\Control\ManagementController;
 
@@ -143,6 +144,7 @@ Route::middleware([
     /* Access Routes */
     Route::get('access', [AccessController::class, 'index'])->name('access');
     Route::post('access', [AccessController::class, 'store'])->name('access.store');
-    /* Bookings Routes */
+    /* Bookings Routes --- API WITH WEB CONTROLLERS */
+    Route::get('booking/rooms', [BookingController::class, 'rooms'])->name('booking.rooms');
     Route::resource('booking', BookingController::class)->except(['show']);
 });

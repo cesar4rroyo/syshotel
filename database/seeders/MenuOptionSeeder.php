@@ -147,5 +147,20 @@ class MenuOptionSeeder extends Seeder
             'order' => 8,
             'menugroup_id' => 1
         ]);
+
+        DB::table('menu_options')->insert([
+            'name' => 'Reservas',
+            'icon' => 'fas fa-bookmark',
+            'link' => 'bookings',
+            'order' => 1,
+            'menugroup_id' => 7
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Lista de Reservas',
+            'icon' => 'fas fa-list',
+            'link' => 'bookinglist',
+            'order' => 1,
+            'menugroup_id' => 7
+        ]);
     }
 }

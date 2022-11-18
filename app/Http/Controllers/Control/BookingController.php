@@ -18,9 +18,9 @@ class BookingController extends Controller
         $this->middleware(function ($request, $next) {
             $this->businessId = session()->get('businessId');
             $this->branchId = session()->get('branchId');
+            $this->service = new BookingService($this->businessId, $this->branchId);
             return $next($request);
         });
-        $this->service = new BookingService($this->businessId, $this->branchId);
     }
 
     public function index()
@@ -111,6 +111,25 @@ class BookingController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'data' => [],
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function rooms(Request $request)
+    {
+        try {
+            $date_from = $request->date_from;
+            $date_to = $request->date_to;
+            $data = $this->service->getAvailableRooms($date_from, $date_to);
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ], 200);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'data' => [],
