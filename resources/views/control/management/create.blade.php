@@ -152,4 +152,25 @@
             divBilling.style.display = 'none';
         }
     }
+
+    function guardar (entidad, idboton, entidad2) {
+        var idformulario = IDFORMMANTENIMIENTO + entidad;
+        var data         = submitForm(idformulario);
+        var respuesta    = '';
+        var listar       = 'NO';
+        if ($(idformulario + ' :input[id = "listar"]').length) {
+            var listar = $(idformulario + ' :input[id = "listar"]').val();
+        };
+        data.done(function(msg) {
+            var route = msg.routes;
+            cargarRuta(route, 'main-container');
+        }).fail(function(xhr, textStatus, errorThrown) {
+            respuesta = xhr.responseText;
+            console.log(respuesta);
+            if(JSON.parse(respuesta).message.trim()){
+                mostrarErrores(xhr.responseText, idformulario, entidad, 1);
+            }
+            respuesta = 'ERROR';
+        });
+    }
 </script>

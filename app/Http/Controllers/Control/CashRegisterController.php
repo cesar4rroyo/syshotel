@@ -145,6 +145,10 @@ class CashRegisterController extends Controller
             }
             return view('control.cashregister.list')->with('lista', $list)->with([
                 'entidad'           => $this->entity,
+                'resumeData'        => $resumeData,
+                'ruta'              => $this->routes,
+                'status'            => $this->cashRegisterService->getStatus(),
+                'titles'            => $this->titles,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');

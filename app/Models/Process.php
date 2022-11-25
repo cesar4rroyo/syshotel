@@ -98,7 +98,13 @@ class Process extends Model
 
     public function payments()
     {
-        return $this->belongsToMany(Payments::class, 'paymentprocesses', 'process_id', 'payment_id');
+        return $this->belongsToMany(Payments::class, 'paymentprocesses', 'process_id', 'payment_id')
+            ->withPivot('amount');
+    }
+
+    public function billings()
+    {
+        return $this->hasMany(Billing::class);
     }
 
     public function scopeSearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, string $status = null, int $cashbox_id = null, int $procesType_id = null, int $lastOpenCashRegister = null, int $lastCashRegisterId = null)
@@ -129,6 +135,19 @@ class Process extends Model
             ->where('branch_id', $branch_id)
             ->where('business_id', $business_id)
             ->where('cashbox_id', $cashbox_id)
+            ->where('processtype_id', 3)
+            ->select(DB::raw("max((CASE WHEN number is NULL THEN 0 ELSE convert(substr(number,6,11),SIGNED integer) END)*1) AS maximum"))->first();
+        return $year . '-' . str_pad($rs->maximum + 1, 6, '0', STR_PAD_LEFT);
+    }
+
+    public function scopeNextNumberCashRegister(Builder $query, $year = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
+    {
+        $year = $year ?? date('Y');
+        $rs = $query->where('number', 'like', '%' . $year . '-%')
+            ->where('branch_id', $branch_id)
+            ->where('business_id', $business_id)
+            ->where('cashbox_id', $cashbox_id)
+            ->where('processtype_id', 2)
             ->select(DB::raw("max((CASE WHEN number is NULL THEN 0 ELSE convert(substr(number,6,11),SIGNED integer) END)*1) AS maximum"))->first();
         return $year . '-' . str_pad($rs->maximum + 1, 6, '0', STR_PAD_LEFT);
     }

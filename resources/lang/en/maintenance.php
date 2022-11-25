@@ -226,6 +226,7 @@ return [
             'paymentType' => 'Forma de Pago',
             'documentType' => 'Tipo de Documento',
             'documentNumber' => 'Número de Documento',
+            'clientBilling' => 'Datos del Cliente',
         ],
         'new' => 'Nuevo Movimiento',
         'open' => 'Aperturar Caja',
@@ -235,6 +236,7 @@ return [
         'edit' => 'Editar Movimiento',
         'delete' => 'Eliminar Movimiento',
         'check-in' => 'Check-In',
+        'check-out' => 'Check-Out',
     ],
 
     'utils' => [

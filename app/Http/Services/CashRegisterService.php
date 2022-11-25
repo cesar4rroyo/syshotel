@@ -86,7 +86,7 @@ class CashRegisterService
 
     public function getCashRegisterNumber(): string
     {
-        return Process::NextNumber(null, $this->businessId, $this->branchId, $this->cashboxId);
+        return Process::NextNumberCashRegister(null, $this->businessId, $this->branchId, $this->cashboxId);
     }
 
     public function storeCashRegister(Request $request): void

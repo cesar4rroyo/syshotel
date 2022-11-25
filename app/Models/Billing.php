@@ -64,6 +64,24 @@ class Billing extends Model
         return $this->belongsTo(Billing::class, 'billing_id');
     }
 
+    public function details()
+    {
+        return $this->hasMany(BillingDetails::class, 'billing_id');
+    }
+
+    public function scopeGetBillingAmounts(Builder $query, int $business_id, int $branch_id, float $amount): array
+    {
+        $settings = Setting::where('business_id', $business_id)->where('branch_id', $branch_id)->first();
+        $igv = $settings->igv;
+        $subtotal = $amount / (1 + ($igv / 100));
+        $igv_amount = $amount - $subtotal;
+        return [
+            'subtotal' => $subtotal,
+            'igv' => $igv_amount,
+            'total' => $amount,
+        ];
+    }
+
     public function scopeNextNumberDocument(Builder $query, string $type, string $serie, int $branch_id = null, int $business_id = null)
     {
         $rs = $query->where('number', 'like', '%' . $serie . '-%')

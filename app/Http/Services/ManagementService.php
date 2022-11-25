@@ -2,22 +2,31 @@
 
 namespace App\Http\Services;
 
+use App\Events\BillingEvents;
 use App\Models\Billing;
 use App\Models\Floor;
+use App\Models\Payments;
 use App\Models\Process;
 use App\Models\Setting;
 use Illuminate\Support\Collection;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ManagementService
 {
 
     protected int $businessId;
     protected int $branchId;
+    protected Process $process;
+    protected Billing $billing;
 
     public function __construct(int $businessId, int $branchId)
     {
         $this->businessId = $businessId;
         $this->branchId = $branchId;
+
+        $this->process = new Process();
+        $this->billing = new Billing();
     }
 
     public function getFloorsWithRooms(int $id = null)
@@ -50,5 +59,96 @@ class ManagementService
     public function getSerie(): string
     {
         return Setting::where('business_id', $this->businessId)->where('branch_id', $this->branchId)->first()->serie;
+    }
+
+    public function getLastProcessInRoom(int $roomId): int
+    {
+        return Process::where('room_id', $roomId)->where('business_id', $this->businessId)->where('branch_id', $this->branchId)->orderBy('id', 'desc')->first()->id;
+    }
+
+    public function createPaymentsAndBilling(Process $process, Request $request): void
+    {
+        $amounts = $this->getAmounts($request->all());
+        $cashregister = $this->createPaymentToCashRegister($process);
+        foreach ($amounts as $key => $amount) {
+            if ($key != 0) {
+                DB::table('paymentprocesses')->insert([
+                    'process_id' => $cashregister->id,
+                    'payment_id' => $key,
+                    'amount' => $amount,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+        $billing = $this->createBilling($process, $request->clientBilling, $request->documentNumber, $request->document);
+    }
+
+    public function getAmounts(array $data): mixed
+    {
+        $amounts = collect([]);
+        $payment_id = $data['payment_type_id'];
+        foreach ($data as $key => $value) {
+            if (strpos($key, 'amounts') !== false) {
+                $id = explode('_', $key)[1];
+                if (!$id) {
+                    $id = $payment_id;
+                }
+                $amounts->put($id, $value);
+            }
+        }
+        return $amounts;
+    }
+
+    public function createPaymentToCashRegister(Process $process): Process
+    {
+        return $process = $this->process->create([
+            'date' => date('Y-m-d'),
+            'number' => $this->getCashRegisterNumber(),
+            'processtype_id' => 2,
+            'status' => 'C',
+            'amount' => $process->amount,
+            'payment_type' => $process->payment_type,
+            'client_id' => $process->client_id,
+            'user_id' => $process->user_id,
+            'business_id' => $process->businessId,
+            'branch_id' => $process->branchId,
+            'cashbox_id' => $process->cashbox_id,
+        ]);
+    }
+
+    public function getCashRegisterNumber(): string
+    {
+        return $this->process->NextNumberCashRegister(null, $this->businessId, $this->branchId, $this->cashboxId);
+    }
+
+    public function createBilling(Process $process, int $client = null, string $number, string $type): Billing
+    {
+        $amounts = $this->billing->GetBillingAmounts($this->businessId, $this->branchId, (float) $process->amount);
+        $billing = $this->billing->create([
+            'date' => date('Y-m-d'),
+            'number' => $number,
+            'type' => $type,
+            'status' => 'CREADO',
+            'total' => $amounts['total'],
+            'igv' => $amounts['igv'],
+            'subtotal' => $amounts['subtotal'],
+            'client_id' => $client ?? $process->client_id,
+            'process_id' => $process->id,
+            'user_id' => auth()->user()->id,
+        ]);
+
+        $billing->details()->create([
+            'process_id' => $process->id,
+            'billing_id' => $billing->id,
+            'notes' => 'Servicio de Alquiler de ' .  $process->room->roomType->name,
+            'amount' => 1,
+            'sale_price' => $process->amount,
+            'total' => $process->amount,
+            'business_id' => $this->businessId,
+            'branch_id' => $this->branchId,
+        ]);
+
+        return $billing;
     }
 }

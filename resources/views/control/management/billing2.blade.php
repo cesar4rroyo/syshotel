@@ -1,12 +1,32 @@
-<div id="divBilling" style="display: none">
+<div id="divBilling">
     <h1 class=" font-bold">{{ __('maintenance.control.management.billing') }}</h1>
     <hr>
+    @if ($model->status == config('constants.processStatus.PyC'))
+    <div class="flex space-x-6 mt-3">
+        <div class="flex flex-col space-y-1 w-full">
+            <table class="w-full text-base font-medium text-left text-gray-500">
+                <thead>
+                    <th>Forma de Pago</th>
+                    <th>Monto</th>
+                </thead>
+                <tbody>
+                    @foreach ($model->payments as $payment)
+                    <tr>
+                        <td class="py-3 px-4">{{ $payment->name }}</td>
+                        <td class="py-3 px-4">{{ $payment->pivot->amount }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @else
     <div class="flex space-x-6 mt-3">
         <div class="flex flex-col space-y-1 w-full">
             <label class="font-medium text-sm text-gray-600" for="payment_type">{{ trans('maintenance.control.management.paymentType') }}</label>
             <select onchange="handleChangePayments()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="payment_type" id="payment_type">
                 @foreach ($cboPaymentTypes as $key => $value)
-                    <option value="{{ $key }}" {{ isset($formData['model']) && $formData['model']->payment_type == $key ? 'selected' : null }}>{{ $value }}</option>
+                    <option value="{{ $key }}" {{ $model->status == config('constants.processStatus.PyC') && $model->payment_type == $key ? 'selected' : null }}>{{ $value }}</option>
                 @endforeach
             </select>
         </div>
@@ -17,27 +37,35 @@
     </div>
     <div id="divOtherPayments" class="grid grid-cols-4 gap-1 mt-3">
     </div>
+    @endif
     <div class="flex space-x-6 mt-3">
         <div class="flex flex-col space-y-1 w-full">
             <label class="font-medium text-sm text-gray-600" for="document">{{ trans('maintenance.control.management.documentType') }}</label>
-            <select onchange="handleChangeDocumentType()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="document" id="document">
+            <select onchange="handleChangeDocumentType()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="document" id="document" {{ $model->status == config('constants.processStatus.PyC') ? 'disabled' : null}}>
                 @foreach ($cboDocumentTypes as $key => $value)
-                    <option value="{{ $key }}">{{ $value }}</option>
+                    <option value="{{ $key }}" {{ $model->status == config('constants.processStatus.PyC') && $model->billings->first()->type == $key ? 'selected' : null }}>{{ $value }}</option>
                 @endforeach
             </select>
         </div>
-        <div id="divDocumentNumber" style="display: none;" class="flex flex-col space-y-1 w-full">
-            <label class="font-medium text-sm text-gray-600" for="documentNumber">{{ trans('maintenance.control.management.documentNumber') }}</label>
-            <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="documentNumber" id="documentNumber" required readonly>
-        </div>
+        @if ($model->status == config('constants.processStatus.PyC'))
+            <div id="divDocumentNumber" class="flex flex-col space-y-1 w-full">
+                <label class="font-medium text-sm text-gray-600" for="documentNumber">{{ trans('maintenance.control.management.documentNumber') }}</label>
+                <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="documentNumber" id="documentNumber" value="{{ $model->billings->first()->number }}" required readonly>
+            </div>
+        @else
+            <div id="divDocumentNumber" style="display: none;" class="flex flex-col space-y-1 w-full">
+                <label class="font-medium text-sm text-gray-600" for="documentNumber">{{ trans('maintenance.control.management.documentNumber') }}</label>
+                <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="text" name="documentNumber" id="documentNumber" required readonly>
+            </div>
+        @endif
     </div>
     <div class="flex space-x-6 mt-3">
         <div class="flex flex-col space-y-1 w-full">
             <label class="font-medium text-sm text-gray-600" for="clientBilling">{{ trans('maintenance.control.management.clientBilling') }}
             </label>
-            <select class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="clientBilling" id="clientBilling">
+            <select class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="clientBilling" id="clientBilling" {{ $model->status == config('constants.processStatus.PyC') ? 'disabled' : null}}>
                 @foreach ($cboClients as $key => $value)
-                    <option value="{{ $key }}" {{ isset($formData['model']) && $formData['model']->client_id == $key ? 'selected' : null }}>{{ $value }}</option>
+                    <option value="{{ $key }}" {{ $model->status == config('constants.processStatus.PyC') && $model->billings->first()->client_id == $key ? 'selected' : null }}>{{ $value }}</option>
                 @endforeach
                 </select>
         </div>

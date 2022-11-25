@@ -49,8 +49,10 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/management', [ManagementController::class, 'index'])->name('management');
+    Route::put('/management/update/{id}', [ManagementController::class, 'update'])->name('management.update');
     Route::get('/management/document', [ManagementController::class, 'documentNumber'])->name('management.documentNumber');
     Route::post('/management', [ManagementController::class, 'store'])->name('management.store');
+    Route::get('/management/checkout', [ManagementController::class, 'checkout'])->name('management.checkout');
     Route::get('/management/create', [ManagementController::class, 'create'])->name('management.create');
 
     Route::get('cashregister/print', [CashRegisterController::class, 'print'])->name('cashregister.print');
