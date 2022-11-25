@@ -113,7 +113,7 @@ class CashRegisterService
 
     public function getCashAmountTotal(): float
     {
-        return Process::TotalAmountCashFromOpen($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
+        return Process::TotalAmountCash($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'cash');
     }
 
     public function getTotalIncomes(): float
@@ -126,13 +126,13 @@ class CashRegisterService
         return Process::TotalAmountExpenses($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
     }
 
-    public function getTotalCards(string $type = null): float
+    public function getTotalCards(string $subType = null): float
     {
-        return Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type);
+        return Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'card', $subType = null);
     }
 
     public function getTotalDeposits(string $type = null): float
     {
-        return Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type);
+        return Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'transfer', $type = null);
     }
 }

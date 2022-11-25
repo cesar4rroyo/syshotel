@@ -15,6 +15,7 @@ use App\Models\Room;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 
 class ManagementController extends Controller
@@ -69,7 +70,7 @@ class ManagementController extends Controller
         try {
             DB::beginTransaction();
             $process = Process::find($id);
-            if ($request->status == 'PyNC') {
+            if ($process->status == config('constants.processStatus.PyNC')) {
                 $this->service->createPaymentsAndBilling($process, $request);
             }
             $process->update([
@@ -181,6 +182,7 @@ class ManagementController extends Controller
                 'routes' => URL::route($this->routes['create'], ['status' => 'Ocupado', 'id' => $request->room_id]),
             ]);
         } catch (\Throwable $th) {
+            Log::error($th);
             DB::rollBack();
             return response()->json([
                 'success' => false,

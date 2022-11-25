@@ -104,22 +104,23 @@ class ManagementService
     {
         return $process = $this->process->create([
             'date' => date('Y-m-d'),
-            'number' => $this->getCashRegisterNumber(),
+            'number' => $this->getCashRegisterNumber($process->cashbox_id),
             'processtype_id' => 2,
             'status' => 'C',
             'amount' => $process->amount,
             'payment_type' => $process->payment_type,
             'client_id' => $process->client_id,
             'user_id' => $process->user_id,
-            'business_id' => $process->businessId,
-            'branch_id' => $process->branchId,
+            'business_id' => $process->business_id,
+            'branch_id' => $process->branch_id,
             'cashbox_id' => $process->cashbox_id,
+            'concept_id' => 4,
         ]);
     }
 
-    public function getCashRegisterNumber(): string
+    public function getCashRegisterNumber(int $cashBoxId): string
     {
-        return $this->process->NextNumberCashRegister(null, $this->businessId, $this->branchId, $this->cashboxId);
+        return $this->process->NextNumberCashRegister(null, $this->businessId, $this->branchId, $cashBoxId);
     }
 
     public function createBilling(Process $process, int $client = null, string $number, string $type): Billing
@@ -136,6 +137,8 @@ class ManagementService
             'client_id' => $client ?? $process->client_id,
             'process_id' => $process->id,
             'user_id' => auth()->user()->id,
+            'business_id' => $this->businessId,
+            'branch_id' => $this->branchId,
         ]);
 
         $billing->details()->create([

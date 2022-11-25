@@ -211,7 +211,24 @@ class Process extends Model
             ->where('processes.processtype_id', 2)
             ->where('payments.type', $type)
             ->when($subtype, function ($query, $subtype) {
-                return $query->where('payments.subtype', $subtype);
+                return $query->where('payments.name', $subtype);
+            })
+            ->sum('paymentprocesses.amount');
+    }
+
+    public function scopeTotalAmountCash(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
+    {
+        return DB::table('paymentprocesses')
+            ->join('payments', 'paymentprocesses.payment_id', '=', 'payments.id')
+            ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
+            ->where('processes.branch_id', $branch_id)
+            ->where('processes.id', '>=', $lastOpenId)
+            ->where('processes.business_id', $business_id)
+            ->where('processes.cashbox_id', $cashbox_id)
+            ->where('processes.processtype_id', 2)
+            ->where('payments.type', $type)
+            ->when($subtype, function ($query, $subtype) {
+                return $query->where('payments.name', $subtype);
             })
             ->sum('paymentprocesses.amount');
     }
