@@ -23,6 +23,8 @@ use App\Http\Controllers\Admin\UserTypeController;
 use App\Http\Controllers\Control\BookingController;
 use App\Http\Controllers\Control\CashRegisterController;
 use App\Http\Controllers\Control\ManagementController;
+use App\Http\Controllers\Control\SellProductController;
+use App\Http\Controllers\Control\SellServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -146,6 +148,18 @@ Route::middleware([
     /* Access Routes */
     Route::get('access', [AccessController::class, 'index'])->name('access');
     Route::post('access', [AccessController::class, 'store'])->name('access.store');
+
+    /* Sell Products and Services Routes */
+    Route::get('sellproduct', [SellProductController::class, 'index'])->name('sellproduct');
+    Route::post('sellproduct/add/{id}', [SellProductController::class, 'addToCart'])->name('sellproduct.addToCart');
+    Route::post('sellproduct/remove/{id}', [SellProductController::class, 'removeFromCart'])->name('sellproduct.removeFromCart');
+    Route::post('sellproduct', [SellProductController::class, 'store'])->name('sellproduct.store');
+
+    Route::get('sellservice', [SellServiceController::class, 'index'])->name('sellservice');
+    Route::post('sellservice/add/{id}', [SellServiceController::class, 'addToCart'])->name('sellservice.addToCart');
+    Route::post('sellservice/remove/{id}', [SellServiceController::class, 'removeFromCart'])->name('sellservice.removeFromCart');
+    Route::post('sellservice', [SellServiceController::class, 'store'])->name('sellservice.store');
+
     /* Bookings Routes --- API WITH WEB CONTROLLERS */
     Route::get('booking/rooms', [BookingController::class, 'rooms'])->name('booking.rooms');
     Route::resource('booking', BookingController::class)->except(['show']);

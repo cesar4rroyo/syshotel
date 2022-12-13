@@ -162,5 +162,21 @@ class MenuOptionSeeder extends Seeder
             'order' => 1,
             'menugroup_id' => 7
         ]);
+
+        //VENTAS OPTIONS
+        DB::table('menu_options')->insert([
+            'name' => 'Venta de Productos',
+            'icon' => 'fas fa-shopping-bag',
+            'link' => 'sellproduct',
+            'order' => 1,
+            'menugroup_id' => 8
+        ]);
+        DB::table('menu_options')->insert([
+            'name' => 'Venta de Servicios',
+            'icon' => 'fas fa-store',
+            'link' => 'sellservice',
+            'order' => 2,
+            'menugroup_id' => 8
+        ]);
     }
 }

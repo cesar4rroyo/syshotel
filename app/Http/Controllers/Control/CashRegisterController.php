@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CashRegisterRequest;
 use App\Http\Services\CashRegisterService;
 use App\Librerias\Libreria;
+use App\Models\Branch;
 use App\Models\Concept;
 use App\Models\People;
 use App\Models\Process;
 use App\Traits\CRUDTrait;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -237,7 +239,7 @@ class CashRegisterController extends Controller
         }
     }
 
-    public function update(CashBoxRequest $request, $id)
+    public function update(Request $request, $id)
     {
         try {
             $error = DB::transaction(function () use ($request, $id) {
@@ -321,7 +323,11 @@ class CashRegisterController extends Controller
 
     public function print(Request $request)
     {
-        dd($request->all());
+        $type = $request->type;
+        $view = $type == 'A4' ? 'control.cashregister.print.A4' : 'control.cashregister.print.ticket';
+        $pdf = \PDF::loadView($view, ['data' => $request->all()]);
+        $type == 'A4' ? $pdf->setPaper('A4', 'portrait') : $pdf->setPaper([0, 0, 567.00, 283.80], 'landscape');
+        return $pdf->stream();
     }
 
     public function details(Request $request)

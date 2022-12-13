@@ -250,4 +250,21 @@ return [
         'search' => 'Buscar',
     ],
 
+    'sell' => [
+        'add' => 'Agregar',
+        'pay' => 'Cobrar',
+        'products' => [
+            'title' => 'Venta de Productos',
+            'name' => 'Nombre',
+            'price' => 'Precio',
+            'sale' => 'Precio de Venta',
+            'purchase' => 'Precio de Compra',
+            'quantity' => 'Cantidad',
+            'subtotal' => 'Subtotal',
+            'total' => 'Total',
+            'actions' => 'Acciones',
+            'remove' => 'Eliminar',
+        ]
+    ]
+
 ];
