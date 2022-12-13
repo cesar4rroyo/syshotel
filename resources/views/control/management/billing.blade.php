@@ -48,11 +48,20 @@
     {
         var documentType = document.getElementById('document').value;
         var divDocumentNumber = document.getElementById('divDocumentNumber');
+        var selectClient = document.getElementById('clientBilling');
 
         axios.get('{{ route($routes['documentType']) }}' + '?type=' + documentType)
             .then(function (response) {
                 document.getElementById('documentNumber').value = response.data.documentNumber;
                 divDocumentNumber.style.display = 'initial';
+                selectClient.innerHTML = '';
+                var clients = response.data.cboClients;
+                for (var key in clients) {
+                    var option = document.createElement('option');
+                    option.value = key;
+                    option.text = clients[key];
+                    selectClient.appendChild(option);
+                }
             })
             .catch(function (error) {
                 console.log(error);

@@ -71,11 +71,14 @@
         data.done(function(msg) {
             var parseData = JSON.parse(msg);
             var selectClientId = document.getElementById("client_id");
+            var selectClientBilling = document.getElementById("clientBilling");
             var option = document.createElement("option");
-            option.text = parseData.name;
+            option.text = parseData.name ?? parseData.social_reason;
             option.value = parseData.id;
             selectClientId.add(option);
             selectClientId.value = parseData.id;
+            selectClientBilling.add(option);
+            selectClientBilling.value = parseData.id;
             cerrarModal();
             Intranet.notificaciones("Accion realizada correctamente", "Realizado" , "success");
         }).fail(function(xhr, textStatus, errorThrown) {

@@ -196,6 +196,11 @@ class ManagementController extends Controller
     public function documentNumber(Request $request)
     {
         $documentNumber = $this->service->generateDocumentNumber($request->type);
-        return response()->json(['documentNumber' => $documentNumber]);
+        if ($request->type == 'FACTURA') {
+            $cboClients = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all();
+        } else {
+            $cboClients = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all();
+        }
+        return response()->json(['documentNumber' => $documentNumber, 'cboClients' => $cboClients]);
     }
 }
