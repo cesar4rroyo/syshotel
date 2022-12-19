@@ -61,7 +61,17 @@
     </div>
     <div class="flex space-x-6 mt-3">
         <div class="flex flex-col space-y-1 w-full">
-            <label class="font-medium text-sm text-gray-600" for="clientBilling">{{ trans('maintenance.control.management.clientBilling') }}
+            <label class="font-medium text-sm text-gray-600" for="clientBilling">
+                {{ trans('maintenance.control.management.clientBilling') }}
+                <span
+                    onclick="modal('{{ URL::route($routes['client'], ['status' => $room['status'], 'room_id' => $room['id'], 'from'=>'billing']) }}', 'Agregar Nuevo Cliente', this);"
+                    class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded mr-2 dark:bg-gray-700 dark:text-gray-300 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-1 w-3 h-3" fill="currentColor"
+                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                    </svg>
+                    {{ __('maintenance.utils.new') }}
+                </span>
             </label>
             <select class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="clientBilling" id="clientBilling" {{ $model->status == config('constants.processStatus.PyC') ? 'disabled' : null}}>
                 @foreach ($cboClients as $key => $value)
@@ -92,7 +102,6 @@
                 }
             })
             .catch(function (error) {
-                console.log(error);
                 divDocumentNumber.style.display = 'none';
             });
     }

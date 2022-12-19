@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Control;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SellRequest;
 use App\Http\Services\SellService;
 use App\Models\Payments;
 use App\Models\People;
+use App\Models\Process;
 use App\Models\Product;
 use App\Traits\CRUDTrait;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 class SellProductController extends Controller
 {
@@ -20,6 +24,7 @@ class SellProductController extends Controller
     protected int $businessId;
     protected int $branchId;
     protected string $folderView;
+    protected Process $process;
 
     public function __construct()
     {
@@ -33,7 +38,10 @@ class SellProductController extends Controller
         $this->folderView = 'control.sell.product.';
         $this->routes = [
             'documentType' => 'management.documentNumber',
+            'client' => 'people.createFast',
+            'cashregister' => 'cashregister',
         ];
+        $this->process = new Process();
     }
 
     public function index(): View
@@ -45,6 +53,7 @@ class SellProductController extends Controller
         $cboPeople =  ['' => 'Seleccione una opción'] + People::PeopleClient()->pluck('name', 'id')->all();
         $cboCompanies = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all();
         $cboClients = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all();
+        $number = $this->sellService->generateNextSellNumber($this->cashboxId);
         return view('control.sell.product.index', with([
             'products' => $products,
             'cartProducts' => $cartProducts,
@@ -54,6 +63,7 @@ class SellProductController extends Controller
             'cboCompanies' => $cboCompanies,
             'cboClients' => $cboClients,
             'routes' => $this->routes,
+            'number' => $number,
         ]));
     }
 
@@ -89,6 +99,29 @@ class SellProductController extends Controller
             ], 200);
         } catch (\Exception $e) {
             app('log')->error($e);
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'message' => 'Error al eliminar producto del carrito'
+            ], 500);
+        }
+    }
+
+    public function store(SellRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+            $process = $this->process->create($request->all());
+            $data = $this->sellService->formatData($request->all());
+            $this->sellService->createPaymentAndBilling($process, $data, 'product');
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Registro creado correctamente',
+            ]);
+        } catch (\Exception $e) {
+            app('log')->error($e);
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),

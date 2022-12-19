@@ -70,10 +70,16 @@ class ManagementService
     {
         $amounts = $this->getAmounts($request->all());
         $cashregister = $this->createPaymentToCashRegister($process);
+        $this->storeAmounts($amounts, $cashregister->id);
+        $billing = $this->createBilling($process, $request->clientBilling, $request->documentNumber, $request->document);
+    }
+
+    public function storeAmounts(mixed $amounts, int $processId): void
+    {
         foreach ($amounts as $key => $amount) {
             if ($key != 0) {
                 DB::table('paymentprocesses')->insert([
-                    'process_id' => $cashregister->id,
+                    'process_id' => $processId,
                     'payment_id' => $key,
                     'amount' => $amount,
                     'created_at' => now(),
@@ -81,7 +87,6 @@ class ManagementService
                 ]);
             }
         }
-        $billing = $this->createBilling($process, $request->clientBilling, $request->documentNumber, $request->document);
     }
 
     public function getAmounts(array $data): mixed

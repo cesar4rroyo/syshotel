@@ -7,6 +7,7 @@
     'model' => isset($formData['model']) ? $formData['model'] : null,
 ])
 <input type="hidden" name="room_id" value="{{ $formData['room_id'] }}">
+<input type="hidden" name="from" id="from" value="{{ $formData['from'] }}">
 <div class="flex space-x-6">
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="dni">
@@ -36,7 +37,7 @@
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="phone">{{ trans('maintenance.admin.people.phone') }}</label>
         <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="phone" id="phone"
-            value="{{ isset($formData['model']) ? $formData['model']->phone : null }}" required>
+            value="{{ isset($formData['model']) ? $formData['model']->phone : null }}">
     </div>
 </div>
 
@@ -72,18 +73,21 @@
             var parseData = JSON.parse(msg);
             var selectClientId = document.getElementById("client_id");
             var selectClientBilling = document.getElementById("clientBilling");
+            var from = document.getElementById("from");
             var option = document.createElement("option");
             option.text = parseData.name ?? parseData.social_reason;
             option.value = parseData.id;
-            selectClientId.add(option);
-            selectClientId.value = parseData.id;
-            selectClientBilling.add(option);
-            selectClientBilling.value = parseData.id;
+            if(from.value == 'billing') {
+                selectClientBilling.add(option);
+                selectClientBilling.value = parseData.id;
+            }else{
+                selectClientId.add(option);
+                selectClientId.value = parseData.id;
+            }
             cerrarModal();
             Intranet.notificaciones("Accion realizada correctamente", "Realizado" , "success");
         }).fail(function(xhr, textStatus, errorThrown) {
             respuesta = xhr.responseText;
-            console.log(respuesta);
             if(JSON.parse(respuesta).message.trim()){
                 mostrarErrores(xhr.responseText, idformulario, entidad, 1);
             }

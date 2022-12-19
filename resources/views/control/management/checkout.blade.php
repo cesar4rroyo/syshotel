@@ -84,7 +84,7 @@
             <label class="font-medium text-sm text-gray-600"
                 for="client_id">{{ trans('maintenance.control.management.client') }}
                 <span
-                    onclick="modal('{{ URL::route($routes['client'], ['status' => $room['status'], 'room_id' => $room['id']]) }}', 'Agregar Nuevo Cliente', this);"
+                    onclick="modal('{{ URL::route($routes['client'], ['status' => $room['status'], 'room_id' => $room['id'], 'from' => 'checkin']) }}', 'Agregar Nuevo Cliente', this);"
                     class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded mr-2 dark:bg-gray-700 dark:text-gray-300 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-1 w-3 h-3" fill="currentColor"
                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

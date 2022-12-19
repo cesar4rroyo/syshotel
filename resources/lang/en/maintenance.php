@@ -253,6 +253,8 @@ return [
     'sell' => [
         'add' => 'Agregar',
         'pay' => 'Cobrar',
+        'date' => 'Fecha',
+        'number' => 'Número',
         'products' => [
             'title' => 'Venta de Productos',
             'name' => 'Nombre',

@@ -131,6 +131,7 @@ class PeopleController extends Controller
                 'boton'             => 'Registrar',
                 'routes'            => $this->routes,
                 'room_id'           => $this->getParam($request->input('room_id'), null),
+                'from'              => $request->from ?? 'checkin',
             ];
             return view($this->folderview . '.createFast')->with(compact('formData'));
         } catch (\Throwable $th) {

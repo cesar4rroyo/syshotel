@@ -4,7 +4,7 @@
         <p>{{ $item->sale_price }}</p>
     </div>
     <div class="flex flex-col w-1/2 space-y-6">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="addToCart('{{ $item->id }}');">{{ __('maintenance.sell.add') }}</button>
+        <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="addToCart('{{ $item->id }}');">{{ __('maintenance.sell.add') }}</button>
     </div>
 </div>
 <script>
@@ -64,14 +64,14 @@
         Object.keys(cart).forEach(function(key){
             var row = table.insertRow(1);
             total += cart[key].total;
-            row.innerHTML = insertDataToRow(cart[key].name, cart[key].quantity, cart[key].total, key);
+            row.innerHTML = insertDataToRow(cart[key].name, cart[key].quantity, cart[key].total, key, cart[key].price);
         });
         totalCart.value = total;
-        
+        handleChangeTotalAmount();
     }
 
-    function insertDataToRow(name, quantity, total, key){
-        return "<tr><td class='border px-4 py-2'>"+name+"</td><td class='border px-4 py-2'><div style='display: flex'><input onchange='handleChangeQuantity("+key+")' type='number' name='quantity' id='quantity-"+key+"' class='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block p-2.5 mr-2 ml-2' value='"+quantity+"'><button class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded' onclick='removeFromCart("+key+");'><i class='fas fa-trash'></i></button></div></td><td class='border px-4 py-2'>"+total+"</td></tr>";
+    function insertDataToRow(name, quantity, total, key, price){
+        return "<tr><td class='border px-4 py-2'>"+name+"</td><td class='border px-4 py-2'><div style='display: flex'><input type='hidden' name='productId[]' value='"+key+"'><input type='hidden' name='price[]' value='"+price+"'><input type='hidden' name='subtotal[]' value='"+total+"'><input onchange='handleChangeQuantity("+key+")' type='number' name='quantity[]' id='quantity-"+key+"' class='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block p-2.5 mr-2 ml-2' value='"+quantity+"'><button type='button' class='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded' onclick='removeFromCart("+key+");'><i class='fas fa-trash'></i></button></div></td><td class='border px-4 py-2'>"+total+"</td></tr>";
     }
 
 </script>
