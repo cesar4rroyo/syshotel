@@ -49,7 +49,8 @@
                 Intranet.notificaciones(response.data.message, "Realizado!" , "success");
             }
         }).catch(function (error) {
-            Intranet.notificaciones(error, "Error!" , "error");
+            var message = error.response.data.message;
+            Intranet.notificaciones(message, "Error!" , "error");
         });
     }
 

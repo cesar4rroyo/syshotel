@@ -4,6 +4,11 @@
     </div>
     <form id="formSell" method="POST">
         <div class="flex items-center justify-between w-full py-8 px-12 rounded-xl bg-white mt-3">
+            @if($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">{{ $errors->first('error') }}</strong>
+                </div>
+            @endif
             <div class="flex flex-col w-1/2 space-y-6">
                 <input type="text" name="search" id="search" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block p-2.5 mr-2 ml-2" placeholder="Search">
                 <div class="flex flex-col w-full space-y-6 overflow-y-scroll" style="height: 340px;">

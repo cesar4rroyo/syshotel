@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Control;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SellRequest;
+use App\Http\Services\CashRegisterService;
 use App\Http\Services\SellService;
+use App\Models\Payments;
+use App\Models\People;
+use App\Models\Process;
 use App\Models\Service;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class SellServiceController extends Controller
 {
@@ -18,6 +24,8 @@ class SellServiceController extends Controller
     protected int $businessId;
     protected int $branchId;
     protected string $folderView;
+    protected Process $process;
+    protected CashRegisterService $cashRegisterService;
 
     public function __construct()
     {
@@ -26,55 +34,117 @@ class SellServiceController extends Controller
             $this->branchId = session()->get('branchId');
             $this->cashboxId = $request->session()->get('cashboxId');
             $this->sellService = new SellService($this->businessId, $this->branchId, 'service');
+            $this->cashRegisterService = new CashRegisterService($this->businessId, $this->branchId, $this->cashboxId);
             return $next($request);
         });
-        $this->folderView = 'control.sell.product.';
-        $this->routes = [];
+        $this->folderView = 'control.sell.service.';
+        $this->routes = [
+            'documentType' => 'management.documentNumber',
+            'client' => 'people.createFast',
+            'cashregister' => 'cashregister',
+        ];
+        $this->process = new Process();
     }
 
     public function index(): View
     {
-        $services = Service::search(null, $this->branchId, $this->businessId)->get();
-        $cartServices = $this->sellService->getCarts();
-        return view('control.sell.service.index', compact('services', 'cartServices'));
+        $products = Service::search(null, $this->branchId, $this->businessId)->get();
+        $cartProducts = $this->sellService->getCarts();
+        $cboPaymentTypes = $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción');
+        $cboDocumentTypes = ['' => 'Seleccione una opción'] + ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'];
+        $cboPeople =  ['' => 'Seleccione una opción'] + People::PeopleClient()->pluck('name', 'id')->all();
+        $cboCompanies = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all();
+        $cboClients = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all();
+        $number = $this->sellService->generateNextSellNumber($this->cashboxId);
+        return view('control.sell.service.index', with([
+            'products' => $products,
+            'cartProducts' => $cartProducts,
+            'cboPaymentTypes' => $cboPaymentTypes,
+            'cboDocumentTypes' => $cboDocumentTypes,
+            'cboPeople' => $cboPeople,
+            'cboCompanies' => $cboCompanies,
+            'cboClients' => $cboClients,
+            'routes' => $this->routes,
+            'number' => $number,
+        ]));
     }
 
-    public function addToCart(int $service, Request $request): JsonResponse
+    public function addToCart(int $product, Request $request): JsonResponse
     {
         try {
-            $service = Service::findOrfail($service);
-            $cart =  $this->sellService->addToSessionCart($service, $request);
+            $status = $this->cashRegisterService->getStatus();
+            if ($status == 'close') {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Caja cerrada',
+                    'message' => 'La caja se encuentra cerrada, aperturela para realizar ventas'
+                ], 500);
+            }
+            $product = Service::findOrfail($product);
+            $cart =  $this->sellService->addToSessionCart($product, $request);
             return response()->json([
                 'success' => true,
                 'cart' => $cart,
-                'service' => $service,
-                'message' => 'Servicio agregado al carrito'
+                'product' => $product,
+                'message' => 'Producto agregado al carrito'
             ], 200);
         } catch (\Exception $e) {
             app('log')->error($e);
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
-                'message' => 'Error al agregar servicio al carrito'
+                'message' => 'Error al agregar producto al carrito'
             ], 500);
         }
     }
 
-    public function removeFromCart(int $service): JsonResponse
+    public function removeFromCart(int $product): JsonResponse
     {
         try {
-            $cart =  $this->sellService->removeFromSessionCart($service);
+            $status = $this->cashRegisterService->getStatus();
+            if ($status == 'close') {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Caja cerrada',
+                    'message' => 'La caja se encuentra cerrada, aperturela para realizar ventas'
+                ], 500);
+            }
+            $cart =  $this->sellService->removeFromSessionCart($product);
             return response()->json([
                 'success' => true,
                 'cart' => $cart,
-                'message' => 'Servicio eliminado del carrito'
+                'message' => 'Producto eliminado del carrito'
             ], 200);
         } catch (\Exception $e) {
             app('log')->error($e);
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
-                'message' => 'Error al eliminar servicio del carrito'
+                'message' => 'Error al eliminar producto del carrito'
+            ], 500);
+        }
+    }
+
+    public function store(SellRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+            $process = $this->process->create($request->all());
+            $data = $this->sellService->formatData($request->all());
+            $this->sellService->createPaymentAndBilling($process, $data, 'service');
+            $this->sellService->clearSessionCart();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Registro creado correctamente',
+            ]);
+        } catch (\Exception $e) {
+            app('log')->error($e);
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'message' => 'Error al eliminar producto del carrito'
             ], 500);
         }
     }

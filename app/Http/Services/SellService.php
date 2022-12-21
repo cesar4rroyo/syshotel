@@ -145,7 +145,7 @@ class SellService
     public function createPaymentAndBilling(Process $process, array $data, string $type): void
     {
         $amounts = $this->managementService->getAmounts($data);
-        $cashRegister = $this->managementService->createPaymentToCashRegister($process);
+        $cashRegister = $this->managementService->createPaymentToCashRegister($process, 3);
         $this->managementService->storeAmounts($amounts, $cashRegister->id);
         $this->createProcessDetails($data['products'], $process, $type);
         $billing = $this->createBilling($process, $data['client_id'], $data['documentNumber'], $data['document'], $type, $data['products']);

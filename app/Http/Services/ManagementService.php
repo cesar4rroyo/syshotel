@@ -69,7 +69,7 @@ class ManagementService
     public function createPaymentsAndBilling(Process $process, Request $request): void
     {
         $amounts = $this->getAmounts($request->all());
-        $cashregister = $this->createPaymentToCashRegister($process);
+        $cashregister = $this->createPaymentToCashRegister($process, 4);
         $this->storeAmounts($amounts, $cashregister->id);
         $billing = $this->createBilling($process, $request->clientBilling, $request->documentNumber, $request->document);
     }
@@ -105,7 +105,7 @@ class ManagementService
         return $amounts;
     }
 
-    public function createPaymentToCashRegister(Process $process): Process
+    public function createPaymentToCashRegister(Process $process, int $conceptId): Process
     {
         return $process = $this->process->create([
             'date' => date('Y-m-d'),
@@ -119,7 +119,7 @@ class ManagementService
             'business_id' => $process->business_id,
             'branch_id' => $process->branch_id,
             'cashbox_id' => $process->cashbox_id,
-            'concept_id' => 4,
+            'concept_id' => $conceptId,
         ]);
     }
 

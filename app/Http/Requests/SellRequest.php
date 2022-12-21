@@ -38,6 +38,7 @@ class SellRequest extends FormRequest
             'processtype_id' => 1,
             'client_id' => $this->clientBilling ?? 1,
             'total' => $this->totalCart,
+            'amount' => $this->totalCart,
         ]);
     }
 

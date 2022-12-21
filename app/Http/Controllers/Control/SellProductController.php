@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Control;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SellRequest;
+use App\Http\Services\CashRegisterService;
 use App\Http\Services\SellService;
 use App\Models\Payments;
 use App\Models\People;
@@ -21,6 +22,7 @@ class SellProductController extends Controller
     use CRUDTrait;
 
     protected SellService $sellService;
+    protected CashRegisterService $cashRegisterService;
     protected int $businessId;
     protected int $branchId;
     protected string $folderView;
@@ -33,10 +35,12 @@ class SellProductController extends Controller
             $this->branchId = session()->get('branchId');
             $this->cashboxId = $request->session()->get('cashboxId');
             $this->sellService = new SellService($this->businessId, $this->branchId, 'product');
+            $this->cashRegisterService = new CashRegisterService($this->businessId, $this->branchId, $this->cashboxId);
             return $next($request);
         });
         $this->folderView = 'control.sell.product.';
         $this->routes = [
+            'index' => 'sellproduct',
             'documentType' => 'management.documentNumber',
             'client' => 'people.createFast',
             'cashregister' => 'cashregister',
@@ -69,6 +73,14 @@ class SellProductController extends Controller
 
     public function addToCart(int $product, Request $request): JsonResponse
     {
+        $status = $this->cashRegisterService->getStatus();
+        if ($status == 'close') {
+            return response()->json([
+                'success' => false,
+                'error' => 'Caja cerrada',
+                'message' => 'La caja se encuentra cerrada, aperturela para realizar ventas'
+            ], 500);
+        }
         try {
             $product = Product::findOrfail($product);
             $cart =  $this->sellService->addToSessionCart($product, $request);
@@ -90,6 +102,14 @@ class SellProductController extends Controller
 
     public function removeFromCart(int $product): JsonResponse
     {
+        $status = $this->cashRegisterService->getStatus();
+        if ($status == 'close') {
+            return response()->json([
+                'success' => false,
+                'error' => 'Caja cerrada',
+                'message' => 'La caja se encuentra cerrada, aperturela para realizar ventas'
+            ], 500);
+        }
         try {
             $cart =  $this->sellService->removeFromSessionCart($product);
             return response()->json([
@@ -114,6 +134,7 @@ class SellProductController extends Controller
             $process = $this->process->create($request->all());
             $data = $this->sellService->formatData($request->all());
             $this->sellService->createPaymentAndBilling($process, $data, 'product');
+            $this->sellService->clearSessionCart();
             DB::commit();
             return response()->json([
                 'success' => true,
