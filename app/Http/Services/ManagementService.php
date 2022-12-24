@@ -132,7 +132,7 @@ class ManagementService
     {
         $amounts = $this->billing->GetBillingAmounts($this->businessId, $this->branchId, (float) $process->amount);
         $billing = $this->billing->create([
-            'date' => date('Y-m-d'),
+            'date' => date('Y-m-d H:i:s'),
             'number' => $number,
             'type' => $type,
             'status' => 'CREADO',
