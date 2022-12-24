@@ -32,6 +32,15 @@ class People extends Model
         'notes',
     ];
 
+    public function getFullNameAttribute()
+    {
+        if (!is_null($this->dni)) {
+            return $this->name;
+        } else {
+            return $this->social_reason;
+        }
+    }
+
     public function scopeCompanies(Builder $builder)
     {
         return $builder->where('ruc', '!=', null)->where('social_reason', '!=', null);

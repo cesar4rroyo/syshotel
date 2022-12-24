@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('billings', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
+            $table->dateTime('date');
             $table->string('number');
             $table->string('type'); // T: Ticket, F: Factura, B: Boleta, R: Recibo, N: Nota de crédito, D: Nota de débito
             $table->string('status'); // P: Pendiente, C: Cancelado, A: Anulado

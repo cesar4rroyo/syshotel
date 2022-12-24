@@ -43,4 +43,11 @@ return [
         'url' => env('BASE_URL_CLIENT_RUC'),
     ],
 
+    'billing' => [
+        'type' => [
+            'boleta' => env('URL_BILLING_BOLETA'),
+            'factura' => env('URL_BILLING_FACTURA'),
+        ]
+    ]
+
 ];
