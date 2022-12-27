@@ -7,6 +7,7 @@ use App\Http\Requests\CashRegisterRequest;
 use App\Http\Services\CashRegisterService;
 use App\Librerias\Libreria;
 use App\Models\Branch;
+use App\Models\Business;
 use App\Models\Concept;
 use App\Models\People;
 use App\Models\Process;
@@ -97,10 +98,10 @@ class CashRegisterController extends Controller
                 'valor'  => 'Observación',
                 'numero' => '1',
             ],
-            [
-                'valor'  => 'Acciones',
-                'numero' => '1',
-            ],
+            // [
+            //     'valor'  => 'Acciones',
+            //     'numero' => '1',
+            // ],
         ];
     }
 
@@ -325,7 +326,17 @@ class CashRegisterController extends Controller
     {
         $type = $request->type;
         $view = $type == 'A4' ? 'control.cashregister.print.A4' : 'control.cashregister.print.ticket';
-        $pdf = \PDF::loadView($view, ['data' => $request->all()]);
+        $data = [
+            'business' => Business::find($this->businessId),
+            'date' => date('Y-m-d H:i:s'),
+            'user' => auth()->user(),
+            'incomes' => $this->cashRegisterService->getLastMovementsIncomes(),
+            'expenses' => $this->cashRegisterService->getLastMovementsExpenses(),
+            'cash' => $this->cashRegisterService->getCashAmountTotal(),
+            'cards' => $this->cashRegisterService->getTotalCards(),
+            'deposits' => $this->cashRegisterService->getTotalDeposits(),
+        ];
+        $pdf = \PDF::loadView($view, ['data' => $data]);
         $type == 'A4' ? $pdf->setPaper('A4', 'portrait') : $pdf->setPaper([0, 0, 567.00, 283.80], 'landscape');
         return $pdf->stream();
     }

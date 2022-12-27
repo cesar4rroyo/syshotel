@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Floor;
 use App\Models\Process;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -19,6 +20,34 @@ class CashRegisterService
         $this->businessId = $businessId;
         $this->branchId = $branchId;
         $this->cashboxId = $cashboxId;
+    }
+
+    public function getLastMovementsIncomes(): Collection
+    {
+        return Process::where('business_id', $this->businessId)
+            ->where('branch_id', $this->branchId)
+            ->where('cashbox_id', $this->cashboxId)
+            ->where('processtype_id', 2)
+            ->orderBy('id', 'asc')
+            ->where('id', '>=', $this->getLastOpenCashRegisterId())
+            ->whereHas('concept', function ($query) {
+                return $query->where('type', 'I');
+            })
+            ->get();
+    }
+
+    public function getLastMovementsExpenses(): Collection
+    {
+        return Process::where('business_id', $this->businessId)
+            ->where('branch_id', $this->branchId)
+            ->where('cashbox_id', $this->cashboxId)
+            ->where('processtype_id', 2)
+            ->orderBy('id', 'asc')
+            ->where('id', '>=', $this->getLastOpenCashRegisterId())
+            ->whereHas('concept', function ($query) {
+                return $query->where('type', 'E');
+            })
+            ->get();
     }
 
     public function getStatus(): string
