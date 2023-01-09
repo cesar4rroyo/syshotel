@@ -94,7 +94,9 @@
         axios.post(url, data)
             .then(function (response) {
                 if(response.data.success){
-                    cargarRuta('{{ URL::to('cashregister') }}', 'main-container')
+                    cargarRuta('{{ URL::to('cashregister') }}', 'main-container');
+                    var win = window.open(response.data.url, '_blank');
+                    win.focus();
                 }
             })
             .catch(function (error) {

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->foreignId('branch_id')->nullable()->references('id')->on('branches');
             $table->foreignId('business_id')->nullable()->references('id')->on('business');
-            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

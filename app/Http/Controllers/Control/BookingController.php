@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 class BookingController extends Controller
 {
     protected BookingService $service;
+    protected int $businessId;
+    protected int $branchId;
 
     public function __construct()
     {

@@ -26,6 +26,7 @@ class ManagementController extends Controller
     protected CashRegisterService $cashRegisterService;
     protected int $businessId;
     protected int $branchId;
+    protected int $cashboxId;
     protected string $folderView;
 
     public function __construct()
@@ -51,6 +52,7 @@ class ManagementController extends Controller
             'back' => 'management',
             'documentType' => 'management.documentNumber',
             'checkout' => 'management.checkout',
+            'print'   => 'billinglist.print',
         ];
         $this->idForm = 'formMantenimiento' . $this->entity;
     }
@@ -70,8 +72,9 @@ class ManagementController extends Controller
         try {
             DB::beginTransaction();
             $process = Process::find($id);
+            $billing = null;
             if ($process->status == config('constants.processStatus.PyNC')) {
-                $this->service->createPaymentsAndBilling($process, $request);
+                $billing = $this->service->createPaymentsAndBilling($process, $request);
             }
             $process->update([
                 'notes' => $request->notes,
@@ -82,6 +85,7 @@ class ManagementController extends Controller
             return response()->json([
                 'success' => true,
                 'routes' => URL::route($this->routes['back']),
+                'url' => isset($billing) ? URL::route($this->routes['print'], ['type' => 'TICKET', 'id' => $billing->id]) : null,
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -170,8 +174,9 @@ class ManagementController extends Controller
         try {
             DB::beginTransaction();
             $process = Process::create($request->all());
+            $billing = null;
             if ($request->billingToggle == 'on') {
-                $this->service->createPaymentsAndBilling($process, $request);
+                $billing = $this->service->createPaymentsAndBilling($process, $request);
             }
             $process->room->update(['status' => 'O']);
             DB::commit();
@@ -180,6 +185,7 @@ class ManagementController extends Controller
                 'message' => 'Registro creado correctamente',
                 'room' => $request->room_id,
                 'routes' => URL::route($this->routes['create'], ['status' => 'Ocupado', 'id' => $request->room_id]),
+                'url' => isset($billing) ? URL::route($this->routes['print'], ['type' => 'TICKET', 'id' => $billing->id]) : null,
             ]);
         } catch (\Throwable $th) {
             Log::error($th);

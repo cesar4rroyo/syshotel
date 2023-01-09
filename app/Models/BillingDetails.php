@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BillingDetails extends Model
 {
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $table = 'billingdetails';
     protected $primaryKey = 'id';

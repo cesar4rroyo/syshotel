@@ -193,7 +193,12 @@
         };
         data.done(function(msg) {
             var route = msg.routes;
+            var url = msg.url;
             cargarRuta(route, 'main-container');
+            if(url != '' && url != null && url != undefined){
+                var win = window.open(url, '_blank');
+                win.focus();
+            }
         }).fail(function(xhr, textStatus, errorThrown) {
             respuesta = xhr.responseText;
             console.log(respuesta);

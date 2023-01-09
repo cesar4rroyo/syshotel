@@ -228,6 +228,9 @@ return [
             'documentNumber' => 'Número de Documento',
             'clientBilling' => 'Datos del Cliente',
         ],
+        'billinglist' => [
+            'title' => 'Lista de Comprobantes',
+        ],
         'new' => 'Nuevo Movimiento',
         'open' => 'Aperturar Caja',
         'close' => 'Cerrar Caja',
@@ -237,6 +240,8 @@ return [
         'delete' => 'Eliminar Movimiento',
         'check-in' => 'Check-In',
         'check-out' => 'Check-Out',
+        'printticket' => 'Imprimir Ticket',
+        'printA4' => 'Imprimir A4',
     ],
 
     'utils' => [

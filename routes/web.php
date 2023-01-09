@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Admin\UserTypeController;
+use App\Http\Controllers\Control\BillingListController;
 use App\Http\Controllers\Control\BookingController;
 use App\Http\Controllers\Control\CashRegisterController;
 use App\Http\Controllers\Control\ManagementController;
@@ -148,7 +149,10 @@ Route::middleware([
     /* Access Routes */
     Route::get('access', [AccessController::class, 'index'])->name('access');
     Route::post('access', [AccessController::class, 'store'])->name('access.store');
-
+    /* Billing list Routes */
+    Route::post('billinglist/search', [BillingListController::class, 'search'])->name('billinglist.search');
+    Route::get('billinglist/print', [BillingListController::class, 'print'])->name('billinglist.print');
+    Route::resource('billinglist', BillingListController::class)->except(['show', 'delete', 'create', 'edit', 'update', 'store']);
     /* Sell Products and Services Routes */
     Route::get('sellproduct', [SellProductController::class, 'index'])->name('sellproduct');
     Route::post('sellproduct/add/{id}', [SellProductController::class, 'addToCart'])->name('sellproduct.addToCart');

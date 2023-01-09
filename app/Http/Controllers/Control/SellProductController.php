@@ -25,6 +25,7 @@ class SellProductController extends Controller
     protected CashRegisterService $cashRegisterService;
     protected int $businessId;
     protected int $branchId;
+    protected int $cashboxId;
     protected string $folderView;
     protected Process $process;
 
@@ -44,6 +45,7 @@ class SellProductController extends Controller
             'documentType' => 'management.documentNumber',
             'client' => 'people.createFast',
             'cashregister' => 'cashregister',
+            'print'   => 'billinglist.print',
         ];
         $this->process = new Process();
     }
@@ -133,12 +135,13 @@ class SellProductController extends Controller
             DB::beginTransaction();
             $process = $this->process->create($request->all());
             $data = $this->sellService->formatData($request->all());
-            $this->sellService->createPaymentAndBilling($process, $data, 'product');
+            $billing = $this->sellService->createPaymentAndBilling($process, $data, 'product');
             $this->sellService->clearSessionCart();
             DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Registro creado correctamente',
+                'url' => URL::route($this->routes['print'], ['type' => 'TICKET', 'id' => $billing->id]),
             ]);
         } catch (\Exception $e) {
             app('log')->error($e);

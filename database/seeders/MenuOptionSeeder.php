@@ -62,7 +62,7 @@ class MenuOptionSeeder extends Seeder
         DB::table('menu_options')->insert([
             'name' => 'Lista de Comprobantes',
             'icon' => 'fas fa-list-ol',
-            'link' => 'business',
+            'link' => 'billinglist',
             'order' => 7,
             'menugroup_id' => 5
         ]);

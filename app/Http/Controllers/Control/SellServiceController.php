@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 class SellServiceController extends Controller
 {
@@ -23,6 +24,7 @@ class SellServiceController extends Controller
     protected SellService $sellService;
     protected int $businessId;
     protected int $branchId;
+    protected int $cashboxId;
     protected string $folderView;
     protected Process $process;
     protected CashRegisterService $cashRegisterService;
@@ -42,6 +44,7 @@ class SellServiceController extends Controller
             'documentType' => 'management.documentNumber',
             'client' => 'people.createFast',
             'cashregister' => 'cashregister',
+            'print'   => 'billinglist.print',
         ];
         $this->process = new Process();
     }
@@ -131,12 +134,13 @@ class SellServiceController extends Controller
             DB::beginTransaction();
             $process = $this->process->create($request->all());
             $data = $this->sellService->formatData($request->all());
-            $this->sellService->createPaymentAndBilling($process, $data, 'service');
+            $billing = $this->sellService->createPaymentAndBilling($process, $data, 'service');
             $this->sellService->clearSessionCart();
             DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Registro creado correctamente',
+                'url' => URL::route($this->routes['print'], ['type' => 'TICKET', 'id' => $billing->id]),
             ]);
         } catch (\Exception $e) {
             app('log')->error($e);

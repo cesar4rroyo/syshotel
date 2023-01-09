@@ -69,6 +69,25 @@ class Billing extends Model
         return $this->hasMany(BillingDetails::class, 'billing_id');
     }
 
+    public function scopeSearch(Builder $query, string $param = null, string $type = null, $date_start = null, $date_end = null, int $business_id, int $branch_id)
+    {
+        return $query->when($param, function ($query, $param) {
+            return $query->where('number', 'like', '%' . $param . '%');
+        })
+            ->when($type, function ($query, $type) {
+                return $query->where('type', $type);
+            })
+            ->when($date_start, function ($query, $date_start) {
+                return $query->where('date', '>=', $date_start);
+            })
+            ->when($date_end, function ($query, $date_end) {
+                return $query->where('date', '<=', $date_end);
+            })
+            ->where('business_id', $business_id)
+            ->where('branch_id', $branch_id)
+            ->orderBy('id', 'desc');
+    }
+
     public function scopeGetBillingAmounts(Builder $query, int $business_id, int $branch_id, float $amount): array
     {
         $settings = Setting::where('business_id', $business_id)->where('branch_id', $branch_id)->first();

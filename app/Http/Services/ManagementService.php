@@ -66,12 +66,13 @@ class ManagementService
         return Process::where('room_id', $roomId)->where('business_id', $this->businessId)->where('branch_id', $this->branchId)->orderBy('id', 'desc')->first()->id;
     }
 
-    public function createPaymentsAndBilling(Process $process, Request $request): void
+    public function createPaymentsAndBilling(Process $process, Request $request): Billing
     {
         $amounts = $this->getAmounts($request->all());
         $cashregister = $this->createPaymentToCashRegister($process, 4);
         $this->storeAmounts($amounts, $cashregister->id);
         $billing = $this->createBilling($process, $request->clientBilling, $request->documentNumber, $request->document);
+        return $billing;
     }
 
     public function storeAmounts(mixed $amounts, int $processId): void
@@ -152,6 +153,7 @@ class ManagementService
             'notes' => 'Servicio de Alquiler de ' .  $process->room->roomType->name,
             'amount' => 1,
             'sale_price' => $process->amount,
+            'purchase_price' => $process->amount,
             'total' => $process->amount,
             'business_id' => $this->businessId,
             'branch_id' => $this->branchId,

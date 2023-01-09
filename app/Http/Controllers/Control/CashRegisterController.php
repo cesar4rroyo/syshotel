@@ -22,6 +22,7 @@ class CashRegisterController extends Controller
     protected CashRegisterService $cashRegisterService;
     protected int $businessId;
     protected int $branchId;
+    protected int $cashboxId;
     protected string $newCashRegisterTitle;
     protected string $openCashRegisterTitle;
     protected string $closeCashRegisterTitle;
