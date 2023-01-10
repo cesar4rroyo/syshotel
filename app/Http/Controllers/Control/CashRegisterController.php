@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CashRegisterRequest;
 use App\Http\Services\CashRegisterService;
 use App\Librerias\Libreria;
+use App\Models\Branch;
+use App\Models\Business;
 use App\Models\Concept;
 use App\Models\People;
 use App\Models\Process;
 use App\Traits\CRUDTrait;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,6 +22,7 @@ class CashRegisterController extends Controller
     protected CashRegisterService $cashRegisterService;
     protected int $businessId;
     protected int $branchId;
+    protected int $cashboxId;
     protected string $newCashRegisterTitle;
     protected string $openCashRegisterTitle;
     protected string $closeCashRegisterTitle;
@@ -95,10 +99,10 @@ class CashRegisterController extends Controller
                 'valor'  => 'Observación',
                 'numero' => '1',
             ],
-            [
-                'valor'  => 'Acciones',
-                'numero' => '1',
-            ],
+            // [
+            //     'valor'  => 'Acciones',
+            //     'numero' => '1',
+            // ],
         ];
     }
 
@@ -145,6 +149,10 @@ class CashRegisterController extends Controller
             }
             return view('control.cashregister.list')->with('lista', $list)->with([
                 'entidad'           => $this->entity,
+                'resumeData'        => $resumeData,
+                'ruta'              => $this->routes,
+                'status'            => $this->cashRegisterService->getStatus(),
+                'titles'            => $this->titles,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -233,7 +241,7 @@ class CashRegisterController extends Controller
         }
     }
 
-    public function update(CashBoxRequest $request, $id)
+    public function update(Request $request, $id)
     {
         try {
             $error = DB::transaction(function () use ($request, $id) {
@@ -317,7 +325,21 @@ class CashRegisterController extends Controller
 
     public function print(Request $request)
     {
-        dd($request->all());
+        $type = $request->type;
+        $view = $type == 'A4' ? 'control.cashregister.print.A4' : 'control.cashregister.print.ticket';
+        $data = [
+            'business' => Business::find($this->businessId),
+            'date' => date('Y-m-d H:i:s'),
+            'user' => auth()->user(),
+            'incomes' => $this->cashRegisterService->getLastMovementsIncomes(),
+            'expenses' => $this->cashRegisterService->getLastMovementsExpenses(),
+            'cash' => $this->cashRegisterService->getCashAmountTotal(),
+            'cards' => $this->cashRegisterService->getTotalCards(),
+            'deposits' => $this->cashRegisterService->getTotalDeposits(),
+        ];
+        $pdf = \PDF::loadView($view, ['data' => $data]);
+        $type == 'A4' ? $pdf->setPaper('A4', 'portrait') : $pdf->setPaper([0, 0, 567.00, 283.80], 'landscape');
+        return $pdf->stream();
     }
 
     public function details(Request $request)

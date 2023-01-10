@@ -38,5 +38,11 @@ class PaymentSeeder extends Seeder
             'type' => 'transfer',
             'business_id' => 1,
         ]);
+
+        DB::table('payments')->insert([
+            'name' => 'COMBINADO',
+            'type' => 'others',
+            'business_id' => 1,
+        ]);
     }
 }

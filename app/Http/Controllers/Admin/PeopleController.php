@@ -4,15 +4,20 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PeopleRequest;
+use App\Http\Services\SearchClientService;
 use App\Librerias\Libreria;
 use App\Models\People;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\throwException;
+
 class PeopleController extends Controller
 {
     use CRUDTrait;
+
+    protected SearchClientService $clientService;
 
     public function __construct()
     {
@@ -28,11 +33,13 @@ class PeopleController extends Controller
             'search'  => 'people.search',
             'index'   => 'people.index',
             'store'   => 'people.store',
+            'storeFast'   => 'people.storeFast',
             'delete'  => 'people.delete',
             'create'  => 'people.create',
             'edit'    => 'people.edit',
             'update'  => 'people.update',
             'destroy' => 'people.destroy',
+            'searchClient'  => 'people.searchClient',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
         $this->clsLibreria = new Libreria();
@@ -110,6 +117,28 @@ class PeopleController extends Controller
         }
     }
 
+    public function createFast(Request $request)
+    {
+        try {
+            $formData = [
+                'route'             => $this->routes['storeFast'],
+                'method'            => 'POST',
+                'class'             => 'flex flex-col space-y-3 py-2',
+                'id'                => $this->idForm,
+                'autocomplete'      => 'off',
+                'entidad'           => $this->entity,
+                'listar'            => $this->getParam($request->input('listagain'), 'NO'),
+                'boton'             => 'Registrar',
+                'routes'            => $this->routes,
+                'room_id'           => $this->getParam($request->input('room_id'), null),
+                'from'              => $request->from ?? 'checkin',
+            ];
+            return view($this->folderview . '.createFast')->with(compact('formData'));
+        } catch (\Throwable $th) {
+            return $this->MessageResponse($th->getMessage(), 'danger');
+        }
+    }
+
     public function  create(Request $request)
     {
         try {
@@ -122,6 +151,7 @@ class PeopleController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
+                'routes'            => $this->routes,
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -129,10 +159,22 @@ class PeopleController extends Controller
         }
     }
 
-    public function store(PeopleRequest $request)
+    public function storeFast(PeopleRequest $request)
     {
         try {
+            $error = DB::transaction(function () use ($request) {
+                $model = $this->model->create($request->all());
+                return json_encode($model);
+            });
+            return $error;
+        } catch (\Throwable $th) {
+            return $this->MessageResponse($th->getMessage(), 'danger');
+        }
+    }
 
+    public function store(Request $request)
+    {
+        try {
             $error = DB::transaction(function () use ($request) {
                 $model = $this->model->create($request->all());
             });
@@ -219,5 +261,13 @@ class PeopleController extends Controller
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
+    }
+
+    public function searchClient(Request $request)
+    {
+        $type = $request->type;
+        $number = $request->number;
+        $this->clientService = new SearchClientService($type, $number);
+        return $this->clientService->searchClient();
     }
 }

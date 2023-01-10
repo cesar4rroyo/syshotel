@@ -22,9 +22,9 @@ class Payments extends Model
         'business_id',
     ];
 
-    public function getTypeAttribute($value)
+    public function getTypeListAttribute()
     {
-        switch ($value) {
+        switch ($this->type) {
             case 'cash':
                 return 'Efectivo';
             case 'card':
@@ -35,8 +35,8 @@ class Payments extends Model
                 return 'Cheque';
             case 'deposit':
                 return 'Depósito';
-            case 'other':
-                return 'Otro';
+            case 'others':
+                return 'Otros';
             default:
                 return 'Desconocido';
         }

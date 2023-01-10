@@ -45,5 +45,15 @@ class MenuGroupSeeder extends Seeder
             'icon' => 'fas fa-chart-bar',
             'order' => 6,
         ]);
+        DB::table('menu_groups')->insert([
+            'name' => 'Reservas',
+            'icon' => 'fas fa-book',
+            'order' => 7,
+        ]);
+        DB::table('menu_groups')->insert([
+            'name' => 'Ventas',
+            'icon' => 'fas fa-shopping-cart',
+            'order' => 3,
+        ]);
     }
 }

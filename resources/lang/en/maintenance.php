@@ -186,9 +186,9 @@ return [
         ],
         'people' => [
             'title'    => 'Personas',
-            'name'     => 'Nombre',
+            'name'     => 'Nombres / Razón Social',
             'lastname' => 'Apellido',
-            'dni'      => 'DNI',
+            'dni'      => 'DNI / RUC',
             'phone'    => 'Teléfono',
             'email'    => 'Email',
             'address'  => 'Dirección',
@@ -222,7 +222,14 @@ return [
             'price' => 'Precio Habitación',
             'general' => 'Datos Generales',
             'billing' => 'Cobro y Facturación',
-            'charge' => 'Cobrar'
+            'charge' => 'Cobrar',
+            'paymentType' => 'Forma de Pago',
+            'documentType' => 'Tipo de Documento',
+            'documentNumber' => 'Número de Documento',
+            'clientBilling' => 'Datos del Cliente',
+        ],
+        'billinglist' => [
+            'title' => 'Lista de Comprobantes',
         ],
         'new' => 'Nuevo Movimiento',
         'open' => 'Aperturar Caja',
@@ -231,6 +238,10 @@ return [
         'printTicket' => 'Imprimir Ticket',
         'edit' => 'Editar Movimiento',
         'delete' => 'Eliminar Movimiento',
+        'check-in' => 'Check-In',
+        'check-out' => 'Check-Out',
+        'printticket' => 'Imprimir Ticket',
+        'printA4' => 'Imprimir A4',
     ],
 
     'utils' => [
@@ -241,6 +252,26 @@ return [
         'import'  => 'Importar',
         'file'   => 'Archivo',
         'back'   => 'Regresar',
+        'search' => 'Buscar',
     ],
+
+    'sell' => [
+        'add' => 'Agregar',
+        'pay' => 'Cobrar',
+        'date' => 'Fecha',
+        'number' => 'Número',
+        'products' => [
+            'title' => 'Venta de Productos',
+            'name' => 'Nombre',
+            'price' => 'Precio',
+            'sale' => 'Precio de Venta',
+            'purchase' => 'Precio de Compra',
+            'quantity' => 'Cantidad',
+            'subtotal' => 'Subtotal',
+            'total' => 'Total',
+            'actions' => 'Acciones',
+            'remove' => 'Eliminar',
+        ]
+    ]
 
 ];

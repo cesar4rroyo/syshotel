@@ -20,8 +20,12 @@ use App\Http\Controllers\Admin\RoomTypeController;
 use App\Http\Controllers\Admin\ServicesController;
 use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Admin\UserTypeController;
+use App\Http\Controllers\Control\BillingListController;
+use App\Http\Controllers\Control\BookingController;
 use App\Http\Controllers\Control\CashRegisterController;
 use App\Http\Controllers\Control\ManagementController;
+use App\Http\Controllers\Control\SellProductController;
+use App\Http\Controllers\Control\SellServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +52,10 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/management', [ManagementController::class, 'index'])->name('management');
+    Route::put('/management/update/{id}', [ManagementController::class, 'update'])->name('management.update');
+    Route::get('/management/document', [ManagementController::class, 'documentNumber'])->name('management.documentNumber');
     Route::post('/management', [ManagementController::class, 'store'])->name('management.store');
+    Route::get('/management/checkout', [ManagementController::class, 'checkout'])->name('management.checkout');
     Route::get('/management/create', [ManagementController::class, 'create'])->name('management.create');
 
     Route::get('cashregister/print', [CashRegisterController::class, 'print'])->name('cashregister.print');
@@ -85,7 +92,10 @@ Route::middleware([
     Route::resource('payment', PaymentController::class)->except(['show']);
 
     /* people routes */
+    Route::get('people/createFast', [PeopleController::class, 'createFast'])->name('people.createFast');
+    Route::post('people/storeFast', [PeopleController::class, 'storeFast'])->name('people.storeFast');
     Route::post('people/search', [PeopleController::class, 'search'])->name('people.search');
+    Route::get('people/searchClient', [PeopleController::class, 'searchClient'])->name('people.searchClient');
     Route::get('people/delete/{id}/{listagain}', [PeopleController::class, 'delete'])->name('people.delete');
     Route::resource('people', PeopleController::class)->except(['show']);
     /* floor routes */
@@ -139,6 +149,22 @@ Route::middleware([
     /* Access Routes */
     Route::get('access', [AccessController::class, 'index'])->name('access');
     Route::post('access', [AccessController::class, 'store'])->name('access.store');
-    /* Bookings Routes */
+    /* Billing list Routes */
+    Route::post('billinglist/search', [BillingListController::class, 'search'])->name('billinglist.search');
+    Route::get('billinglist/print', [BillingListController::class, 'print'])->name('billinglist.print');
+    Route::resource('billinglist', BillingListController::class)->except(['show', 'delete', 'create', 'edit', 'update', 'store']);
+    /* Sell Products and Services Routes */
+    Route::get('sellproduct', [SellProductController::class, 'index'])->name('sellproduct');
+    Route::post('sellproduct/add/{id}', [SellProductController::class, 'addToCart'])->name('sellproduct.addToCart');
+    Route::post('sellproduct/remove/{id}', [SellProductController::class, 'removeFromCart'])->name('sellproduct.removeFromCart');
+    Route::post('sellproduct', [SellProductController::class, 'store'])->name('sellproduct.store');
+
+    Route::get('sellservice', [SellServiceController::class, 'index'])->name('sellservice');
+    Route::post('sellservice/add/{id}', [SellServiceController::class, 'addToCart'])->name('sellservice.addToCart');
+    Route::post('sellservice/remove/{id}', [SellServiceController::class, 'removeFromCart'])->name('sellservice.removeFromCart');
+    Route::post('sellservice', [SellServiceController::class, 'store'])->name('sellservice.store');
+
+    /* Bookings Routes --- API WITH WEB CONTROLLERS */
+    Route::get('booking/rooms', [BookingController::class, 'rooms'])->name('booking.rooms');
     Route::resource('booking', BookingController::class)->except(['show']);
 });

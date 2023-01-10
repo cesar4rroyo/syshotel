@@ -15,10 +15,10 @@ var contadorModal       = 0;
 * @param  {string} idformulario
 * @return {string} respuesta
 */
-function submitForm (idformulario) {
+function submitForm (idformulario, method = null) {
 	var parametros = $(idformulario).serialize();
 	var accion     = $(idformulario).attr('action');
-	var metodo     = $(idformulario).attr('method');
+	var metodo     = method ?? $(idformulario).attr('method');
 	var respuesta  = $.ajax({
 		url : accion,
 		type: metodo,

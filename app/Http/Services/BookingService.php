@@ -113,4 +113,10 @@ class BookingService
     {
         $booking->delete();
     }
+
+    public function getAvailableRooms($dateFrom, $dateTo)
+    {
+        $rooms = Room::with('roomType')->available($dateFrom, $dateTo, $this->branch_id, $this->business_id)->get();
+        return collect($rooms);
+    }
 }

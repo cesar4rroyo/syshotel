@@ -1,4 +1,8 @@
-
+@if($errors->any())
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <strong class="font-bold">{{ $errors->first('error') }}</strong>
+  </div>
+@endif
 <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="myTab" data-tabs-toggle="#myTabContent" role="tablist">
         @foreach ($floors as $item)

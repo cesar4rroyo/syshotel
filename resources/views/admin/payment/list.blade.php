@@ -10,7 +10,7 @@
 		@foreach ($lista as $key => $value)
         <tr>
 			<td class="py-3 px-4">{{ $value->name }}</td>
-			<td class="py-3 px-4">{{ $value->type }}</td>
+			<td class="py-3 px-4">{{ $value->typeList }}</td>
 			<td class="py-3 px-4">{{ $value->notes }}</td>
 			<td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">

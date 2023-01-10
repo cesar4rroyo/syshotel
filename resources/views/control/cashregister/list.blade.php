@@ -1,9 +1,9 @@
-@if(count($lista) == 0)
-@include('utils.noresult')
-@else
 <div class="flex flex-col w-full space-y-6 mb-4 mt-3">
 	@include('control.cashregister.buttons', ['ruta' => $ruta, 'entidad' => $entidad, 'status' => $status, 'titles' => $titles])
 </div>
+@if(count($lista) == 0)
+@include('utils.noresult')
+@else
 <table id="example1" class="w-full text-base font-medium text-left text-gray-500">
 	@include('utils.theader', ['cabecera' => $cabecera])
 	<tbody class="border-b border-gray-300">
@@ -16,13 +16,13 @@
 			<td class="py-3 px-4">{{ $value->number }}</td>
 			<td class="py-3 px-4">{{ $value->concept->name }}</td>
 			<td class="py-3 px-4">{{ $value->amount }}</td>
-			<td class="py-3 px-4">{{ $value->client?->name }}</td>
-			<td class="py-3 px-4">{{ $value->notes }}</td>
-			<td class="py-3 px-4">
+			<td class="py-3 px-4">{{ $value->client?->name ?? '-' }}</td>
+			<td class="py-3 px-4">{{ $value->notes ?? '-' }}</td>
+			{{-- <td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
 				</div>
-			</td>
+			</td> --}}
 		</tr>
 		<?php
 		$contador = $contador + 1;

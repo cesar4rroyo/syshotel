@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             'people',
             'processtypes',
             'bookings',
-            'processes',
+            // 'processes',
         ]);
 
         $this->call([
@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
             PeopleSeeder::class,
             ProcessTypeSeeder::class,
             BookingSeeder::class,
-            ProcessSeeder::class,
+            // ProcessSeeder::class,
         ]);
     }
 

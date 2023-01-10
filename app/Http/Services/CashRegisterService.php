@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Floor;
 use App\Models\Process;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -19,6 +20,34 @@ class CashRegisterService
         $this->businessId = $businessId;
         $this->branchId = $branchId;
         $this->cashboxId = $cashboxId;
+    }
+
+    public function getLastMovementsIncomes(): Collection
+    {
+        return Process::where('business_id', $this->businessId)
+            ->where('branch_id', $this->branchId)
+            ->where('cashbox_id', $this->cashboxId)
+            ->where('processtype_id', 2)
+            ->orderBy('id', 'asc')
+            ->where('id', '>=', $this->getLastOpenCashRegisterId())
+            ->whereHas('concept', function ($query) {
+                return $query->where('type', 'I');
+            })
+            ->get();
+    }
+
+    public function getLastMovementsExpenses(): Collection
+    {
+        return Process::where('business_id', $this->businessId)
+            ->where('branch_id', $this->branchId)
+            ->where('cashbox_id', $this->cashboxId)
+            ->where('processtype_id', 2)
+            ->orderBy('id', 'asc')
+            ->where('id', '>=', $this->getLastOpenCashRegisterId())
+            ->whereHas('concept', function ($query) {
+                return $query->where('type', 'E');
+            })
+            ->get();
     }
 
     public function getStatus(): string
@@ -86,7 +115,7 @@ class CashRegisterService
 
     public function getCashRegisterNumber(): string
     {
-        return Process::NextNumber(null, $this->businessId, $this->branchId, $this->cashboxId);
+        return Process::NextNumberCashRegister(null, $this->businessId, $this->branchId, $this->cashboxId);
     }
 
     public function storeCashRegister(Request $request): void
@@ -113,7 +142,7 @@ class CashRegisterService
 
     public function getCashAmountTotal(): float
     {
-        return Process::TotalAmountCashFromOpen($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
+        return Process::TotalAmountCash($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'cash');
     }
 
     public function getTotalIncomes(): float
@@ -126,13 +155,13 @@ class CashRegisterService
         return Process::TotalAmountExpenses($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
     }
 
-    public function getTotalCards(string $type = null): float
+    public function getTotalCards(string $subType = null): float
     {
-        return Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type);
+        return Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'card', $subType = null);
     }
 
     public function getTotalDeposits(string $type = null): float
     {
-        return Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type);
+        return Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'transfer', $type = null);
     }
 }
