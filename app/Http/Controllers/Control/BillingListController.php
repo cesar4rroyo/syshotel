@@ -133,7 +133,7 @@ class BillingListController extends Controller
     {
         $billing = $this->model::with('details')->find($request->id);
         $type = $request->type;
-        $view = $type == 'A4' ? 'control.billinglist.print.A4' : 'control.billinglist.print.ticket';
+        $view = $type == 'A4' ? 'control.billinglist.print.a4' : 'control.billinglist.print.ticket';
         $branch = Branch::find($billing->branch_id);
         $data = [
             'billing' => $billing,
