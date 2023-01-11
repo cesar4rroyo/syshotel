@@ -16,10 +16,10 @@ class BusinessSeeder extends Seeder
     public function run()
     {
         DB::table('business')->insert([
-            'name' => 'Business 1',
-            'address' => 'Address 1',
-            'phone' => 'Phone 1',
-            'email' => 'Email 1',
+            'name' => 'HOTEL PRUEBA',
+            'address' => 'Av. Prueba 123 - Chiclayo',
+            'phone' => '924734626',
+            'email' => 'prueba@gmail.com',
             'city' => 'Chiclayo',
         ]);
     }

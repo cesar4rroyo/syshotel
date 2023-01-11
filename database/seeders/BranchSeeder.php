@@ -16,10 +16,10 @@ class BranchSeeder extends Seeder
     public function run()
     {
         DB::table('branches')->insert([
-            'name' => 'Branch 1',
-            'address' => 'Address 1',
-            'phone' => 'Phone 1',
-            'email' => 'Email 1',
+            'name' => 'Hotel Prueba Sucursal 1',
+            'address' => 'Av. Sucursal 1 #454',
+            'phone' => 'Phone Sucursal 1',
+            'email' => 'hotelsucursal1@gmail.com',
             'city' => 'Chiclayo',
             'business_id' => 1,
             'status' => 'A',
