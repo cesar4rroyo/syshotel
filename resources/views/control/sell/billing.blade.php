@@ -90,8 +90,13 @@
         var data = new FormData(form);
         var url = "{{ route($store) }}";
         var method = "POST";
+        var axiosConfig = {
+            headers : {
+                'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+            }
+        }
 
-        axios.post(url, data)
+        axios.post(url, data, axiosConfig)
             .then(function (response) {
                 if(response.data.success){
                     cargarRuta('{{ URL::to('cashregister') }}', 'main-container');
