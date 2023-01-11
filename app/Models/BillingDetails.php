@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BillingDetails extends Model
 {
-    // use SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'billingdetails';
     protected $primaryKey = 'id';
+
+    public $timestamps = false;
 
     protected $fillable = [
         'billing_id',
@@ -24,6 +26,9 @@ class BillingDetails extends Model
         'notes',
         'branch_id',
         'business_id',
+        'deleted_at',
+        'created_at',
+        'updated_at'
     ];
 
     public function billing()

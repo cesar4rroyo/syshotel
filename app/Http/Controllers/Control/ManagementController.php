@@ -89,6 +89,7 @@ class ManagementController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
+            app('log')->error($th->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al crear el registro',

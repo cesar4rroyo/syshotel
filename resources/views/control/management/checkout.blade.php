@@ -192,6 +192,7 @@
             var listar = $(idformulario + ' :input[id = "listar"]').val();
         };
         data.done(function(msg) {
+            console.log(msg);
             var route = msg.routes;
             var url = msg.url;
             cargarRuta(route, 'main-container');
