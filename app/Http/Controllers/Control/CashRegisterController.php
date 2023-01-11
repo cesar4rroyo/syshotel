@@ -326,7 +326,7 @@ class CashRegisterController extends Controller
     public function print(Request $request)
     {
         $type = $request->type;
-        $view = $type == 'A4' ? 'control.cashregister.print.A4' : 'control.cashregister.print.ticket';
+        $view = $type == 'A4' ? 'control.cashregister.print.a4' : 'control.cashregister.print.ticket';
         $data = [
             'business' => Business::find($this->businessId),
             'date' => date('Y-m-d H:i:s'),
