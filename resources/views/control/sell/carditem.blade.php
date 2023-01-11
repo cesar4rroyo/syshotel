@@ -28,7 +28,12 @@
     function removeFromCart(id){
         var url = '{{ route($remove, ':id') }}';
         url = url.replace(':id', id);
-        var data = axios.post(url).then(function (response) {
+        var axiosConfig = {
+            headers : {
+                'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+            }
+        }
+        var data = axios.post(url, axiosConfig).then(function (response) {
             if(response.data.success){
                 var cart = response.data.cart;
                 addToTable(cart);
@@ -42,7 +47,12 @@
     function postToCart(id, params = null){
         var url = '{{ route($route, ':id') }}';
         url = url.replace(':id', id);
-        var data = axios.post(url, params).then(function (response) {
+        var axiosConfig = {
+            headers : {
+                'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+            }
+        }
+        var data = axios.post(url, params, axiosConfig).then(function (response) {
             if(response.data.success){
                 var cart = response.data.cart;
                 addToTable(cart);
