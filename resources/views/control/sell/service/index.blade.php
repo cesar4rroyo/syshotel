@@ -1,6 +1,6 @@
 <div class="container" id="container">
     <div class="flex flex-col w-full space-y-6">
-        <p class="text-4xl font-bold font-baloo">{{ __('maintenance.sell.products.title') }}</p>
+        <p class="text-4xl font-bold font-baloo">{{ __('maintenance.sell.services.title') }}</p>
     </div>
     <form id="formSell" method="POST">
         <div class="flex items-center justify-between w-full py-8 px-12 rounded-xl bg-white mt-3">

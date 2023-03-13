@@ -4,9 +4,6 @@ namespace App\Http\Services\Billing;
 
 use App\Models\Billing;
 use App\Models\BillingDetails;
-use App\Models\Process;
-use nusoap_client;
-
 
 class BillingService
 {
@@ -72,10 +69,10 @@ class BillingService
         ];
         if ($billing->type == 'BOLETA') {
             $document['numeroboleta'] = $this->getNumerBilling($billing->number);
-            $document['dni'] = $this->billing->client->dni;
+            $document['dni'] = $billing->client->dni;
         } else if ($billing->type == 'FACTURA') {
             $body['numerofactura'] = $this->getNumerBilling($billing->number);
-            $body['ruc'] = $this->billing->client->ruc;
+            $body['ruc'] = $billing->client->ruc;
         }
         return $body;
     }

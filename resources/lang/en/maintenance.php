@@ -271,7 +271,19 @@ return [
             'total' => 'Total',
             'actions' => 'Acciones',
             'remove' => 'Eliminar',
-        ]
+        ],
+        'services' => [
+            'title' => 'Venta de Servicios',
+            'name' => 'Nombre',
+            'price' => 'Precio',
+            'sale' => 'Precio de Venta',
+            'purchase' => 'Precio de Compra',
+            'quantity' => 'Cantidad',
+            'subtotal' => 'Subtotal',
+            'total' => 'Total',
+            'actions' => 'Acciones',
+            'remove' => 'Eliminar',
+        ],
     ]
 
 ];
