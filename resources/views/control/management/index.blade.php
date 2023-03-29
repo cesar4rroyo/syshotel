@@ -19,12 +19,20 @@
     </ul>
 </div>
 <div class="grid grid-cols-4 gap-4" id="floorContainer">
-    @php
-        $id = $id ?? $floors->first()['id'];
-    @endphp
-    @foreach ($floors->where('id', $id)->first()['rooms'] as $room)
-        @include('control.management.room', ['room' => $room, 'routes' => $routes])
-    @endforeach
+    @if(!$floors->isEmpty())
+        @php
+            $id = $floors->first()['id'];
+        @endphp
+        @foreach ($floors->where('id', $id)->first()['rooms'] as $room)
+            @include('control.management.room', ['room' => $room, 'routes' => $routes])
+        @endforeach
+    @else
+        <div class="col-span-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">No hay pisos ni habitaciones registradas</strong>
+            </div>
+        </div>
+    @endif
 </div>
 <script>
 </script>
