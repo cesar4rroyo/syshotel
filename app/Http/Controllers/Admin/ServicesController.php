@@ -120,8 +120,10 @@ class ServicesController extends Controller
         }
     }
 
-    public function  create(Request $request)
+    public function create(Request $request)
     {
+        $businessId = auth()->user()->business_id;
+
         try {
             $formData = [
                 'route'             => $this->routes['store'],
@@ -132,7 +134,7 @@ class ServicesController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
+                'cboBranch'         => Branch::where('business_id', $businessId)->get()->pluck('name', 'id'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -168,6 +170,8 @@ class ServicesController extends Controller
                 return $exist;
             }
 
+            $businessId = auth()->user()->business_id;
+
             $formData = [
                 'route'             => array($this->routes['update'], $id),
                 'method'            => 'PUT',
@@ -178,7 +182,7 @@ class ServicesController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione Sucursal'),
+                'cboBranch'         => Branch::where('business_id', $businessId)->get()->pluck('name', 'id'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));

@@ -130,8 +130,11 @@ class ProductsController extends Controller
         }
     }
 
-    public function  create(Request $request)
+    public function create(Request $request)
     {
+
+        $businessId = auth()->user()->business_id;
+
         try {
             $formData = [
                 'route'             => $this->routes['store'],
@@ -142,9 +145,9 @@ class ProductsController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione una sucursal'),
-                'cboCategory'       => $this->generateCboGeneral(Category::class, 'name', 'id', 'Seleccione una categoría'),
-                'cboUnit'           => $this->generateCboGeneral(Unit::class, 'name', 'id', 'Seleccione una unidad'),
+                'cboBranch'         => Branch::where('business_id', $businessId)->get()->pluck('name', 'id'),
+                'cboCategory'       => Category::where('business_id', $businessId)->get()->pluck('name', 'id'),
+                'cboUnit'           => Unit::where('business_id', $businessId)->get()->pluck('name', 'id'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -182,6 +185,8 @@ class ProductsController extends Controller
                 return $exist;
             }
 
+            $businessId = auth()->user()->business_id;
+
             $formData = [
                 'route'             => array($this->routes['update'], $id),
                 'method'            => 'PUT',
@@ -192,9 +197,9 @@ class ProductsController extends Controller
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         => $this->generateCboGeneral(Branch::class, 'name', 'id', 'Seleccione una sucursal'),
-                'cboCategory'       => $this->generateCboGeneral(Category::class, 'name', 'id', 'Seleccione una categoría'),
-                'cboUnit'           => $this->generateCboGeneral(Unit::class, 'name', 'id', 'Seleccione una unidad'),
+                'cboBranch'         => Branch::where('business_id', $businessId)->get()->pluck('name', 'id'),
+                'cboCategory'       => Category::where('business_id', $businessId)->get()->pluck('name', 'id'),
+                'cboUnit'           => Unit::where('business_id', $businessId)->get()->pluck('name', 'id'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));

@@ -210,6 +210,7 @@ class UserController extends Controller
                 'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'cboCashboxes'      => CashBox::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'businessId'        => $businessId,
+                'cboPeople'         => People::PeopleClient()->get()->pluck('full_name', 'id')->all(),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
