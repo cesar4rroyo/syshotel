@@ -123,7 +123,7 @@ class CashRegisterController extends Controller
             $resumeData = [
                 'incomes' => $this->cashRegisterService->getTotalIncomes(),
                 'expenses' => $this->cashRegisterService->getTotalExpenses(),
-                'cash' => $this->cashRegisterService->getCashAmountTotal(),
+                'cash' => $this->cashRegisterService->getCashAmountTotal() -  $this->cashRegisterService->getTotalExpenses(),
                 'cards' => $this->cashRegisterService->getTotalCards(),
                 'deposits' => $this->cashRegisterService->getTotalDeposits(),
             ];
