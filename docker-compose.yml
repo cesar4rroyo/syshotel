@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+  nginx-laravel:
+    image: nginx:stable-alpine
+    container_name: nginx-laravel
+    ports:
+      - 8000:80
+    volumes:
+      - .:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - hotelapp
+      - mysql
+    networks:
+      - networkapp
+
+  mysql:
+    platform: linux/x86_64 # this is needed for the mysql image to work on mac m1 chip uncomment this line if you are not using mac m1 chip
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    ports:
+      - 33069:3306
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hotel
+      MYSQL_USER: hotel
+      MYSQL_PASSWORD: root
+    networks:
+      - networkapp
+  
+  hotelapp:
+    build:
+      args:
+        - user=laraveluser
+        - uid=1000
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: hotelapp
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - networkapp
+
+networks:
+  networkapp:
+
+volumes:
+  dbdata:
