@@ -7,13 +7,12 @@ use nusoap_client;
 
 class Facturacion
 {
-    private $client;
-    private $baseUrl;
+    private nusoap_client $client;
+    private string $baseUrl;
 
     public function __construct(string $type)
     {
-        $this->baseUrl = config('services.billing.' . $type . '.url');
-        $this->client = new nusoap_client($this->baseUrl);
+        $this->baseUrl = config('services.billing.type.' . strtoupper($type));
     }
 
     public function getBaseUrl(): string
@@ -23,6 +22,7 @@ class Facturacion
 
     public function getClient(): nusoap_client
     {
+        $this->client = new nusoap_client($this->baseUrl);
         return $this->client;
     }
 
@@ -33,7 +33,7 @@ class Facturacion
             if ($this->getClient()->fault) {
                 return [
                     'success' => false,
-                    'message' => $this->facturacion->getClient()->fault
+                    'message' => $this->getClient()->fault
                 ];
             } else {
                 $error = $this->getClient()->getError();

@@ -22,7 +22,10 @@ class Setting extends Model
         'logo',
         'business_id',
         'branch_id',
-        'serie'
+        'serie',
+        'igv',
+        'password_sunnat',
+        'serverId',
     ];
 
     public function business()
