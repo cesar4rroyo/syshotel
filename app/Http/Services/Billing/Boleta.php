@@ -57,8 +57,8 @@ class Boleta implements BillingContract
         $json = json_encode($json);
 
         return [
-            'ruc' => '10723124871',
-            'password' => '123456789',
+            'ruc' => $businessInfo['ruc'],
+            'password' => $businessInfo['password'],
             'json' => $json,
         ];
     }
