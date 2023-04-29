@@ -51,14 +51,30 @@
             value="{{ isset($formData['model']) ? $formData['model']->serie : null }}" required>
     </div>
 </div>
-<div class="flex space-x-6 mt-3">
-    <label for="billing" class="inline-flex items-center">
-        <input id="billing" type="checkbox"
-            class="rounded border-gray-300 text-blue-corp shadow-sm focus:outline-none focus:ring-0 focus:border-gray-300"
-            name="remember">
-        <span class="ml-2 text-sm font-medium text-gray-900">{{ trans('maintenance.admin.setting.billing') }}</span>
-    </label>
+<input type="hidden" name="has_electronic_billing" id="has_electronic_billing" value="N">
+<div class="flex space-x-6 mt-3 ml-5 pl-4">
+    <input onchange="handleChangeHasBilling()" name="hasBilling" class="form-check-input appearance-none w-9 -ml-10 rounded-full h-5 align-top bg-white bg-no-repeat bg-contain bg-gray-300 focus:outline-none cursor-pointer shadow-sm" type="checkbox" role="switch" id="hasBilling">
+    <label class="form-check-label inline-block text-gray-800" for="hasBilling">{{ trans('maintenance.admin.setting.billing') }}</label>
 </div>  
+<div id="divBilling" style="display: none">
+    <div class="flex space-x-6 mt-3">
+        <div class="flex flex-col space-y-1 w-full">
+            <label class="font-medium text-sm text-gray-600" for="igv">{{ trans('maintenance.admin.setting.igv') }}</label>
+            <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="igv" id="igv"
+                value="{{ isset($formData['model']) ? $formData['model']->igv : null }}" required>
+        </div>
+        <div class="flex flex-col space-y-1 w-full">
+            <label class="font-medium text-sm text-gray-600" for="password_sunat">{{ trans('maintenance.admin.setting.password_sunat') }}</label>
+            <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="password_sunat" name="password_sunat" id="password_sunat"
+                value="{{ isset($formData['model']) ? $formData['model']->password_sunat : null }}" required>
+        </div>
+        <div class="flex flex-col space-y-1 w-full">
+            <label class="font-medium text-sm text-gray-600" for="serverId">{{ trans('maintenance.admin.setting.serverId') }}</label>
+            <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="serverId" name="serverId" id="serverId"
+                value="{{ isset($formData['model']) ? $formData['model']->serverId : null }}" required>
+        </div>
+    </div>
+</div>
 <div class="flex w-full mt-3">
     @include('utils.modalbuttons', ['entidad' => $formData['entidad'], 'boton' => $formData['boton']])
 </div>
@@ -68,5 +84,20 @@
     $(document).ready(function() {
         configurarAnchoModal('450');
         init(IDFORMMANTENIMIENTO + '{!! $formData['entidad'] !!}', 'M', '{!! $formData['entidad'] !!}');
+        document.getElementById('hasBilling').disabled = true;
     });
+
+    function handleChangeHasBilling()
+    {
+        var divBilling = document.getElementById('divBilling');
+        var has_electronic_billing = document.getElementById('has_electronic_billing');
+        if(divBilling.style.display == 'none'){
+            divBilling.style.display = 'inline';
+            has_electronic_billing.value = 'Y';
+        }else{
+            divBilling.style.display = 'none';
+            has_electronic_billing.value = 'N';
+        }
+    }
+    
 </script>

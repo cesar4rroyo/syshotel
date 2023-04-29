@@ -25,6 +25,12 @@ class BusinessService
             'serie' => 'required',
         ];
 
+        if ($request->has_electronic_billing == 'Y') {
+            $rules['password_sunat'] = 'required';
+            $rules['igv'] = 'required';
+            $rules['serverId'] = 'required';
+        }
+
         $messages = [
             'razon_social.required' => 'El campo Razón Social es obligatorio.',
             'nombre_comercial.required' => 'El campo Nombre Comercial es obligatorio.',
@@ -36,6 +42,9 @@ class BusinessService
             'telefono.numeric' => 'El campo Teléfono debe ser numérico.',
             'email.email' => 'El campo Email debe ser un email válido.',
             'serie.required' => 'El campo Serie es obligatorio.',
+            'password_sunat.required' => 'El campo Contraseña Sunat es obligatorio.',
+            'igv.required' => 'El campo IGV es obligatorio.',
+            'serverId.required' => 'El campo Servidor es obligatorio.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages)->stopOnFirstFailure()->validate();
@@ -53,6 +62,10 @@ class BusinessService
                 'telefono' => $request->telefono,
                 'email' => $request->email,
                 'serie' => $request->serie,
+                'igv' => $request->igv,
+                'password_sunat' => $request->password_sunat,
+                'serverId' => $request->serverId,
+                'has_electronic_billing' => $request->has_electronic_billing == 'Y' ? true : false,
             ]
         );
     }

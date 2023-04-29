@@ -25,7 +25,8 @@ return new class extends Migration
             $table->string('checkin')->nullable();
             $table->string('checkout')->nullable();
             //TO DO - Agregar campos para configurar el sistema con facturación electrónica
-            $table->string('igv')->default('10');
+            $table->boolean('has_electronic_billing')->nullable()->default(false);
+            $table->string('igv')->nullable()->default('10');
             $table->string('serie')->nullable();
             $table->foreignId('business_id')->references('id')->on('business');
             $table->foreignId('branch_id')->references('id')->on('branches');

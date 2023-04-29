@@ -26,6 +26,7 @@ class Setting extends Model
         'igv',
         'password_sunnat',
         'serverId',
+        'has_electronic_billing'
     ];
 
     public function business()
