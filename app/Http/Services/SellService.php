@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Events\BillingEvents;
 use App\Listeners\SendBillingNotification;
 use App\Models\Billing;
+use App\Models\Business;
 use App\Models\Process;
 use App\Models\Product;
 use App\Models\Service;
@@ -232,5 +233,15 @@ class SellService
     public function isBillable(string $documentType): bool
     {
         return $documentType == 'BOLETA' || $documentType == 'FACTURA';
+    }
+
+    public function getDocumentTypes(): array
+    {
+        $hasBilling = Business::find($this->businessId)->hasBilling;
+        if ($hasBilling) {
+            return ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'];
+        } else {
+            return ['TICKET' => 'TICKET'];
+        }
     }
 }
