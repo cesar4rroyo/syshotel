@@ -68,6 +68,9 @@ return [
             'logo' => 'Logo',
             'billing' => 'Facturación',
             'serie' => 'Serie',
+            'igv' => 'IGV',
+            'password_sunat' => 'Contraseña Sunat',
+            'serverId' => 'Servidor',
         ],
         'business' => [
             'name' => 'Nombre',

@@ -8,7 +8,7 @@
                 <input type="text" name="search" id="search" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block p-2.5 mr-2 ml-2" placeholder="Search">
                 <div class="flex flex-col w-full space-y-6 overflow-y-scroll" style="height: 340px;">
                     @foreach ($products as $product)
-                        @include('control.sell.carditem', ['item' => $product, 'route' => 'sellproduct.addToCart', 'remove' => 'sellproduct.removeFromCart'])
+                        @include('control.sell.carditem', ['item' => $product, 'route' => 'sellservice.addToCart', 'remove' => 'sellservice.removeFromCart'])
                     @endforeach
                 </div>
             </div>

@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Events\BillingEvents;
 use App\Models\Billing;
+use App\Models\Business;
 use App\Models\Floor;
 use App\Models\Payments;
 use App\Models\Process;
@@ -53,7 +54,7 @@ class ManagementService
 
     public function generateDocumentNumber(string $type): string
     {
-        return Billing::NextNumberDocument($type, $this->getSerie(), $this->businessId, $this->branchId);
+        return Billing::NextNumberDocument($type, $this->getSerie(), $this->branchId, $this->businessId);
     }
 
     public function getSerie(): string
@@ -136,7 +137,7 @@ class ManagementService
             'date' => date('Y-m-d H:i:s'),
             'number' => $number,
             'type' => $type,
-            'status' => 'CREADO',
+            'status' => Billing::STATUS_CREATED,
             'total' => $amounts['total'],
             'igv' => $amounts['igv'],
             'subtotal' => $amounts['subtotal'],
@@ -160,5 +161,15 @@ class ManagementService
         ]);
 
         return $billing;
+    }
+
+    public function getDocumentTypes(): array
+    {
+        $hasBilling = Business::find($this->businessId)->hasBilling;
+        if ($hasBilling) {
+            return ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'];
+        } else {
+            return ['TICKET' => 'TICKET'];
+        }
     }
 }

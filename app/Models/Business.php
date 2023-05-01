@@ -27,6 +27,11 @@ class Business extends Model
         return $this->status == 'A' ? 'Activo' : 'Inactivo';
     }
 
+    public function getHasBillingAttribute()
+    {
+        return $this->settings->has_electronic_billing;
+    }
+
     public function scopesearch(Builder $query, string $param = null, string $status = null)
     {
         return $query->when($param, function ($query, $param) {

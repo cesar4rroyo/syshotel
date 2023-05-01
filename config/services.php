@@ -45,8 +45,8 @@ return [
 
     'billing' => [
         'type' => [
-            'boleta' => env('URL_BILLING_BOLETA'),
-            'factura' => env('URL_BILLING_FACTURA'),
+            'BOLETA' => env('URL_BILLING_BOLETA'),
+            'FACTURA' => env('URL_BILLING_FACTURA'),
         ]
     ]
 

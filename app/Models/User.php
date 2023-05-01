@@ -64,6 +64,12 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+
+    public function isRootAdmin(): bool
+    {
+        return $this->usertype_id == 1;
+    }
+
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);

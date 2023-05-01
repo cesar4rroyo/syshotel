@@ -9,6 +9,7 @@ use App\Http\Services\BusinessService;
 use App\Librerias\Libreria;
 use App\Models\Branch;
 use App\Models\CashBox;
+use App\Models\People;
 use App\Models\User;
 use App\Models\UserType;
 use App\Traits\CRUDTrait;
@@ -150,7 +151,7 @@ class UserController extends Controller
     public function create(Request $request)
     {
         try {
-            $businessId = $request->businessId ?? auth()->user()->business_id;
+            $businessId = $request->params ? $request->params['businessId'] : auth()->user()->business_id;
             $formData = [
                 'route'             => $this->routes['store'],
                 'method'            => 'POST',
@@ -165,6 +166,7 @@ class UserController extends Controller
                 'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'cboCashboxes'      => CashBox::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'businessId'        => $businessId,
+                'cboPeople'         => People::PeopleClient()->get()->pluck('full_name', 'id')->all(),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -208,6 +210,7 @@ class UserController extends Controller
                 'cboBranches'       => Branch::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'cboCashboxes'      => CashBox::where('business_id', $businessId)->get()->pluck('name', 'id')->all(),
                 'businessId'        => $businessId,
+                'cboPeople'         => People::PeopleClient()->get()->pluck('full_name', 'id')->all(),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {

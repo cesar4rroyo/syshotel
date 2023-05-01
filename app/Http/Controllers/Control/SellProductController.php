@@ -55,7 +55,7 @@ class SellProductController extends Controller
         $products = Product::search(null, $this->branchId, $this->businessId)->get();
         $cartProducts = $this->sellService->getCarts();
         $cboPaymentTypes = $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción');
-        $cboDocumentTypes = ['' => 'Seleccione una opción'] + ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'];
+        $cboDocumentTypes = ['' => 'Seleccione una opción'] + $this->sellService->getDocumentTypes();
         $cboPeople =  ['' => 'Seleccione una opción'] + People::PeopleClient()->pluck('name', 'id')->all();
         $cboCompanies = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all();
         $cboClients = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all();

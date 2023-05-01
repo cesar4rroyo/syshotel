@@ -233,11 +233,13 @@ class Process extends Model
         return DB::table('paymentprocesses')
             ->join('payments', 'paymentprocesses.payment_id', '=', 'payments.id')
             ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
+            ->join('concepts', 'processes.concept_id', '=', 'concepts.id')
             ->where('processes.branch_id', $branch_id)
             ->where('processes.id', '>=', $lastOpenId)
             ->where('processes.business_id', $business_id)
             ->where('processes.cashbox_id', $cashbox_id)
             ->where('processes.processtype_id', 2)
+            ->where('concepts.type', 'I')
             ->where('payments.type', $type)
             ->when($subtype, function ($query, $subtype) {
                 return $query->where('payments.name', $subtype);

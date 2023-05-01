@@ -126,7 +126,7 @@ class ManagementController extends Controller
             'formData'          => $formData,
             'room'              => $room,
             'cboPaymentTypes'   => $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción'),
-            'cboDocumentTypes'  => ['' => 'Seleccione una opción'] + ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'],
+            'cboDocumentTypes'  => ['' => 'Seleccione una opción'] + $this->service->getDocumentTypes(),
             'status'            => $process->status,
         ]));
     }
@@ -165,7 +165,7 @@ class ManagementController extends Controller
             'formData' => $formData,
             'room' => $room,
             'cboPaymentTypes' => $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción'),
-            'cboDocumentTypes' => ['' => 'Seleccione una opción'] + ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'],
+            'cboDocumentTypes' => ['' => 'Seleccione una opción'] + $this->service->getDocumentTypes(),
             'status' => $request->status,
         ]));
     }

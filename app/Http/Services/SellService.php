@@ -2,7 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Events\BillingEvents;
+use App\Listeners\SendBillingNotification;
 use App\Models\Billing;
+use App\Models\Business;
 use App\Models\Process;
 use App\Models\Product;
 use App\Models\Service;
@@ -149,6 +152,9 @@ class SellService
         $this->managementService->storeAmounts($amounts, $cashRegister->id);
         $this->createProcessDetails($data['products'], $process, $type);
         $billing = $this->createBilling($process, $data['client_id'], $data['documentNumber'], $data['document'], $type, $data['products']);
+        if ($this->isBillable($data['document'])) {
+            event(new BillingEvents($billing));
+        }
         //EVENT TO ELECTRONIC BILLING
         return $billing;
     }
@@ -178,7 +184,7 @@ class SellService
             'date' => date('Y-m-d H:i:s'),
             'number' => $number,
             'type' => $documentType,
-            'status' => 'CREADO',
+            'status' => Billing::STATUS_CREATED,
             'total' => $amounts['total'],
             'igv' => $amounts['igv'],
             'subtotal' => $amounts['subtotal'],
@@ -222,5 +228,20 @@ class SellService
     public function array_except(array $array, array $keys): array
     {
         return array_diff_key($array, array_flip($keys));
+    }
+
+    public function isBillable(string $documentType): bool
+    {
+        return $documentType == 'BOLETA' || $documentType == 'FACTURA';
+    }
+
+    public function getDocumentTypes(): array
+    {
+        $hasBilling = Business::find($this->businessId)->hasBilling;
+        if ($hasBilling) {
+            return ['BOLETA' => 'BOLETA', 'FACTURA' => 'FACTURA', 'TICKET' => 'TICKET'];
+        } else {
+            return ['TICKET' => 'TICKET'];
+        }
     }
 }

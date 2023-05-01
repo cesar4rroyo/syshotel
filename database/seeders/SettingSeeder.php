@@ -18,7 +18,7 @@ class SettingSeeder extends Seeder
         DB::table('settings')->insert([
             'razon_social' => 'Hotel Casa Andina SAC',
             'nombre_comercial' => 'Hotel Casa Andina',
-            'ruc' => '20488048378',
+            'ruc' => '10723124871',
             'direccion' => 'Av. Antenor Orrego MzB Lte. 10',
             'telefono' => '924734622',
             'email' => 'hotel@gmail.com',
@@ -28,6 +28,9 @@ class SettingSeeder extends Seeder
             'serie' => '02',
             'business_id' => 1,
             'branch_id' => 1,
+            'igv' => '10',
+            'password_sunnat' => '123456789',
+            'serverId' => 1,
         ]);
     }
 }
