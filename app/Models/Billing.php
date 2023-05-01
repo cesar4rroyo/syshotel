@@ -15,6 +15,14 @@ class Billing extends Model
     protected $table = 'billings';
     protected $primaryKey = 'id';
 
+    const STATUS_CREATED = 'Creado';
+    const STATUS_SENT = 'Enviado';
+    const STATUS_ACCEPTED = 'Aceptado';
+    const STATUS_REJECTED = 'Rechazado';
+    const STATUS_CANCELLED = 'Eliminado';
+    const STATUS_ERROR = 'Error';
+
+
     protected $fillable = [
         'date',
         'number',
@@ -31,6 +39,7 @@ class Billing extends Model
         'branch_id',
         'business_id',
         'billing_id',
+        'solicitudId'
     ];
 
 

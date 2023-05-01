@@ -58,7 +58,7 @@ class Boleta implements BillingContract
 
         return [
             'ruc' => $businessInfo['ruc'],
-            'password' => $businessInfo['password'],
+            'password' => $businessInfo['password_sunnat'],
             'json' => $json,
         ];
     }

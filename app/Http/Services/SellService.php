@@ -184,7 +184,7 @@ class SellService
             'date' => date('Y-m-d H:i:s'),
             'number' => $number,
             'type' => $documentType,
-            'status' => 'CREADO',
+            'status' => Billing::STATUS_CREATED,
             'total' => $amounts['total'],
             'igv' => $amounts['igv'],
             'subtotal' => $amounts['subtotal'],

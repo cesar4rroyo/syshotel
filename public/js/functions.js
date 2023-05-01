@@ -778,17 +778,20 @@ var Intranet = (function () {
             const dismiss = new Dismiss(toast, {
                 triggerEl: toast,
                 transition: 'transition-opacity',
-                duration: 5000,
+                duration: 2000,
                 timing: 'ease-out',
             });
 
             if (tipo == "error") {
                 toastr.error(mensaje, titulo);
+				setTimeout(function(){
+                    dismiss.hide();
+                }, 2000);
             } else if (tipo == "success") {
                 // toastr.success(mensaje, titulo);
                 setTimeout(function(){
                     dismiss.hide();
-                }, 5000);
+                }, 2000);
 
             } else if (tipo == "info") {
                 toastr.info(mensaje, titulo);

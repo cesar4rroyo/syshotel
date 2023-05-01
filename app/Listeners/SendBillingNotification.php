@@ -31,6 +31,20 @@ class SendBillingNotification
     {
         $billing = Billing::with('details')->find($event->billing->id);
         $billingService = new BillingService($billing->type, $billing->branch_id);
-        $billingService->sendBill($billing, $billing->type);
+        $res = $billingService->sendBill($billing, $billing->type);
+        if ($res['success']) {
+            $billing->update([
+                'status' => Billing::STATUS_SENT,
+                'solicitudId' => $res['solicitudId']
+            ]);
+        } else {
+            $billing->update([
+                'status' => Billing::STATUS_ERROR,
+            ]);
+            app('log')->error('Error al enviar la factura electrónica', [
+                'billing' => $billing,
+                'error' => $res['message']
+            ]);
+        }
     }
 }

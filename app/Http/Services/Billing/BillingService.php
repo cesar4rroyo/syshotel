@@ -26,7 +26,7 @@ class BillingService
         ];
     }
 
-    public function sendBill(Billing $billing, string $type)
+    public function sendBill(Billing $billing, string $type): array
     {
         $bill = $this->billingFactory->getBillingProperties($type);
         return $this->facturacion->callClient($bill->getMethod(), $bill->getDocumentDataBeforeSend($billing, $this->businessInfo));

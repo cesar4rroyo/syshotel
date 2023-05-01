@@ -43,13 +43,13 @@ class Facturacion
                         'message' => $error
                     ];
                 } else {
-                    $result  = json_decode($result);
-                    if ($result->code == '0') {
-                        $file_ZIP_BASE64 = $result->fileZIPBASE64;
-                        $nombre_documento = $result->nombre_documento;
-                        $solicitudId = $result->id_solicitud;
+                    $result = json_decode($result, true);
+                    if ($result['code'] == '0') {
+                        $file_ZIP_BASE64 = $result['fileZIPBASE64'];
+                        $nombre_documento = $result['nombre_documento'];
+                        $solicitudId = $result['id_solicitud'];
                         $file_ZIP = base64_decode($file_ZIP_BASE64);
-                        $filename_zip = storage_path('app/public/reportes/' . $nombre_documento . ".zip");
+                        $filename_zip = storage_path('app/public/facturacion/' . $nombre_documento . ".zip");
                         file_put_contents($filename_zip, $file_ZIP);
                         return [
                             'success' => true,
@@ -65,6 +65,10 @@ class Facturacion
                 }
             }
         } catch (\Exception $e) {
+            app('log')->error([
+                'message' => $e->getMessage(),
+                'params' => $params
+            ]);
             $response = [
                 'success' => false,
                 'message' => $e->getMessage()
