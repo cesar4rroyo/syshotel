@@ -27,8 +27,9 @@ class BookingRequest extends FormRequest
             'datefrom' => 'required|date',
             'dateto' => 'required|date',
             'room_id' => 'required|integer',
-            'amount' => 'required|decimal',
+            'amount' => 'nullable',
             'notes' => 'nullable|string',
+            'client_id' => 'required|integer',
         ];
     }
 
@@ -40,15 +41,14 @@ class BookingRequest extends FormRequest
     public function messages()
     {
         return [
-            'datefrom.required' => 'El campo fecha desde es obligatorio',
-            'datefrom.date' => 'El campo fecha desde debe ser una fecha válida',
-            'dateto.required' => 'El campo fecha hasta es obligatorio',
-            'dateto.date' => 'El campo fecha hasta debe ser una fecha válida',
+            'datefrom.required' => 'El campo fecha de entrada es obligatorio',
+            'datefrom.date' => 'El campo fecha de entrada debe ser una fecha válida',
+            'dateto.required' => 'El campo fecha de salida es obligatorio',
+            'dateto.date' => 'El campo fecha de salida debe ser una fecha válida',
             'room_id.required' => 'El campo habitación es obligatorio',
             'room_id.integer' => 'El campo habitación debe ser un número entero',
-            'amount.required' => 'El campo monto es obligatorio',
-            'amount.decimal' => 'El campo monto debe ser un número decimal',
             'notes.string' => 'El campo notas debe ser una cadena de caracteres',
+            'client_id.required' => 'El campo cliente es obligatorio',
         ];
     }
 }

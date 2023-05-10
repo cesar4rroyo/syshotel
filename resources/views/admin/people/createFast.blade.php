@@ -80,6 +80,10 @@
             if(from.value == 'billing') {
                 selectClientBilling.add(option);
                 selectClientBilling.value = parseData.id;
+            }else if(from.value == 'booking'){
+                var selectClientBooking = document.getElementById("booking_client_id");
+                selectClientBooking.add(option);
+                selectClientBooking.value = parseData.id;
             }else{
                 selectClientId.add(option);
                 selectClientId.value = parseData.id;

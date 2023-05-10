@@ -31,6 +31,10 @@ class Booking extends Model
         'business_id',
     ];
 
+    const USED_STATUS = 'U';
+    const CANCELLED_STATUS = 'C';
+    const PENDING_STATUS = 'P';
+
     public function getStatusAttribute($status)
     {
         $values = config('constants.bookingStatus');
@@ -65,11 +69,12 @@ class Booking extends Model
     public function scopeNextNumber(Builder $query, $year = null, int $branch_id = null, int $business_id = null)
     {
         $year = $year ?? date('Y');
-        $query->where('number', 'like', '%' . $year . '-%')
+        $res = $query->where('number', 'like', '%' . $year . '-%')
             ->where('branch_id', $branch_id)
             ->where('business_id', $business_id)
             ->select(DB::raw("max((CASE WHEN number is NULL THEN 0 ELSE convert(substr(number,6,11),SIGNED integer) END)*1) AS maximum"))->first();
-        return str_pad($query->maximum + 1, 11, '0', STR_PAD_LEFT);
+
+        return $year . '-' . str_pad($res->maximum + 1, 6, '0', STR_PAD_LEFT);
     }
 
     public function scopeSearch(Builder $query, string $param = null, string $date_from = null, string $date_to = null, string $client = null, int $branch_id = null, int $business_id = null, array $status = null)

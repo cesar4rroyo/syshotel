@@ -21,7 +21,7 @@ class BookingFactory extends Factory
             'datefrom' => $this->faker->dateTimeBetween('-10 days', 'now'),
             'dateto' => $this->faker->dateTimeBetween('now', '+30 days'),
             'number' => date('Y') . '-' . str_pad($this->faker->unique()->randomNumber(3), 5, '0', STR_PAD_LEFT),
-            'status' => $this->faker->randomElement(['P', 'C', 'A']),
+            'status' => $this->faker->randomElement(['U', 'C', 'P']),
             'amount' => $this->faker->randomFloat(2, 100, 1000),
             'days' => $this->faker->numberBetween(1, 30),
             'notes' => $this->faker->text(),

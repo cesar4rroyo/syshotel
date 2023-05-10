@@ -26,6 +26,11 @@ class Room extends Model
         'room_type_id',
     ];
 
+    const AVAILABLE_STATUS = 'D';
+    const OCCUPIED_STATUS = 'O';
+    const MAINTENANCE_STATUS = 'M';
+
+
     public function getHasBookingTodayAttribute()
     {
         $today = date('Y-m-d');
@@ -47,8 +52,9 @@ class Room extends Model
                 ->where('dateto', '>=', $dateto)
                 ->where('branch_id', $branch_id)
                 ->where('business_id', $business_id)
-                ->whereNotIn('status', ['C', 'P']);
-        });
+                ->whereNotIn('status', ['P']);
+        })->where('branch_id', $branch_id)
+            ->where('business_id', $business_id);
     }
 
     public function getCheckoutDateAttribute()

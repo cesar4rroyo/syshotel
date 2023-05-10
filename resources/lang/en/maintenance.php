@@ -256,6 +256,7 @@ return [
         'file'   => 'Archivo',
         'back'   => 'Regresar',
         'search' => 'Buscar',
+        'close'  => 'Cerrar',
     ],
 
     'sell' => [
@@ -287,6 +288,19 @@ return [
             'actions' => 'Acciones',
             'remove' => 'Eliminar',
         ],
+    ],
+
+    'bookings' => [
+        'title' => 'Reservas',
+        'number' => 'Número',
+        'datefrom' => 'Fecha de Entrada',
+        'dateto' => 'Fecha de Salida',
+        'days' => 'Noches',
+        'room' => 'Habitaciones Disponibles',
+        'client' => 'Cliente',
+        'notes' => 'Comentarios',
+        'amount' => 'Pago Adelantado',
+        'cancel' => 'Cancelar Reserva',
     ]
 
 ];
