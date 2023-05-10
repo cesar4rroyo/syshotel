@@ -50,10 +50,11 @@ class BookingService
                 'date' => $room->processes->first()->date,
                 'start' => $room->processes->first()->start_date,
                 'end' => $room->processes->first()->end_date,
-                'title' => 'Habitación ' . $room->name . ' - ' . $room->processes->first()->client->name,
+                'title' => 'OCUPADO ' . $room->name . ' - ' . $room->processes->first()->client->name,
                 'status' => $room->status,
                 'client' => $room->processes->first()->client->name,
                 'type' => 'room',
+                'color' => 'red'
             ]);
         }
         foreach ($bookings as $booking) {
@@ -67,6 +68,7 @@ class BookingService
                 'status' => $booking->status,
                 'client' => $booking->client->name,
                 'type' => 'booking',
+                'color' => 'blue'
             ]);
         }
         return $data;

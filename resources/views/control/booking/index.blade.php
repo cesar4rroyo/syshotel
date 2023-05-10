@@ -30,7 +30,9 @@
                 let processId = info.event.extendedProps.process_id;
                 let type = info.event.extendedProps.type;
                 let title = type === 'booking' ? 'Ver Reserva' : 'Ver Habitación';
-                modal(urlModal + '?processId=' + processId + '&type=' + type, 'Ver Reserva', this);
+                if(type != 'room'){
+                    modal(urlModal + '?processId=' + processId + '&type=' + type, 'Ver Reserva', this);
+                }
             }
         });
         calendar.render();
