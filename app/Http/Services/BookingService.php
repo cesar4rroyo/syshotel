@@ -38,10 +38,10 @@ class BookingService
         $this->firstDayOfYear = Carbon::createFromDate($this->year, 1, 1)->toDateString();
     }
 
-    public function getDataToCalendar(): Collection
+    public function getDataToCalendar(array $statusBooking, array $statusRooms): Collection
     {
-        $rooms = Room::with('processes')->search(null, $this->branch_id, $this->business_id, ['O'])->get();
-        $bookings = $this->booking->search(null, $this->firstDayOfYear, null, null, $this->branch_id, $this->business_id, ['P'])->get();
+        $rooms = Room::with('processes')->search(null, $this->branch_id, $this->business_id, $statusRooms)->get();
+        $bookings = $this->booking->search(null, $this->firstDayOfYear, null, null, $this->branch_id, $this->business_id, $statusBooking)->get();
         $data = collect();
         foreach ($rooms as $room) {
             $data->push([
@@ -50,9 +50,11 @@ class BookingService
                 'date' => $room->processes->first()->date,
                 'start' => $room->processes->first()->start_date,
                 'end' => $room->processes->first()->end_date,
-                'title' => 'Habitación ' . $room->number . ' - ' . $room->processes->first()->client->name,
+                'title' => 'OCUPADO ' . $room->name . ' - ' . $room->processes->first()->client->name,
                 'status' => $room->status,
                 'client' => $room->processes->first()->client->name,
+                'type' => 'room',
+                'color' => 'red'
             ]);
         }
         foreach ($bookings as $booking) {
@@ -62,9 +64,11 @@ class BookingService
                 'date' => $booking->date,
                 'start' => $booking->datefrom,
                 'end' => $booking->dateto,
-                'title' => 'Reserva Habitación ' . $booking->room->number . ' - ' . $booking->client->name,
+                'title' => 'Reserva Habitación ' . $booking->room->name . ' - ' . $booking->client->name,
                 'status' => $booking->status,
                 'client' => $booking->client->name,
+                'type' => 'booking',
+                'color' => 'blue'
             ]);
         }
         return $data;
@@ -72,22 +76,20 @@ class BookingService
 
     public function storeBooking(array $data): Booking
     {
-        $datefrom = $this->libreria->formatDateWithAddingTime($data['datefrom'], null, null, null, $this->checkin_hour, $this->checkin_minute, null)->toDateString();
-        $dateto = $this->libreria->formatDateWithAddingTime($data['dateto'], null, null, null, $this->checkout_hour, $this->checkout_minute, null)->toDateString();
         $booking = $this->booking->create([
             'date' => $this->today,
-            'number' => $this->booking->nextNumber($this->year, $this->branch_id, $this->business_id),
-            'datefrom' => $datefrom,
-            'dateto' => $dateto,
+            'number' => $data['number'],
+            'datefrom' => $data['datefrom'],
+            'dateto' => $data['dateto'],
             'status' => 'P',
             'room_id' => $data['room_id'],
-            'user_id' => $data['user_id'] ?? auth()->user()->id,
-            'days' => $this->libreria->getDaysBetweenDates($datefrom, $dateto),
+            'user_id' => auth()->user()->id,
+            'days' => $data['days'],
             'amount' => $data['amount'],
             'notes' => $data['notes'],
             'client_id' => $data['client_id'],
-            'branch_id' => auth()->user()->branches->first()->id,
-            'business_id' => auth()->user()->business->id,
+            'branch_id' => $this->branch_id,
+            'business_id' => $this->business_id,
         ]);
         return $booking;
     }
@@ -111,12 +113,23 @@ class BookingService
 
     public function deleteBooking(Booking $booking): void
     {
-        $booking->delete();
+        $booking->update([
+            'status' => Booking::CANCELLED_STATUS,
+        ]);
     }
 
     public function getAvailableRooms($dateFrom, $dateTo)
     {
         $rooms = Room::with('roomType')->available($dateFrom, $dateTo, $this->branch_id, $this->business_id)->get();
+        $rooms = $rooms->map(function ($room) {
+            return [
+                'id' => $room->id,
+                'name' => $room->name,
+                'number' => $room->number,
+                'type' => $room->roomType->name,
+                'price' => 'S/. ' . $room->roomType->price,
+            ];
+        });
         return collect($rooms);
     }
 }

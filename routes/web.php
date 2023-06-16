@@ -165,6 +165,7 @@ Route::middleware([
     Route::post('sellservice', [SellServiceController::class, 'store'])->name('sellservice.store');
 
     /* Bookings Routes --- API WITH WEB CONTROLLERS */
+    Route::get('bookings', [BookingController::class, 'view'])->name('bookings.view');
     Route::get('booking/rooms', [BookingController::class, 'rooms'])->name('booking.rooms');
     Route::resource('booking', BookingController::class)->except(['show']);
 });
