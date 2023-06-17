@@ -25,7 +25,7 @@ class BookingController extends Controller
         $this->middleware(function ($request, $next) {
             $this->businessId = session()->get('businessId');
             $this->branchId = session()->get('branchId');
-            $this->service = new BookingService($this->businessId, $this->branchId);
+            $this->service = new BookingService($this->branchId, $this->businessId);
             return $next($request);
         });
 
@@ -181,6 +181,7 @@ class BookingController extends Controller
                     'autocomplete'      => 'off',
                     'entidad'           => $this->entity,
                     'listar'            => 'SI',
+                    'url_cancel'        => $this->routes['index'],
                     'boton'             => 'Registrar',
                     'day'               => $request->date,
                     'number'            => Booking::NextNumber(date('Y'), $this->branchId, $this->businessId),

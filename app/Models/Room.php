@@ -48,8 +48,7 @@ class Room extends Model
     public function scopeAvailable(Builder $query, string $datefrom, string $dateto, int $branch_id, int $business_id)
     {
         return $query->whereDoesntHave('bookings', function ($query) use ($datefrom, $dateto, $branch_id, $business_id) {
-            $query->where('datefrom', '<=', $datefrom)
-                ->where('dateto', '>=', $dateto)
+            $query->whereNotBetween('datefrom', [$datefrom, $dateto])
                 ->where('branch_id', $branch_id)
                 ->where('business_id', $business_id)
                 ->whereNotIn('status', ['P']);

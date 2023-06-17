@@ -4,7 +4,6 @@
         <div id='calendar'></div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.6/index.global.min.js"></script>
 <script>
     $(document).ready(function() {
         var urlModal = "{{ URL::route($routes['create']) }}";
