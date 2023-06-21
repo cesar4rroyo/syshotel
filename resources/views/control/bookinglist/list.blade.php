@@ -21,9 +21,9 @@
 						<button class="btn" onclick="cargarRuta('{{URL::route($ruta['checkin'], ['action'=>'LIST', 'businessId' => $value->id])}}', 'main-container');">
 							<i style="color: green" class="fas fa-users"></i>
 						</button>
-						<button class="btn"  onclick="modal('{{URL::route($ruta['delete'], array($id, 'listagain'=>'SI', 'params' => $params2 ?? null))}}', 'Eliminar Reserva', this);">
+						{{-- <button class="btn"  onclick="modal('{{URL::route($ruta['delete'], array($value->id, 'listagain'=>'SI', 'params' => $params2 ?? null))}}', 'Eliminar Reserva', this);">
 							<i style="color: red" class="fas fa-trash"></i>
-						</button>
+						</button> --}}
 					@endif
 				</div>
 			</td>

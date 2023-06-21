@@ -173,5 +173,6 @@ Route::middleware([
     /* Booking list Routes */
     Route::post('bookinglist/search', [BookingListController::class, 'search'])->name('bookinglist.search');
     Route::get('bookinglist/print', [BookingListController::class, 'print'])->name('bookinglist.print');
+    Route::get('bookinglist/checkin', [BookingListController::class, 'checkin'])->name('bookinglist.checkin');
     Route::resource('bookinglist', BookingListController::class)->except(['show', 'delete', 'create', 'edit', 'update', 'store']);
 });

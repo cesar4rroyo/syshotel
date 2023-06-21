@@ -36,6 +36,8 @@ class BookingListController extends Controller
             'search'  => 'bookinglist.search',
             'index'   => 'bookinglist.index',
             'print'   => 'bookinglist.print',
+            'checkin' => 'bookinglist.checkin',
+            'delete'  => 'bookinglist.delete',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
 

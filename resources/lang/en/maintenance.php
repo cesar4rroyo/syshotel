@@ -122,6 +122,7 @@ return [
             'price'    => 'Precio',
             'branch'   => 'Sucursal',
             'business' => 'Empresa',
+            'price_hour' => 'Precio por Hora',
         ],
         'category' => [
             'title'    => 'Categorías',
