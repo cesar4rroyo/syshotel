@@ -15,15 +15,15 @@ class PosSeeder extends Seeder
      */
     public function run()
     {
-        DB::insert([
+        DB::table('pos')->insert([
             'description' => 'Izipay',
         ]);
 
-        DB::insert([
+        DB::table('pos')->insert([
             'description' => 'Niubiz',
         ]);
 
-        DB::insert([
+        DB::table('pos')->insert([
             'description' => 'Culqi',
         ]);
     }

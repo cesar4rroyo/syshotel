@@ -15,32 +15,32 @@ class CardSeeder extends Seeder
      */
     public function run()
     {
-        DB::insert([
+        DB::table('cards')->insert([
             'description' => 'Visa',
             'type' => 'CREDITO'
         ]);
 
-        DB::insert([
+        DB::table('cards')->insert([
             'description' => 'MasterCard',
             'type' => 'CREDITO'
         ]);
 
-        DB::insert([
+        DB::table('cards')->insert([
             'description' => 'American Express',
             'type' => 'CREDITO'
         ]);
 
-        DB::insert([
+        DB::table('cards')->insert([
             'description' => 'Diners Club',
             'type' => 'CREDITO'
         ]);
 
-        DB::insert([
+        DB::table('cards')->insert([
             'description' => 'Visa',
             'type' => 'DEBITO'
         ]);
 
-        DB::insert([
+        DB::table('cards')->insert([
             'description' => 'MasterCard',
             'type' => 'DEBITO'
         ]);

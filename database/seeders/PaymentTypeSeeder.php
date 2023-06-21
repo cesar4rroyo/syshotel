@@ -15,23 +15,23 @@ class PaymentTypeSeeder extends Seeder
      */
     public function run()
     {
-        DB::insert([
+        DB::table('paymenttypes')->insert([
             'description' => 'Efectivo',
         ]);
 
-        DB::insert([
+        DB::table('paymenttypes')->insert([
             'description' => 'Tarjeta',
         ]);
 
-        DB::insert([
+        DB::table('paymenttypes')->insert([
             'description' => 'Billetera Digital',
         ]);
 
-        DB::insert([
+        DB::table('paymenttypes')->insert([
             'description' => 'Transferencia',
         ]);
 
-        DB::insert([
+        DB::table('paymenttypes')->insert([
             'description' => 'Depósito',
         ]);
     }

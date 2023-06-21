@@ -15,31 +15,31 @@ class DigitalWalletSeeder extends Seeder
      */
     public function run()
     {
-        DB::insert([
+        DB::table('digitalwallets')->insert([
             'description' => 'Yape',
         ]);
 
-        DB::insert([
+        DB::table('digitalwallets')->insert([
             'description' => 'Plin',
         ]);
 
-        DB::insert([
+        DB::table('digitalwallets')->insert([
             'description' => 'Tunki',
         ]);
 
-        DB::insert([
+        DB::table('digitalwallets')->insert([
             'description' => 'Lukita',
         ]);
 
-        DB::insert([
+        DB::table('digitalwallets')->insert([
             'description' => 'BIM',
         ]);
 
-        DB::insert([
+        DB::table('digitalwallets')->insert([
             'description' => 'Agora PAY',
         ]);
 
-        DB::insert([
+        DB::table('digitalwallets')->insert([
             'description' => 'BBVA Wallet',
         ]);
     }
