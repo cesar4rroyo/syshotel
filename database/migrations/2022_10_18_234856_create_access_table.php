@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('usertype_id')->references('id')->on('usertypes');
             $table->foreignId('menuoption_id')->references('id')->on('menu_options');
+            $table->foreignId('business_id')->references('id')->on('business');
             $table->timestamps();
         });
     }

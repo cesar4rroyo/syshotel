@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('room_types', function (Blueprint $table) {
+        Schema::create('pospayments', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->integer('capacity')->nullable();
-            $table->decimal('price', 10, 2)->nullable();
-            $table->decimal('price_hour', 10, 2)->nullable();
-            $table->foreignId('branch_id')->references('id')->on('branches');
-            $table->foreignId('business_id')->references('id')->on('business');
+            $table->foreignId('pos_id')->references('id')->on('pos');
+            $table->foreignId('paymenttype_id')->references('id')->on('paymenttypes');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('room_types');
+        Schema::dropIfExists('pospayments');
     }
 };

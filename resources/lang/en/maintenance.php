@@ -234,6 +234,10 @@ return [
         'billinglist' => [
             'title' => 'Lista de Comprobantes',
         ],
+        'bookinglist' => [
+            'title' => 'Lista de Reservas',
+            'status' => 'Estados',
+        ],
         'new' => 'Nuevo Movimiento',
         'open' => 'Aperturar Caja',
         'close' => 'Cerrar Caja',
