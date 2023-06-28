@@ -3,7 +3,6 @@
 namespace App\Http\Services\Billing;
 
 use App\Http\Contracts\Billing\BillingContract;
-use App\Models\Billing;
 
 class BillingFactory
 {

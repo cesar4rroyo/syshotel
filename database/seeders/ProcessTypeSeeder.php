@@ -35,5 +35,10 @@ class ProcessTypeSeeder extends Seeder
             'description' => 'Compra de Productos/Servicios',
             'abbreviation' => 'C',
         ]);
+        DB::table('processtypes')->insert([
+            'name' => 'MOVIMIENTO DE STOCK',
+            'description' => 'Movimiento de Stock',
+            'abbreviation' => 'MS',
+        ]);
     }
 }
