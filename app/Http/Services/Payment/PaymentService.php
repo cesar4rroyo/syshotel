@@ -8,7 +8,7 @@ class PaymentService
 {
     protected PaymentFactory $paymentFactory;
 
-    public function __construct(protected string $type)
+    public function __construct()
     {
         $this->paymentFactory = new PaymentFactory();
     }
@@ -19,7 +19,7 @@ class PaymentService
         $paymentsSaved = collect();
 
         foreach ($payments as $payment) {
-            $paymentSaved = $this->paymentFactory->create($this->type)->savePayment($payment);
+            $paymentSaved = $this->paymentFactory->create($payment['type'])->savePayment($payment);
             $paymentsSaved->push($paymentSaved);
         }
 

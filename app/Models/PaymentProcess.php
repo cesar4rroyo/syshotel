@@ -21,12 +21,14 @@ class PaymentProcess extends Model
         'image',
         'amount',
         'comment',
+        'concept_id',
         'card_id',
         'bank_id',
         'digitalwallet_id',
         'pos_id',
         'branch_id',
         'business_id',
+        'payment_id'
     ];
 
     protected $dates = [

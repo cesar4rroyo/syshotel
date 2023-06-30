@@ -16,16 +16,18 @@ return new class extends Migration
         Schema::create('paymentprocesses', function (Blueprint $table) {
             $table->id();
             $table->dateTime('date');
-            $table->string('number');
-            $table->string('description');
+            $table->string('number')->nullable();
+            $table->string('description')->nullable();
             $table->string('status')->default('A'); // A = Active, I = Inactive, D = Deleted
             $table->text('image')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->text('comment')->nullable();
-            $table->foreignId('card_id')->references('id')->on('cards')->onUpdate('cascade')->onDelete('cascade')->nullable();
-            $table->foreignId('bank_id')->references('id')->on('banks')->onUpdate('cascade')->onDelete('cascade')->nullable();
-            $table->foreignId('digitalwallet_id')->references('id')->on('digitalwallets')->onUpdate('cascade')->onDelete('cascade')->nullable();
-            $table->foreignId('pos_id')->references('id')->on('pos')->onUpdate('cascade')->onDelete('cascade')->nullable();
+            $table->foreignId('concept_id')->references('id')->on('concepts')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('payment_id')->references('id')->on('paymenttypes')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('card_id')->nullable()->references('id')->on('cards')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('bank_id')->nullable()->references('id')->on('banks')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('digitalwallet_id')->nullable()->references('id')->on('digitalwallets')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('pos_id')->nullable()->references('id')->on('pos')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('business_id')->references('id')->on('business')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();

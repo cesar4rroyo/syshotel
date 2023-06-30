@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SellRequest;
 use App\Http\Services\CashRegisterService;
 use App\Http\Services\SellService;
-use App\Models\Payments;
+use App\Models\PaymentType;
 use App\Models\People;
 use App\Models\Process;
 use App\Models\Product;
@@ -54,7 +54,7 @@ class SellProductController extends Controller
     {
         $products = Product::search(null, $this->branchId, $this->businessId)->get();
         $cartProducts = $this->sellService->getCarts();
-        $cboPaymentTypes = $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción');
+        $cboPaymentTypes = $this->generateCboGeneral(PaymentType::class, 'description', 'id', 'Seleccione una opción');
         $cboDocumentTypes = ['' => 'Seleccione una opción'] + $this->sellService->getDocumentTypes();
         $cboPeople =  ['' => 'Seleccione una opción'] + People::PeopleClient()->pluck('name', 'id')->all();
         $cboCompanies = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all();

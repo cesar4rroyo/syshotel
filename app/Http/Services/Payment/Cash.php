@@ -4,6 +4,7 @@ namespace App\Http\Services\Payment;
 
 use App\Http\Contracts\Payment\PaymentContract;
 use App\Models\PaymentProcess;
+use App\Models\PaymentType;
 
 class Cash implements PaymentContract
 {
@@ -19,6 +20,8 @@ class Cash implements PaymentContract
             'comment' => $data['comment'] ?? '',
             'branch_id' => $data['branch_id'],
             'business_id' => $data['business_id'],
+            'payment_id' => PaymentType::CASH_ID,
+            'concept_id' => $data['concept_id'],
         ]);
     }
 

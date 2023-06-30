@@ -18,4 +18,10 @@ class PaymentType extends Model
         'status',
         'image'
     ];
+
+    const CASH_ID = 1;
+    const CARD_ID = 2;
+    const DIGITALWALLET_ID = 3;
+    const TRANSFER_ID = 4;
+    const DEPOSIT_ID = 5;
 }

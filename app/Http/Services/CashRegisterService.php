@@ -2,7 +2,8 @@
 
 namespace App\Http\Services;
 
-use App\Models\Floor;
+use App\Http\Services\Payment\PaymentService;
+use App\Models\PaymentProcess;
 use App\Models\Process;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -15,11 +16,14 @@ class CashRegisterService
     protected int $branchId;
     protected int $cashboxId;
 
+    protected PaymentService $paymentService;
+
     public function __construct(int $businessId, int $branchId, int $cashboxId)
     {
         $this->businessId = $businessId;
         $this->branchId = $branchId;
         $this->cashboxId = $cashboxId;
+        $this->paymentService = new PaymentService();
     }
 
     public function getLastMovementsIncomes(): Collection
@@ -136,8 +140,22 @@ class CashRegisterService
             'user_id'           => auth()->user()->id,
             'amoutreal'         => $request->amountreal ?? null,
         ]);
+
         $process->save();
-        $process->payments()->attach(1, ['amount' => $request->amount]);
+
+        $this->paymentService->savePayments([
+            [
+                'type' => 'CASH',
+                'date' => date('Y-m-d H:i:s'),
+                'number' => $request->number,
+                'amount' => $request->amount,
+                'comment' => $request->notes,
+                'process_id' => $process->id,
+                'concept_id' => $request->concept_id,
+                'branch_id' => $this->branchId,
+                'business_id' => $this->businessId,
+            ]
+        ]);
     }
 
     public function getCashAmountTotal(): float
