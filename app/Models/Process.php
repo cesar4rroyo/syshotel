@@ -98,8 +98,7 @@ class Process extends Model
 
     public function payments()
     {
-        return $this->belongsToMany(Payments::class, 'paymentprocesses', 'process_id', 'payment_id')
-            ->withPivot('amount');
+        return $this->belongsToMany(PaymentType::class, 'paymentprocesses', 'process_id', 'payment_id');
     }
 
     public function billings()
@@ -214,16 +213,16 @@ class Process extends Model
     public function scopeTotalAmountCards(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
     {
         return DB::table('paymentprocesses')
-            ->join('payments', 'paymentprocesses.payment_id', '=', 'payments.id')
+            ->join('paymenttypes', 'paymentprocesses.payment_id', '=', 'paymenttypes.id')
             ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
             ->where('processes.branch_id', $branch_id)
             ->where('processes.id', '>=', $lastOpenId)
             ->where('processes.business_id', $business_id)
             ->where('processes.cashbox_id', $cashbox_id)
             ->where('processes.processtype_id', 2)
-            ->where('payments.type', $type)
+            ->where('paymenttypes.type', $type)
             ->when($subtype, function ($query, $subtype) {
-                return $query->where('payments.name', $subtype);
+                return $query->where('paymenttypes.name', $subtype);
             })
             ->sum('paymentprocesses.amount');
     }
@@ -231,7 +230,7 @@ class Process extends Model
     public function scopeTotalAmountCash(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
     {
         return DB::table('paymentprocesses')
-            ->join('payments', 'paymentprocesses.payment_id', '=', 'payments.id')
+            ->join('paymenttypes', 'paymentprocesses.payment_id', '=', 'paymenttypes.id')
             ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
             ->join('concepts', 'processes.concept_id', '=', 'concepts.id')
             ->where('processes.branch_id', $branch_id)
@@ -240,9 +239,9 @@ class Process extends Model
             ->where('processes.cashbox_id', $cashbox_id)
             ->where('processes.processtype_id', 2)
             ->where('concepts.type', 'I')
-            ->where('payments.type', $type)
+            ->where('paymenttypes.type', $type)
             ->when($subtype, function ($query, $subtype) {
-                return $query->where('payments.name', $subtype);
+                return $query->where('paymenttypes.name', $subtype);
             })
             ->sum('paymentprocesses.amount');
     }
@@ -250,16 +249,16 @@ class Process extends Model
     public function scopeTotalAmountDeposits(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
     {
         return DB::table('paymentprocesses')
-            ->join('payments', 'paymentprocesses.payment_id', '=', 'payments.id')
+            ->join('paymenttypes', 'paymentprocesses.payment_id', '=', 'paymenttypes.id')
             ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
             ->where('processes.branch_id', $branch_id)
             ->where('processes.id', '>=', $lastOpenId)
             ->where('processes.business_id', $business_id)
             ->where('processes.cashbox_id', $cashbox_id)
             ->where('processes.processtype_id', 2)
-            ->where('payments.type', $type)
+            ->where('paymenttypes.type', $type)
             ->when($subtype, function ($query, $subtype) {
-                return $query->where('payments.name', $subtype);
+                return $query->where('paymenttypes.name', $subtype);
             })
             ->sum('paymentprocesses.amount');
     }

@@ -25,12 +25,35 @@
                 @endforeach
             </select>
         </div>
-        <div style="display: none" id="paymentDiv" class="flex flex-col space-y-1 w-full">
-            <label id="labelType" class="font-medium text-sm text-gray-600" for="amounts_"></label>
-            <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="amounts_" id="amounts_">
-        </div>
     </div>
-    <div id="divOtherPayments" class="grid grid-cols-4 gap-1 mt-3">
+    <div style="display: none" class="flex space-x-6 mt-3" id="divPaymentsTable">
+        <table id="tablePayments" class="w-full text-base font-medium text-left text-gray-500">
+            <thead class="text-base font-medium text-gray-900">
+                <tr>
+                    <th scope="col" class="py-3 px-4 border-b border-gray-300">F. Pago</th>
+                    <th scope="col" class="py-3 px-4 border-b border-gray-300"> Monto</th>
+                    <th scope="col" class="py-3 px-4 border-b border-gray-300">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="border-b border-gray-300">
+                <tr>
+                    <td class="py-3 px-4">
+                        <input type="number" name="payment_type[]" id="payment_type[]" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" readonly value="1">
+                    </td>
+                    <td class="py-3 px-4">
+                        <input type="number" name="payment_amount[]" id="payment_amount[]" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" readonly>
+                    </td>
+                    <td class="py-3 px-4">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="editRow(this)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div class="flex space-x-6 mt-3">
         <div class="flex flex-col space-y-1 w-full">
@@ -146,7 +169,8 @@
         var divDocumentNumber = document.getElementById('divDocumentNumber');
         var selectClient = document.getElementById('clientBilling');
 
-        axios.get('{{ route($routes['documentType']) }}' + '?type=' + documentType)
+        if(documentType != ''){
+            axios.get('{{ route($routes['documentType']) }}' + '?type=' + documentType)
             .then(function (response) {
                 document.getElementById('documentNumber').value = response.data.documentNumber;
                 divDocumentNumber.style.display = 'initial';
@@ -163,6 +187,9 @@
                 console.log(error);
                 divDocumentNumber.style.display = 'none';
             });
+        }else{
+            divDocumentNumber.style.display = 'none';
+        }
     }
 
     function handleChangeAmounts(e){
@@ -190,45 +217,8 @@
 
     function handleChangePayments()
     {
-        var container = document.getElementById('divOtherPayments');
-        var payment_type = document.getElementById('payment_type').value;
-        handleChangeTotalAmount();
-        if(payment_type != 5) {
-            container.innerHTML = '';
-            document.getElementById('paymentDiv').style.display = 'inherit';
-            document.getElementById('divOtherPayments').style.display = 'none';
-            document.getElementById('labelType').innerHTML = document.getElementById('payment_type').options[document.getElementById('payment_type').selectedIndex].text;
-        } else if (payment_type == 5){
-            document.getElementById('paymentDiv').style.display = 'none';
-            document.getElementById('divOtherPayments').style.display = 'grid';
-            var options = document.getElementById('payment_type').options;
-            var count = 0;
-            for (var i = 0; i < options.length; i++) {
-                if (options[i].value != 5 && options[i].value != 0) {
-                    count++;
-                }
-            }
-            container.innerHTML = '';
-            for (var i = 0; i < count; i++) {
-                var div = document.createElement('div');
-                div.className = 'flex flex-col space-y-1 w-full';
-                var label = document.createElement('label');
-                label.className = 'font-medium text-sm text-gray-600';
-                label.innerHTML = 'Monto ' + options[i+1].text;
-                var input = document.createElement('input');
-                input.className = 'border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 input-amounts';
-                input.type = 'number';
-                input.name = 'amounts_' + options[i+1].value;
-                input.id = 'amounts_'+ options[i+1].text;
-                input.onchange = function(e){
-                    handleChangeAmounts(e);
-                }
-                div.appendChild(label);
-                div.appendChild(input);
-                container.appendChild(div);
-            }
-        }else{
-            return false;
-        }
+        var payment = document.getElementById('payment_type').value;
+        var paymentText = document.getElementById('payment_type').options[payment].text;
+        console.log(paymentText);
     }
 </script>

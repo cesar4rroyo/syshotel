@@ -123,9 +123,12 @@ class CashRegisterController extends Controller
             $resumeData = [
                 'incomes' => $this->cashRegisterService->getTotalIncomes(),
                 'expenses' => $this->cashRegisterService->getTotalExpenses(),
-                'cash' => $this->cashRegisterService->getCashAmountTotal() -  $this->cashRegisterService->getTotalExpenses(),
-                'cards' => $this->cashRegisterService->getTotalCards(),
-                'deposits' => $this->cashRegisterService->getTotalDeposits(),
+                // 'cash' => $this->cashRegisterService->getCashAmountTotal() -  $this->cashRegisterService->getTotalExpenses(),
+                'cash' => 0,
+                // 'cards' => $this->cashRegisterService->getTotalCards(),
+                'cards' => 0,
+                // 'deposits' => $this->cashRegisterService->getTotalDeposits(),
+                'deposits' => 0,
             ];
             if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
@@ -191,7 +194,7 @@ class CashRegisterController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboConcepts'       => $this->generateCboGeneral(Concept::class, 'name', 'id', 'Seleccione una opción'),
+                'cboConcepts'       => Concept::whereNotIn('id', [Concept::OPEN_CASH_REGISTER_ID, Concept::CLOSE_CASH_REGISTER_ID])->pluck('name', 'id')->toArray(),
                 'cboClients'        => $this->generateCboGeneral(People::class, 'name', 'id', 'Seleccione una opción'),
                 'number'            => $this->cashRegisterService->getCashRegisterNumber(),
                 'today'             => date('Y-m-d'),
@@ -300,7 +303,8 @@ class CashRegisterController extends Controller
                 'action'        => $action,
                 'number'        => $this->cashRegisterService->getCashRegisterNumber(),
                 'today'         => date('Y-m-d'),
-                'amountreal'    => $this->cashRegisterService->getCashAmountTotal(),
+                // 'amountreal'    => $this->cashRegisterService->getCashAmountTotal(),
+                'amountreal'    => '0.00'
             ];
             if ($action == 'OPEN') {
                 return view('control.cashregister.open')->with(compact('formData'));

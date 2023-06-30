@@ -12,6 +12,7 @@
 			<td class="py-3 px-4">{{ $value->name }}</td>
             <td class="py-3 px-4">{{ $value->capacity }}</td>
             <td class="py-3 px-4">{{ $value->price}}</td>
+            <td class="py-3 px-4">{{ $value->price_hour}}</td>
             <td class="py-3 px-4">{{ $value->branch->name }}</td>
             <td class="py-3 px-4">{{ $value->business->name }}</td>
 			<td class="py-3 px-4">

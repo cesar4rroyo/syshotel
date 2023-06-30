@@ -19,6 +19,7 @@ class RoomTyperSeeder extends Seeder
             'name' => 'Room Type 1',
             'capacity' => 4,
             'price' => 100.00,
+            'price_hour' => 10.00,
             'branch_id' => 1,
             'business_id' => 1,
         ]);
@@ -27,6 +28,7 @@ class RoomTyperSeeder extends Seeder
             'name' => 'Room Type 2',
             'capacity' => 2,
             'price' => 50.00,
+            'price_hour' => 5.00,
             'branch_id' => 1,
             'business_id' => 1,
         ]);
@@ -35,6 +37,7 @@ class RoomTyperSeeder extends Seeder
             'name' => 'Room Type 3',
             'capacity' => 4,
             'price' => 90.00,
+            'price_hour' => 12.00,
             'branch_id' => 1,
             'business_id' => 1,
         ]);

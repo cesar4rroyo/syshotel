@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('capacity')->nullable();
             $table->decimal('price', 10, 2)->nullable();
+            $table->decimal('price_hour', 10, 2)->nullable();
             $table->foreignId('branch_id')->references('id')->on('branches');
             $table->foreignId('business_id')->references('id')->on('business');
             $table->timestamps();

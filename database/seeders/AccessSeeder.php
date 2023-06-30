@@ -20,6 +20,7 @@ class AccessSeeder extends Seeder
             DB::table('access')->insert([
                 'usertype_id' => 1,
                 'menuoption_id' => $i,
+                'business_id' => 1,
             ]);
         }
     }

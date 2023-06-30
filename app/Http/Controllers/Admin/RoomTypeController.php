@@ -51,6 +51,10 @@ class RoomTypeController extends Controller
                 'numero' => '1',
             ],
             [
+                'valor'  => 'Precio por hora',
+                'numero' => '1',
+            ],
+            [
                 'valor'  => 'Sucursal',
                 'numero' => '1',
             ],
@@ -152,6 +156,7 @@ class RoomTypeController extends Controller
                     'name'          => $request->input('name'),
                     'capacity'      => $request->input('capacity'),
                     'price'         => $request->input('price'),
+                    'price_hour'    => $request->input('price_hour'),
                     'branch_id'     => $request->input('branch_id'),
                     'business_id'   => auth()->user()->business_id,
                 ]);
@@ -200,6 +205,7 @@ class RoomTypeController extends Controller
                     'name'          => $this->getParam($request->input('name')),
                     'capacity'      => $request->input('capacity'),
                     'price'         => $request->input('price'),
+                    'price_hour'    => $request->input('price_hour'),
                     'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
                 ]);

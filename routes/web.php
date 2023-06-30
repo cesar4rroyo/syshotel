@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Admin\UserTypeController;
 use App\Http\Controllers\Control\BillingListController;
 use App\Http\Controllers\Control\BookingController;
+use App\Http\Controllers\Control\BookingListController;
 use App\Http\Controllers\Control\CashRegisterController;
 use App\Http\Controllers\Control\ManagementController;
 use App\Http\Controllers\Control\SellProductController;
@@ -168,4 +169,10 @@ Route::middleware([
     Route::get('bookings', [BookingController::class, 'view'])->name('bookings.view');
     Route::get('booking/rooms', [BookingController::class, 'rooms'])->name('booking.rooms');
     Route::resource('booking', BookingController::class)->except(['show']);
+
+    /* Booking list Routes */
+    Route::post('bookinglist/search', [BookingListController::class, 'search'])->name('bookinglist.search');
+    Route::get('bookinglist/print', [BookingListController::class, 'print'])->name('bookinglist.print');
+    Route::get('bookinglist/checkin', [BookingListController::class, 'checkin'])->name('bookinglist.checkin');
+    Route::resource('bookinglist', BookingListController::class)->except(['show', 'delete', 'create', 'edit', 'update', 'store']);
 });

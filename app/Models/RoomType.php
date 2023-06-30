@@ -20,6 +20,7 @@ class RoomType extends Model
         'price',
         'branch_id',
         'business_id',
+        'price_hour'
     ];
 
     public function scopesearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null)

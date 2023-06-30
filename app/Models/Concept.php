@@ -14,6 +14,9 @@ class Concept extends Model
     protected $table = 'concepts';
     protected $primaryKey = 'id';
 
+    const OPEN_CASH_REGISTER_ID = 1;
+    const CLOSE_CASH_REGISTER_ID = 2;
+
     protected $fillable = [
         'name',
         'type',

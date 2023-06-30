@@ -24,6 +24,7 @@ class SellService
     protected Process $process;
     protected Billing $billing;
     protected ManagementService $managementService;
+    protected StockProductService $stockProductService;
 
     public function __construct(int $businessId, int $branchId, string $type)
     {
@@ -35,6 +36,7 @@ class SellService
         $this->process = new Process();
         $this->billing = new Billing();
         $this->managementService = new ManagementService($businessId, $branchId);
+        $this->stockProductService = new StockProductService($businessId, $branchId);
     }
 
     public function getCarts(): Collection
@@ -174,6 +176,9 @@ class SellService
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+            if ($type == 'product') {
+                $this->stockProductService->decreaseStock($this->branchId, $product['product_id'], $product['quantity']);
+            }
         }
     }
 

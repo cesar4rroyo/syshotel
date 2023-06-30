@@ -122,6 +122,7 @@ return [
             'price'    => 'Precio',
             'branch'   => 'Sucursal',
             'business' => 'Empresa',
+            'price_hour' => 'Precio por Hora',
         ],
         'category' => [
             'title'    => 'Categorías',
@@ -233,6 +234,10 @@ return [
         ],
         'billinglist' => [
             'title' => 'Lista de Comprobantes',
+        ],
+        'bookinglist' => [
+            'title' => 'Lista de Reservas',
+            'status' => 'Estados',
         ],
         'new' => 'Nuevo Movimiento',
         'open' => 'Aperturar Caja',

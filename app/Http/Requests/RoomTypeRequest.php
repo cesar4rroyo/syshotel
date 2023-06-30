@@ -29,6 +29,7 @@ class RoomTypeRequest extends FormRequest
             'name' => 'required|string|max:255',
             'capacity' => 'required|numeric',
             'price' => 'required|numeric',
+            'price_hour' => 'required|numeric',
             'branch_id' => 'required',
         ];
     }
@@ -42,6 +43,8 @@ class RoomTypeRequest extends FormRequest
             'price.required' => 'El campo precio es obligatorio',
             'price.numeric' => 'El campo precio debe ser un número',
             'branch_id.required' => 'El campo sucursal es obligatorio',
+            'price_hour.required' => 'El campo precio por hora es obligatorio',
+            'price_hour.numeric' => 'El campo precio por hora debe ser un número',
         ];
     }
 
@@ -51,6 +54,7 @@ class RoomTypeRequest extends FormRequest
             'name' => 'trim|escape|uppercase',
             'capacity' => 'trim|escape|uppercase',
             'price' => 'trim|escape|uppercase',
+            'price_hour' => 'trim|escape|uppercase',
             'branch_id' => 'trim|escape|uppercase',
         ];
     }

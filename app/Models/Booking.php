@@ -35,10 +35,42 @@ class Booking extends Model
     const CANCELLED_STATUS = 'C';
     const PENDING_STATUS = 'P';
 
+
+
+    public function getColorStatusAttribute($status)
+    {
+        switch ($status) {
+            case self::USED_STATUS:
+                return 'blue';
+                break;
+            case self::CANCELLED_STATUS:
+                return 'red';
+                break;
+            case self::PENDING_STATUS:
+                return 'green';
+                break;
+            default:
+                return 'black';
+                break;
+        }
+    }
+
     public function getStatusAttribute($status)
     {
-        $values = config('constants.bookingStatus');
-        return $values[$status];
+        switch ($status) {
+            case self::USED_STATUS:
+                return 'Usado';
+                break;
+            case self::CANCELLED_STATUS:
+                return 'Cancelado';
+                break;
+            case self::PENDING_STATUS:
+                return 'Pendiente';
+                break;
+            default:
+                return 'Pendiente';
+                break;
+        }
     }
 
     public function client()
