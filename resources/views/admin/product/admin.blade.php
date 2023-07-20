@@ -8,6 +8,16 @@
         <div class="flex flex-col space-y-1">
             @include('utils.rangeinput', ['cboRangeFilas' => $cboRangeFilas, 'entidad' => $entidad])
         </div>
+        @if (!empty($cboBranch))
+        <div class="flex flex-col space-y-1">
+            <label for="branch_id" class="font-medium text-sm text-gray-600">{{trans('maintenance.admin.product.branch')}}</label>
+            <select name="branch_id" id="branch_id" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full p-2.5" onchange="buscar('{{ $entidad }}');">
+                @foreach ($cboBranch as $key => $value)
+                    <option value="{{ $key }}">{{ $value }}</option>
+                @endforeach
+            </select>
+        </div>
+        @endif
     </div>
     <input type="hidden" name="page" id="page" value="1">
     <input type="hidden" name="accion" id="accion" value="listar">

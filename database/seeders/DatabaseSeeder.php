@@ -42,6 +42,7 @@ class DatabaseSeeder extends Seeder
                 'paymenttypes',
                 'pos',
                 'digitalwallets',
+                'stockproducts',
                 // 'processes',
             ]);
             $this->call([
@@ -70,6 +71,7 @@ class DatabaseSeeder extends Seeder
                 PaymentTypeSeeder::class,
                 PosSeeder::class,
                 DigitalWalletSeeder::class,
+                StockProductSeeder::class,
                 // ProcessSeeder::class,
             ]);
         } catch (\Throwable $th) {

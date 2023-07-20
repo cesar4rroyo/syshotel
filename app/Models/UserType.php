@@ -17,6 +17,12 @@ class UserType extends Model
         'name',
     ];
 
+    const ADMIN_ROOT_USER_TYPE = 1;
+    const ADMIN_BUSINESS_USER_TYPE = 2;
+    const ADMIN_BRANCH_USER_TYPE = 3;
+
+    const CASH_BOX_USER_TYPE = 4;
+
     public function user()
     {
         return $this->hasMany(User::class, 'usertype_id');

@@ -31,7 +31,7 @@ class ProductRequest extends FormRequest
             'purchase_price' => 'required|numeric',
             'category_id' => 'required',
             'unit_id' => 'required',
-            'branch_id' => 'required',
+            // 'branch_id' => 'required',
         ];
     }
 
@@ -45,7 +45,7 @@ class ProductRequest extends FormRequest
             'purchase_price.numeric' => 'El campo precio de compra debe ser un número',
             'category_id.required' => 'El campo categoria es obligatorio',
             'unit_id.required' => 'El campo unidad es obligatorio',
-            'branch_id.required' => 'El campo sucursal es obligatorio',
+            // 'branch_id.required' => 'El campo sucursal es obligatorio',
         ];
     }
 
@@ -57,7 +57,7 @@ class ProductRequest extends FormRequest
             'purchase_price' => 'trim|escape|uppercase',
             'category_id' => 'trim|escape|uppercase',
             'unit_id' => 'trim|escape|uppercase',
-            'branch_id' => 'trim|escape|uppercase',
+            // 'branch_id' => 'trim|escape|uppercase',
         ];
     }
 }

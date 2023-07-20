@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,5 +39,16 @@ class StockProduct extends Model
     public function business()
     {
         return $this->belongsTo(Business::class, 'business_id');
+    }
+
+    public function scopesearch(Builder $query, string $param = null, int $branchId = null, int $businessId = null)
+    {
+        return $query->whereHas('product', function ($query) use ($param) {
+            $query->where('name', 'like', "%$param%");
+        })->when($branchId, function ($query, $branchId) {
+            return $query->where('branch_id', $branchId);
+        })->when($businessId, function ($query, $businessId) {
+            return $query->where('business_id', $businessId);
+        })->orderBy('id', 'asc');
     }
 }

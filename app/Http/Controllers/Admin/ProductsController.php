@@ -8,7 +8,9 @@ use App\Librerias\Libreria;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\StockProduct;
 use App\Models\Unit;
+use App\Models\UserType;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +18,10 @@ use Illuminate\Support\Facades\DB;
 class ProductsController extends Controller
 {
     use CRUDTrait;
+
+    protected bool $isAdmin = false;
+    protected int $businessId = 0;
+    protected int $branchId = 0;
 
     public function __construct()
     {
@@ -45,6 +51,10 @@ class ProductsController extends Controller
                 'numero' => '1',
             ],
             [
+                'valor'  => 'Stock',
+                'numero' => '1',
+            ],
+            [
                 'valor'  => 'Precio de venta',
                 'numero' => '1',
             ],
@@ -65,14 +75,17 @@ class ProductsController extends Controller
                 'numero' => '1',
             ],
             [
-                'valor'  => 'Empresa',
-                'numero' => '1',
-            ],
-            [
                 'valor'  => 'Acciones',
                 'numero' => '1',
             ],
         ];
+
+        $this->middleware(function ($request, $next) {
+            $this->isAdmin = in_array(auth()->user()->usertype_id, [UserType::ADMIN_ROOT_USER_TYPE, UserType::ADMIN_BUSINESS_USER_TYPE]);
+            $this->businessId = auth()->user()->business_id;
+            $this->branchId = auth()->user()->business->branches->first()->id;
+            return $next($request);
+        });
     }
 
     public function search(Request $request)
@@ -84,10 +97,10 @@ class ProductsController extends Controller
             $nombre   = $this->getParam($request->nombre);
             $businessId = auth()->user()->business_id;
             $branchId = $this->getParam($request->branch_id);
-            if ($branchId == null && auth()->user()->usertype_id != 1) {
-                $branchId = auth()->user()->branch_id;
+            if ($branchId == null && !$this->isAdmin) {
+                $branchId = auth()->user()->business->branches->first()->id;
             }
-            $result   = $this->model::search($nombre, $branchId, $businessId);
+            $result = StockProduct::search($nombre, $branchId, $businessId);
             $list     = $result->get();
 
             if (count($list) > 0) {
@@ -124,6 +137,7 @@ class ProductsController extends Controller
                 'titulo_registrar'  => $this->addTitle,
                 'ruta'              => $this->routes,
                 'cboRangeFilas'     => $this->cboRangeFilas(),
+                'cboBranch'         => $this->isAdmin ? Branch::where('business_id', auth()->user()->business_id)->get()->pluck('name', 'id') : [],
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
@@ -132,9 +146,6 @@ class ProductsController extends Controller
 
     public function create(Request $request)
     {
-
-        $businessId = auth()->user()->business_id;
-
         try {
             $formData = [
                 'route'             => $this->routes['store'],
@@ -145,13 +156,13 @@ class ProductsController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboBranch'         => Branch::where('business_id', $businessId)->get()->pluck('name', 'id'),
-                'cboCategory'       => Category::where('business_id', $businessId)->get()->pluck('name', 'id'),
-                'cboUnit'           => Unit::where('business_id', $businessId)->get()->pluck('name', 'id'),
+                'cboBranch'         => Branch::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
+                'cboCategory'       => Category::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
+                'cboUnit'           => Unit::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
             ];
             return view($this->folderview . '.create')->with(compact('formData'));
         } catch (\Throwable $th) {
-            return $this->MessageResponse($th->getMessage(), 'danger', $th);
+            return $this->MessageResponse($th->getMessage(), 'danger');
         }
     }
 
@@ -162,13 +173,24 @@ class ProductsController extends Controller
             $error = DB::transaction(function () use ($request) {
                 $model = $this->model->create([
                     'name'          => $this->getParam($request->input('name')),
-                    'sale_price'    => $this->getParam($request->input('sale_price')),
-                    'purchase_price' => $this->getParam($request->input('purchase_price')),
                     'unit_id'       => $this->getParam($request->input('unit_id')),
                     'category_id'   => $this->getParam($request->input('category_id')),
-                    'branch_id'     => $this->getParam($request->input('branch_id')),
                     'business_id'   => auth()->user()->business_id,
                 ]);
+                $branches = Branch::where('business_id', $this->businessId)->get();
+                foreach ($branches as $branch) {
+                    StockProduct::create([
+                        'product_id' => $model->id,
+                        'branch_id' => $branch->id,
+                        'business_id' => $this->businessId,
+                        'quantity' => 0,
+                        'min_quantity' => 0,
+                        'max_quantity' => 0,
+                        'alert_quantity' => 0,
+                        'purchase_price' => $this->getParam($request->input('purchase_price')),
+                        'sale_price' => $this->getParam($request->input('sale_price')),
+                    ]);
+                }
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
@@ -185,21 +207,19 @@ class ProductsController extends Controller
                 return $exist;
             }
 
-            $businessId = auth()->user()->business_id;
-
             $formData = [
                 'route'             => array($this->routes['update'], $id),
                 'method'            => 'PUT',
                 'class'             => 'form-horizontal',
                 'id'                => $this->idForm,
                 'autocomplete'      => 'off',
-                'model'             => $this->model->find($id),
+                'model'             => StockProduct::find($id),
                 'listar'            => $this->getParam($request->input('listar'), 'NO'),
                 'boton'             => 'Modificar',
                 'entidad'           => $this->entity,
-                'cboBranch'         => Branch::where('business_id', $businessId)->get()->pluck('name', 'id'),
-                'cboCategory'       => Category::where('business_id', $businessId)->get()->pluck('name', 'id'),
-                'cboUnit'           => Unit::where('business_id', $businessId)->get()->pluck('name', 'id'),
+                'cboBranch'         => Branch::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
+                'cboCategory'       => Category::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
+                'cboUnit'           => Unit::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
             ];
 
             return view($this->folderview . '.create')->with(compact('formData'));
@@ -212,14 +232,15 @@ class ProductsController extends Controller
     {
         try {
             $error = DB::transaction(function () use ($request, $id) {
-                $this->model->find($id)->update([
+                $productId = StockProduct::find($id)->product_id;
+                $this->model->find($productId)->update([
                     'name'          => $this->getParam($request->input('name')),
-                    'sale_price'    => $this->getParam($request->input('sale_price')),
-                    'purchase_price' => $this->getParam($request->input('purchase_price')),
                     'unit_id'       => $this->getParam($request->input('unit_id')),
                     'category_id'   => $this->getParam($request->input('category_id')),
-                    'branch_id'     => $this->getParam($request->input('branch_id')),
-                    'business_id'   => auth()->user()->business_id,
+                ]);
+                StockProduct::find($id)->update([
+                    'purchase_price' => $this->getParam($request->input('purchase_price')),
+                    'sale_price'    => $this->getParam($request->input('sale_price')),
                 ]);
             });
             return is_null($error) ? "OK" : $error;
@@ -261,6 +282,7 @@ class ProductsController extends Controller
         try {
             $error = DB::transaction(function () use ($id) {
                 $this->model->find($id)->delete();
+                StockProduct::where('product_id', $id)->where('branch_id', $this->branchId)->delete();
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {

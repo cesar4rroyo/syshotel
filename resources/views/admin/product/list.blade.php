@@ -9,13 +9,13 @@
 		?>
 		@foreach ($lista as $key => $value)
         <tr>
-			<td class="py-3 px-4">{{ $value->name }}</td>
-            <td class="py-3 px-4">{{ $value->sale_price }}</td>
-            <td class="py-3 px-4">{{ $value->purchase_price }}</td>
-            <td class="py-3 px-4">{{ $value->unit->name }}</td>
-            <td class="py-3 px-4">{{ $value->category->name }}</td>
+			<td class="py-3 px-4">{{ $value->product->name }}</td>
+            <td class="py-3 px-4 text-bold">{{ $value->quantity}}</td>
+            <td class="py-3 px-4">{{ 'S/. ' . $value->sale_price }}</td>
+            <td class="py-3 px-4">{{ 'S/. ' . $value->purchase_price }}</td>
+            <td class="py-3 px-4">{{ $value->product->unit->name }}</td>
+            <td class="py-3 px-4">{{ $value->product->category->name }}</td>
             <td class="py-3 px-4">{{ $value->branch->name }}</td>
-            <td class="py-3 px-4">{{ $value->business->name }}</td>
 			<td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
