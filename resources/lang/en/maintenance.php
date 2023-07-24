@@ -139,6 +139,8 @@ return [
             'category' => 'Categoría',
             'branch'   => 'Sucursal',
             'business' => 'Empresa',
+            'add'     => 'Agregar Stocks',
+            'move'    => 'Mover Stock',
         ],
         'service' => [
             'title'    => 'Servicios',

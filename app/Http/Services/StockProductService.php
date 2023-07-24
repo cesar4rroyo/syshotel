@@ -2,6 +2,9 @@
 
 namespace App\Http\Services;
 
+use App\Models\Product;
+use App\Models\StockMovement;
+use App\Models\StockMovementDetail;
 use App\Models\StockProduct;
 use Illuminate\Support\Collection;
 
@@ -44,6 +47,14 @@ class StockProductService
         return $this->getStocks($branchId);
     }
 
+    public function moveStockBetweenBranches(int $productId, int $originbranch, int $finalbranch, int $quantity): Collection
+    {
+        $this->decreaseStock($originbranch, $productId, $quantity);
+        $this->increaseStock($finalbranch, $productId, $quantity);
+
+        return $this->getStocks($originbranch, $productId);
+    }
+
     public function increaseStock(int $branchId, int $productId, int $quantity): Collection
     {
         $stock = $this->stock->where('business_id', $this->businessId)
@@ -59,7 +70,9 @@ class StockProductService
                 'business_id' => $this->businessId,
                 'branch_id' => $branchId,
                 'product_id' => $productId,
-                'quantity' => $quantity
+                'quantity' => $quantity,
+                'purchase_price' => StockProduct::where('product_id', $productId)->first()->purchase_price,
+                'sale_price' => StockProduct::where('product_id', $productId)->first()->sale_price,
             ]);
         }
 
@@ -86,5 +99,30 @@ class StockProductService
         }
 
         return $this->getStocks($branchId, $productId);
+    }
+
+    public function createStockMovement(string $description, int $userId, string $type): int
+    {
+        $movement = StockMovement::create([
+            'business_id' => $this->businessId,
+            'date' => now(),
+            'description' => $description,
+            'type' => $type,
+            'user_id' => $userId
+        ]);
+
+        return $movement->id;
+    }
+
+    public function createStockMovementDetails(int $movementId, int $productId, int $quantity, int $initialbranch = null, int $finalbranch = null)
+    {
+        return StockMovementDetail::create([
+            'stockmovement_id' => $movementId,
+            'product_id' => $productId,
+            'initialbranch_id' => $initialbranch,
+            'finalbranch_id' => $finalbranch,
+            'quantity' => $quantity,
+            'business_id' => $this->businessId
+        ]);
     }
 }

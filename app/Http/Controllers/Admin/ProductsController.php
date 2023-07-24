@@ -3,17 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MoveStockRequest;
 use App\Http\Requests\ProductRequest;
+use App\Http\Services\StockProductService;
 use App\Librerias\Libreria;
 use App\Models\Branch;
 use App\Models\Category;
+use App\Models\Process;
 use App\Models\Product;
+use App\Models\StockMovementDetail;
 use App\Models\StockProduct;
 use App\Models\Unit;
 use App\Models\UserType;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Nette\Utils\Json;
 
 class ProductsController extends Controller
 {
@@ -22,6 +27,7 @@ class ProductsController extends Controller
     protected bool $isAdmin = false;
     protected int $businessId = 0;
     protected int $branchId = 0;
+    protected StockProductService $stockProductService;
 
     public function __construct()
     {
@@ -41,7 +47,10 @@ class ProductsController extends Controller
             'create'  => 'product.create',
             'edit'    => 'product.edit',
             'update'  => 'product.update',
-            'destroy' => 'product.destroy',
+            'destroy' => 'stockproduct.destroy',
+            'find'    => 'product.find',
+            'addStock' => 'product.addstock',
+            'moveStock' => 'product.movestock',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
         $this->clsLibreria = new Libreria();
@@ -84,6 +93,7 @@ class ProductsController extends Controller
             $this->isAdmin = in_array(auth()->user()->usertype_id, [UserType::ADMIN_ROOT_USER_TYPE, UserType::ADMIN_BUSINESS_USER_TYPE]);
             $this->businessId = auth()->user()->business_id;
             $this->branchId = auth()->user()->business->branches->first()->id;
+            $this->stockProductService = new StockProductService($this->businessId, $this->branchId);
             return $next($request);
         });
     }
@@ -138,17 +148,61 @@ class ProductsController extends Controller
                 'ruta'              => $this->routes,
                 'cboRangeFilas'     => $this->cboRangeFilas(),
                 'cboBranch'         => $this->isAdmin ? Branch::where('business_id', auth()->user()->business_id)->get()->pluck('name', 'id') : [],
+                'isAdmin'           => $this->isAdmin,
             ]);
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
     }
 
+
+    public function find(Request $request)
+    {
+        $param = $request->input('param');
+        try {
+            $products = Product::where('name', 'like', "%$param%")
+                ->where('business_id', $this->businessId)
+                ->when($request->branchId, function ($query, $branchId) {
+                    return $query->whereHas('stocks', function ($query) use ($branchId) {
+                        $query->where('branch_id', $branchId)->where('quantity', '>', 0);
+                    });
+                })
+                ->get()->each(function ($item, $key) use ($request) {
+                    $item->name = $item->name . ' - ' . $item->category->name;
+                    if ($request->branchId) {
+                        $item->stock = $item->stocks->where('branch_id', $request->branchId)->first()->quantity;
+                    }
+                });
+            return response()->json(['success' => true, 'data' => $products]);
+        } catch (\Throwable $th) {
+            $data = [];
+            return response()->json(['success' => false, 'data' => $data, 'message' => 'No se encontraron productos']);
+        }
+    }
+
     public function create(Request $request)
     {
+        $type = $request->input('type') ?? 'create';
         try {
+
+            switch ($type) {
+                case 'addStock':
+                    $view = '.addStock';
+                    $route = $this->routes['addStock'];
+                    break;
+                case 'moveStock':
+                    $view = '.moveStock';
+                    $route = $this->routes['moveStock'];
+                    break;
+                default:
+                    $view = '.create';
+                    $route = $this->routes['store'];
+                    break;
+            }
+
             $formData = [
-                'route'             => $this->routes['store'],
+                'route'             => $route,
+                'find'              => $this->routes['find'],
                 'method'            => 'POST',
                 'class'             => 'flex flex-col space-y-3 py-2',
                 'id'                => $this->idForm,
@@ -160,7 +214,7 @@ class ProductsController extends Controller
                 'cboCategory'       => Category::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
                 'cboUnit'           => Unit::where('business_id', $this->businessId)->get()->pluck('name', 'id'),
             ];
-            return view($this->folderview . '.create')->with(compact('formData'));
+            return view($this->folderview . $view)->with(compact('formData'));
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
         }
@@ -202,7 +256,7 @@ class ProductsController extends Controller
     {
         try {
 
-            $exist = $this->verificarExistencia($id, $this->entity);
+            $exist = $this->verificarExistencia($id, 'stockproducts');
             if ($exist !== true) {
                 return $exist;
             }
@@ -252,7 +306,7 @@ class ProductsController extends Controller
     public function delete($id, $listagain)
     {
         try {
-            $exist = $this->verificarExistencia($id, $this->entity);
+            $exist = $this->verificarExistencia($id, 'stockproducts');
             if ($exist !== true) {
                 return $exist;
             }
@@ -261,7 +315,7 @@ class ProductsController extends Controller
                 $listar = $listagain;
             }
             $formData = [
-                'route'         => array($this->routes['destroy'], $this->model->find($id)),
+                'route'         => array($this->routes['destroy'], StockProduct::find($id)),
                 'method'        => 'DELETE',
                 'class'         => 'form-horizontal',
                 'id'            => $this->idForm,
@@ -269,7 +323,7 @@ class ProductsController extends Controller
                 'boton'         => 'Eliminar',
                 'entidad'       => $this->entity,
                 'listar'        => $listar,
-                'modelo'        => $this->model->find($id),
+                'modelo'        => StockProduct::find($id),
             ];
             return view('utils.comfirndelete')->with(compact('formData'));
         } catch (\Throwable $th) {
@@ -281,8 +335,48 @@ class ProductsController extends Controller
     {
         try {
             $error = DB::transaction(function () use ($id) {
-                $this->model->find($id)->delete();
-                StockProduct::where('product_id', $id)->where('branch_id', $this->branchId)->delete();
+                $stock = StockProduct::find($id);
+                $movement = $this->stockProductService->createStockMovement('Se eliminó stock de producto', auth()->user()->id, 'ES');
+                $this->stockProductService->createStockMovementDetails($movement, $stock->product_id, -$stock->quantity, $stock->branch_id);
+                $stock->delete();
+            });
+            return is_null($error) ? "OK" : $error;
+        } catch (\Throwable $th) {
+            return $this->MessageResponse($th->getMessage(), 'danger');
+        }
+    }
+
+    public function addstock(Request $request)
+    {
+        try {
+            $products = $request->products;
+            $quantities = $request->quantities;
+            $branches = $request->branches;
+            $error = DB::transaction(function () use ($products, $quantities, $branches) {
+                $movement = $this->stockProductService->createStockMovement('Se agregó stock', auth()->user()->id, 'AS');
+                foreach ($products as $key => $product) {
+                    $this->stockProductService->increaseStock($branches[$key], $product, $quantities[$key]);
+                    $this->stockProductService->createStockMovementDetails($movement, $product, $quantities[$key], null, $branches[$key]);
+                }
+            });
+            return is_null($error) ? "OK" : $error;
+        } catch (\Throwable $th) {
+            return $this->MessageResponse($th->getMessage(), 'danger');
+        }
+    }
+
+    public function movestock(MoveStockRequest $request)
+    {
+        try {
+            $products = $request->products;
+            $originbranch = $request->originbranch;
+            $finalbranch = $request->finalbranch;
+            $error = DB::transaction(function () use ($products, $originbranch, $finalbranch) {
+                $movement = $this->stockProductService->createStockMovement('Movimiento de stock', auth()->user()->id, 'MS');
+                foreach ($products as $key => $product) {
+                    $this->stockProductService->moveStockBetweenBranches($key, $originbranch, $finalbranch, $product);
+                    $this->stockProductService->createStockMovementDetails($movement, $key, $product, $originbranch, $finalbranch);
+                }
             });
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {

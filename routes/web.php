@@ -119,6 +119,10 @@ Route::middleware([
     Route::post('product/search', [ProductsController::class, 'search'])->name('product.search');
     Route::get('product/delete/{id}/{listagain}', [ProductsController::class, 'delete'])->name('product.delete');
     Route::resource('product', ProductsController::class)->except(['show']);
+    Route::get('product/findByName', [ProductsController::class, 'find'])->name('product.find');
+    Route::post('product/movestock', [ProductsController::class, 'movestock'])->name('product.movestock');
+    Route::post('product/addstock', [ProductsController::class, 'addstock'])->name('product.addstock');
+    Route::resource('stockproduct', ProductsController::class)->except(['index,show,edit,create,update']);
     /* categories routes */
     Route::post('category/search', [CategoriesController::class, 'search'])->name('category.search');
     Route::get('category/delete/{id}/{listagain}', [CategoriesController::class, 'delete'])->name('category.delete');

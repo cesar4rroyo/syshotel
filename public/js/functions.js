@@ -783,7 +783,7 @@ var Intranet = (function () {
             });
 
             if (tipo == "error") {
-                toastr.error(mensaje, titulo);
+                // toastr.error(mensaje, titulo);
 				setTimeout(function(){
                     dismiss.hide();
                 }, 2000);
