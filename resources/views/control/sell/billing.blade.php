@@ -18,45 +18,6 @@
     </div>
     <div class="flex space-x-6 mt-3">
         <div class="flex flex-col space-y-1 w-full">
-            <label class="font-medium text-sm text-gray-600" for="payment_type">{{ trans('maintenance.control.management.paymentType') }}</label>
-            <select onchange="handleChangePayments()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="payment_type" id="payment_type">
-                @foreach ($cboPaymentTypes as $key => $value)
-                    <option value="{{ $key }}">{{ $value }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-    <div style="display: none" class="flex space-x-6 mt-3" id="divPaymentsTable">
-        <table id="tablePayments" class="w-full text-base font-medium text-left text-gray-500">
-            <thead class="text-base font-medium text-gray-900">
-                <tr>
-                    <th scope="col" class="py-3 px-4 border-b border-gray-300">F. Pago</th>
-                    <th scope="col" class="py-3 px-4 border-b border-gray-300"> Monto</th>
-                    <th scope="col" class="py-3 px-4 border-b border-gray-300">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="border-b border-gray-300">
-                <tr>
-                    <td class="py-3 px-4">
-                        <input type="number" name="payment_type[]" id="payment_type[]" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" readonly value="1">
-                    </td>
-                    <td class="py-3 px-4">
-                        <input type="number" name="payment_amount[]" id="payment_amount[]" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" readonly>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="editRow(this)">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="flex space-x-6 mt-3">
-        <div class="flex flex-col space-y-1 w-full">
             <label class="font-medium text-sm text-gray-600" for="document">{{ trans('maintenance.control.management.documentType') }}</label>
             <select onchange="handleChangeDocumentType()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" name="document" id="document">
                 @foreach ($cboDocumentTypes as $key => $value)
@@ -90,19 +51,90 @@
                 </select>
         </div>
     </div>
+    <div class="flex space-x-6 mt-3" id="divPaymentsTable">
+        <table id="tablePayments" class="w-full text-base font-medium text-left text-gray-500">
+            <thead class="text-base font-medium text-gray-900">
+                <tr>
+                    <th scope="col" class="py-3 px-4 border-b border-gray-300">F. Pago</th>
+                    <th scope="col" class="py-3 px-4 border-b border-gray-300">Monto</th>
+                    <th scope="col" class="py-3 px-4 border-b border-gray-300">Detalles</th>
+                    <th scope="col" class="py-3 px-4 border-b border-gray-300">Acciones
+                        <span
+                            onclick="modal('{{ URL::route($paymentRoute) }}', 'Nuevo Pago', this);"
+                            class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded mr-2 dark:bg-gray-700 dark:text-gray-300 cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-1 w-3 h-3" fill="currentColor"
+                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                            </svg>
+                            {{ __('maintenance.utils.new') }}
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="border-b border-gray-300">
+                <tr>
+                    <td class="py-3 px-4">
+                        <input type="hidden" name="payment_type_id[]" id="payment_type_id[]" value="1">
+                        <input type="text" name="payment_type[]" id="payment_type[]" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" readonly value="Efectivo">
+                    </td>
+                    <td class="py-3 px-4">
+                        <input type="number" name="payment_amount[]" id="payment_amount[]" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 payment-amount" value="0" readonly>
+                    </td>
+                    <td class="py-3 px-4" id="tdListDetails">
+                        <ul></ul>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">
+                            <i style="color: red" class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 <script>
 
     $( document ).ready( function() {
         var total = document.getElementById('totalCart').value;
-        var input = document.getElementById('amounts_');
+        var input = document.getElementsByClassName('payment-amount')[0];
         input.value = total;
-        input.setAttribute('readonly', true);
     });
 
-    function save(e){
+    function handleChangeDocumentType()
+    {
+        var documentType = document.getElementById('document').value;
+        var divDocumentNumber = document.getElementById('divDocumentNumber');
+        var selectClient = document.getElementById('clientBilling');
+
+        if(documentType != ''){
+            axios.get('{{ route($routes['documentType']) }}' + '?type=' + documentType)
+            .then(function (response) {
+                document.getElementById('documentNumber').value = response.data.documentNumber;
+                divDocumentNumber.style.display = 'initial';
+                selectClient.innerHTML = '';
+                var clients = response.data.cboClients;
+                for (var key in clients) {
+                    var option = document.createElement('option');
+                    option.value = key;
+                    option.text = clients[key];
+                    selectClient.appendChild(option);
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                divDocumentNumber.style.display = 'none';
+            });
+        }else{
+            divDocumentNumber.style.display = 'none';
+        }
+    }
+
+    function savepayment(e){
         e.preventDefault();
-        verifyTotalAmounts();
+        if(!verifyTotalAmounts()){
+            return;
+        }
         var total = document.getElementById('totalCart').value;
         var errorDiv = document.getElementById('divErrors');
         if(total == 0){
@@ -145,80 +177,107 @@
     }
 
     function verifyTotalAmounts(){
-        var paymentType = document.getElementById('payment_type').value;
         var total = document.getElementById('totalCart').value;
-        if(paymentType == 5){
-            var amounts = document.getElementsByClassName('input-amounts');
-            var total = 0;
-            for (var i = 0; i < amounts.length; i++) {
-                total += parseFloat(amounts[i].value);
-            }
-            var totalReal = document.getElementById('totalCart').value;
-
-            if(total != totalReal){
-                Intranet.notificaciones('Los montos ingresados no coinciden con el total', 'Error!!', 'error');
-                return;
-            }
+        var amounts = document.getElementsByClassName('payment-amount');
+        var totalAmounts = 0;
+        console.log(amounts.length);  
+        if(amounts.length == 0){
+            Intranet.notificaciones('No hay montos de pago', 'Error!!', 'error');
+            return false;
         }
-    }
-
-
-    function handleChangeDocumentType()
-    {
-        var documentType = document.getElementById('document').value;
-        var divDocumentNumber = document.getElementById('divDocumentNumber');
-        var selectClient = document.getElementById('clientBilling');
-
-        if(documentType != ''){
-            axios.get('{{ route($routes['documentType']) }}' + '?type=' + documentType)
-            .then(function (response) {
-                document.getElementById('documentNumber').value = response.data.documentNumber;
-                divDocumentNumber.style.display = 'initial';
-                selectClient.innerHTML = '';
-                var clients = response.data.cboClients;
-                for (var key in clients) {
-                    var option = document.createElement('option');
-                    option.value = key;
-                    option.text = clients[key];
-                    selectClient.appendChild(option);
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-                divDocumentNumber.style.display = 'none';
-            });
-        }else{
-            divDocumentNumber.style.display = 'none';
-        }
-    }
-
-    function handleChangeAmounts(e){
-        if(e.target.value <= 0){
-            e.target.value = 0;
-        }
-        var amounts = document.getElementsByClassName('input-amounts');
-        var total = 0;
         for (var i = 0; i < amounts.length; i++) {
-            total += parseFloat(amounts[i].value);
+            totalAmounts += parseFloat(amounts[i].value);
         }
-        var totalReal = document.getElementById('totalCart').value;
-
-        if(total > totalReal){
-            e.target.value = 0;
-            Intranet.notificaciones('El monto ingresado es mayor al total', 'Error!!', 'error');
+        if(total != totalAmounts){
+            Intranet.notificaciones('El monto total no coincide con la suma de los montos de pago', 'Error!!', 'error');
+            return false;
         }
+        return true;
     }
 
     function handleChangeTotalAmount(){
         var total = document.getElementById('totalCart').value;
-        var input = document.getElementById('amounts_');
+        var input = document.getElementsByClassName('payment-amount')[0];
         input.value = total;
     }
 
     function handleChangePayments()
     {
         var payment = document.getElementById('payment_type').value;
-        var paymentText = document.getElementById('payment_type').options[payment].text;
-        console.log(paymentText);
+        var ruta = '{{ route($paymentRoute) }}' + '?type=' + payment;
+        modal2(ruta, 'Nuevo Pago', payment);
+    }
+
+    function insertDataToRowBilling(data)
+    {
+        var html = "<tr>";
+        html += "<td class='py-3 px-4'>";
+        html += "<input type='hidden' name='payment_type_id[]' id='payment_type_id[]' value='"+data.payment_type+"'>";
+        html += "<input type='text' name='payment_type[]' id='payment_type[]' class='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5' readonly value='"+data.paymenttext+"'>";
+        html += "</td>";
+        html += "<td class='py-3 px-4'>";
+        html += "<input type='number' name='payment_amount[]' id='payment_amount[]' class='border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 payment-amount' value='"+data.amount+"' readonly>";
+        html += "</td>";
+        html += "<td class='py-3 px-4' id='tdListDetails'>";
+        html += "<ul>";
+        if(data.notes != null && data.notes.trim() != '' && data.notes != undefined){
+            html += "<input type='hidden' name='notes[]' id='notes[]' value='"+data.notes+"'>";
+            html += "<li>Notas: "+data.notes+"</li>";
+        }else{
+            html += "<input type='hidden' name='notes[]' id='notes[]' value=''>";
+        }
+        if(data.pos != null && data.pos != '' && data.pos != undefined){
+            html += "<input type='hidden' name='pos[]' id='pos[]' value='"+data.pos+"'>";
+            html += "<li>POS: "+data.postext+"</li>";
+        }else{
+            html += "<input type='hidden' name='pos[]' id='pos[]' value=''>";
+        }
+        if(data.card != null && data.card != '' && data.card != undefined){
+            html += "<input type='hidden' name='card[]' id='card[]' value='"+data.card+"'>";
+            html += "<li>Tarjeta: "+data.cardtext+"</li>";
+        }else{
+            html += "<input type='hidden' name='card[]' id='card[]' value=''>";
+        }
+        if(data.noperation != null && data.noperation != '' && data.noperation != undefined){
+            html += "<input type='hidden' name='noperation[]' id='noperation[]' value='"+data.noperation+"'>";
+            html += "<li>N° Operación: "+data.noperation+"</li>";
+        }else{
+            html += "<input type='hidden' name='noperation[]' id='noperation[]' value=''>";
+        }
+        if(data.bank != null && data.bank != '' && data.bank != undefined){
+            html += "<input type='hidden' name='bank[]' id='bank[]' value='"+data.bank+"'>";
+            html += "<li>Banco: "+data.banktext+"</li>";
+        }else{
+            html += "<input type='hidden' name='bank[]' id='bank[]' value=''>";
+        }
+        if(data.digitalwallet != null && data.digitalwallet != '' && data.digitalwallet != undefined){
+            html += "<input type='hidden' name='digitalwallet[]' id='digitalwallet[]' value='"+data.digitalwallet+"'>";
+            html += "<li>Billetera: "+data.digitalwallettext+"</li>";
+        }else{
+            html += "<input type='hidden' name='digitalwallet[]' id='digitalwallet[]' value=''>";
+        }
+        html += "</ul>";
+        html += "</td>";
+        html += "<td class='py-3 px-4 text-center'>";
+        html += "<button type='button' class='btn btn-danger btn-sm' onclick='deleteRow(this)'>";
+        html += "<i style='color: red' class='fas fa-trash-alt'></i>";
+        html += "</button>";
+        html += "</td>";
+        html += "</tr>";
+        return html;
+    }
+
+    function deleteRow(btn)
+    {
+        var row = btn.parentNode.parentNode;
+        row.parentNode.removeChild(row);
+    }
+
+    function addPaymentDataToTable(data)
+    {
+        var tablePayments = document.getElementById("tablePayments");
+        var rowCount = tablePayments.rows.length;
+        var row = tablePayments.insertRow(rowCount);
+        row.innerHTML = insertDataToRowBilling(data); 
     }
 </script>

@@ -65,7 +65,7 @@ class SellService
         return session()->get($sessionName);
     }
 
-    public function addToSessionCart(Product|Service $product, Request $request): array
+    public function addToSessionCart(Product|Service $product, Request $request, mixed $saleprice): array
     {
         if ($request->has('quantity')) {
             $quantity = $request->quantity;
@@ -77,7 +77,7 @@ class SellService
                 $product->id => [
                     "name" => $product->name,
                     "quantity" => 1,
-                    "price" => $product->sale_price ?? $product->price,
+                    "price" => $saleprice ?? $product->price,
                 ]
             ];
             session()->put($sessionName, $cart);
@@ -157,17 +157,16 @@ class SellService
         if ($this->isBillable($data['document'])) {
             event(new BillingEvents($billing));
         }
-        //EVENT TO ELECTRONIC BILLING
         return $billing;
     }
 
-    public function createProcessDetails(array $products, Process $process, $type): void
+    public function createProcessDetails(array $products, Process $process, string $type): void
     {
         foreach ($products as $product) {
             DB::table('processdetails')->insert([
                 'process_id' => $process->id,
                 'product_id' => ($type == 'product') ? $product['product_id'] : null,
-                'service_id' => ($type == 'service') ? $product['product_id'] : null,
+                'service_id' => ($type == 'service') ? $product['service_id'] : null,
                 'amount' => $product['quantity'],
                 'purchase_price' => $product['price'],
                 'sale_price' => $product['subtotal'],
@@ -182,18 +181,18 @@ class SellService
         }
     }
 
-    public function createBilling(Process $process, int $client = null, string $number, string $documentType, string $type, array $products): Billing
+    public function createBilling(Process $process, array $billingData, array $products, string $type): Billing
     {
         $amounts = $this->billing->GetBillingAmounts($this->businessId, $this->branchId, (float) $process->amount);
         $billing = $this->billing->create([
             'date' => date('Y-m-d H:i:s'),
-            'number' => $number,
-            'type' => $documentType,
+            'number' => $billingData['number'],
+            'type' => $billingData['type'],
             'status' => Billing::STATUS_CREATED,
             'total' => $amounts['total'],
             'igv' => $amounts['igv'],
             'subtotal' => $amounts['subtotal'],
-            'client_id' => $client ?? $process->client_id,
+            'client_id' => $billingData['client_id'],
             'process_id' => $process->id,
             'user_id' => auth()->user()->id,
             'business_id' => $this->businessId,
@@ -203,7 +202,7 @@ class SellService
         foreach ($products as $product) {
             $billing->details()->create([
                 'product_id' => ($type == 'product') ? $product['product_id'] : null,
-                'service_id' => ($type == 'service') ? $product['product_id'] : null,
+                'service_id' => ($type == 'service') ? $product['service_id'] : null,
                 'amount' => $product['quantity'],
                 'purchase_price' => $product['price'],
                 'sale_price' => $product['subtotal'],
@@ -211,6 +210,11 @@ class SellService
                 'branch_id' => $this->branchId,
             ]);
         }
+
+        if ($this->isBillable($billingData['type'])) {
+            event(new BillingEvents($billing));
+        }
+
         return $billing;
     }
 

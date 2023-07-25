@@ -16,6 +16,8 @@ class Concept extends Model
 
     const OPEN_CASH_REGISTER_ID = 1;
     const CLOSE_CASH_REGISTER_ID = 2;
+    const SELL_PRODUCT_OR_SERVICE_ID = 3;
+    const HOTEL_SERVICE_ID = 4;
 
     protected $fillable = [
         'name',

@@ -14,12 +14,12 @@ class PaymentService
     }
 
 
-    public function savePayments(array $payments): Collection
+    public function savePayments(array $payments, int $processId = null): Collection
     {
         $paymentsSaved = collect();
 
         foreach ($payments as $payment) {
-            $paymentSaved = $this->paymentFactory->create($payment['type'])->savePayment($payment);
+            $paymentSaved = $this->paymentFactory->create($payment['type'])->savePayment($payment, $processId);
             $paymentsSaved->push($paymentSaved);
         }
 

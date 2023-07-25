@@ -160,6 +160,7 @@ Route::middleware([
     Route::resource('billinglist', BillingListController::class)->except(['show', 'delete', 'create', 'edit', 'update', 'store']);
     /* Sell Products and Services Routes */
     Route::get('sellproduct', [SellProductController::class, 'index'])->name('sellproduct');
+    Route::get('sellproduct/payment', [SellProductController::class, 'payment'])->name('sellproduct.create.payment');
     Route::post('sellproduct/add/{id}', [SellProductController::class, 'addToCart'])->name('sellproduct.addToCart');
     Route::post('sellproduct/remove/{id}', [SellProductController::class, 'removeFromCart'])->name('sellproduct.removeFromCart');
     Route::post('sellproduct', [SellProductController::class, 'store'])->name('sellproduct.store');

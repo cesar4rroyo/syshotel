@@ -28,7 +28,9 @@ class PaymentProcess extends Model
         'pos_id',
         'branch_id',
         'business_id',
-        'payment_id'
+        'payment_id',
+        'process_id',
+        'nrooperation',
     ];
 
     protected $dates = [

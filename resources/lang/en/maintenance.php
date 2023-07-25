@@ -179,6 +179,12 @@ return [
             'business' => 'Empresa',
             'type'     => 'Tipo',
             'notes'    => 'Comentarios',
+            'amount'   => 'Monto',
+            'pos'      => 'P.O.S',
+            'card'     => 'Tarjeta',
+            'noperation' => 'Nro. Operación',
+            'bank'     => 'Banco',
+            'digitalwallet' => 'Billetera Digital',
         ],
         'cashregister' => [
             'title'    => 'Control Flujo de Caja',

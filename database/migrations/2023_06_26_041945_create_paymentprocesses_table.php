@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('image')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->text('comment')->nullable();
+            $table->text('nrooperation')->nullable();
             $table->foreignId('concept_id')->references('id')->on('concepts')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('payment_id')->references('id')->on('paymenttypes')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('card_id')->nullable()->references('id')->on('cards')->onUpdate('cascade')->onDelete('cascade');
@@ -30,6 +31,7 @@ return new class extends Migration
             $table->foreignId('pos_id')->nullable()->references('id')->on('pos')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('cascade');
             $table->foreignId('business_id')->references('id')->on('business')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('process_id')->references('id')->on('processes')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

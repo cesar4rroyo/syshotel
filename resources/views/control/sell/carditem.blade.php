@@ -1,7 +1,7 @@
 <div class="flex items center justify-between w-full py-8 px-12 rounded-xl bg-white">
     <div class="flex flex-col w-1/2 space-y-6">
-        <p class=" font-semibold">{{ $item->name }}</p>
-        <p>{{ $item->sale_price }}</p>
+        <p class="font-semibold">{{ $item->product->name . ' - S/.' . $item->sale_price }}</p>
+        <p>{{ 'Quedan: '. $item->quantity }}</p>
     </div>
     <div class="flex flex-col w-1/2 space-y-6">
         <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="addToCart('{{ $item->id }}');">{{ __('maintenance.sell.add') }}</button>
@@ -55,6 +55,7 @@
         var data = axios.post(url, params, axiosConfig).then(function (response) {
             if(response.data.success){
                 var cart = response.data.cart;
+                console.log(cart);
                 addToTable(cart);
                 Intranet.notificaciones(response.data.message, "Realizado!" , "success");
             }

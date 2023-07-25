@@ -5,12 +5,19 @@ namespace App\Http\Controllers\Control;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SellRequest;
 use App\Http\Services\CashRegisterService;
+use App\Http\Services\Payment\PaymentService;
 use App\Http\Services\SellService;
+use App\Models\Bank;
+use App\Models\Card;
+use App\Models\DigitalWallet;
 use App\Models\PaymentType;
 use App\Models\People;
+use App\Models\Pos;
 use App\Models\Process;
 use App\Models\Product;
+use App\Models\StockProduct;
 use App\Traits\CRUDTrait;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +35,7 @@ class SellProductController extends Controller
     protected int $cashboxId;
     protected string $folderView;
     protected Process $process;
+    protected PaymentService $paymentService;
 
     public function __construct()
     {
@@ -37,6 +45,7 @@ class SellProductController extends Controller
             $this->cashboxId = $request->session()->get('cashboxId');
             $this->sellService = new SellService($this->businessId, $this->branchId, 'product');
             $this->cashRegisterService = new CashRegisterService($this->businessId, $this->branchId, $this->cashboxId);
+            $this->paymentService = new PaymentService();
             return $next($request);
         });
         $this->folderView = 'control.sell.product.';
@@ -52,7 +61,7 @@ class SellProductController extends Controller
 
     public function index(): View
     {
-        $products = Product::search(null, $this->branchId, $this->businessId)->get();
+        $products = StockProduct::search(null, $this->branchId, $this->businessId)->get();
         $cartProducts = $this->sellService->getCarts();
         $cboPaymentTypes = $this->generateCboGeneral(PaymentType::class, 'description', 'id', 'Seleccione una opción');
         $cboDocumentTypes = ['' => 'Seleccione una opción'] + $this->sellService->getDocumentTypes();
@@ -70,6 +79,7 @@ class SellProductController extends Controller
             'cboClients' => $cboClients,
             'routes' => $this->routes,
             'number' => $number,
+            'paymentRoute' => 'sellproduct.create.payment',
         ]));
     }
 
@@ -84,12 +94,12 @@ class SellProductController extends Controller
             ], 500);
         }
         try {
-            $product = Product::findOrfail($product);
-            $cart =  $this->sellService->addToSessionCart($product, $request);
+            $product = StockProduct::findOrfail($product);
+            $cart =  $this->sellService->addToSessionCart($product->product, $request, $product->sale_price);
             return response()->json([
                 'success' => true,
                 'cart' => $cart,
-                'product' => $product,
+                'product' => $product->product,
                 'message' => 'Producto agregado al carrito'
             ], 200);
         } catch (\Exception $e) {
@@ -134,8 +144,9 @@ class SellProductController extends Controller
         try {
             DB::beginTransaction();
             $process = $this->process->create($request->all());
-            $data = $this->sellService->formatData($request->all());
-            $billing = $this->sellService->createPaymentAndBilling($process, $data, 'product');
+            $billing = $this->sellService->createBilling($process, $request->billing, $request->products, 'product');
+            $this->sellService->createProcessDetails($request->products, $process, 'product');
+            $this->paymentService->savePayments($request->payments, $process->id);
             $this->sellService->clearSessionCart();
             DB::commit();
             return response()->json([
@@ -143,14 +154,27 @@ class SellProductController extends Controller
                 'message' => 'Registro creado correctamente',
                 'url' => URL::route($this->routes['print'], ['type' => 'TICKET', 'id' => $billing->id]),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             app('log')->error($e);
             DB::rollBack();
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
-                'message' => 'Error al eliminar producto del carrito'
+                'message' => 'Ha ocurrido un error al generar el pago!'
             ], 500);
         }
+    }
+
+    public function payment(Request $request)
+    {
+        return view('control.sell.payments.create', with([
+            'cboPaymentTypes' => PaymentType::pluck('description', 'id')->all(),
+            'pos' => Pos::pluck('description', 'id')->all(),
+            'banks' => Bank::pluck('description', 'id')->all(),
+            'wallets' => DigitalWallet::pluck('description', 'id')->all(),
+            'cards' => Card::all()->each(function ($card) {
+                $card->description = $card->type . ' - ' . $card->description;
+            })->pluck('description', 'id')->all(),
+        ]));
     }
 }

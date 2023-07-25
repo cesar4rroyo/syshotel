@@ -56,10 +56,10 @@
             </div>
         </div>
         <div class="items-center justify-between w-full py-8 px-12 rounded-xl bg-white mt-3">
-            @include('control.sell.billing', ['store' => 'sellproduct.store', 'number' => $number])
+            @include('control.sell.billing', ['store' => 'sellproduct.store', 'number' => $number, 'paymentRoute' => $paymentRoute])
             <div class="flex items-center justify-end space-x-5 py-3 w-full">
                 <button class="px-5 py-2 rounded-lg bg-blue-corp text-white flex items-center space-x-2" id="btnGuardar"
-                    onclick="save(event)">
+                    onclick="savepayment(event)">
                     <i class="far fa-save"></i>
                     <p>{{ __('maintenance.sell.pay') }}</p>
                 </button>

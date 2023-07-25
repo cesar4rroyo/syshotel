@@ -8,12 +8,12 @@ use App\Models\PaymentType;
 
 class Transfer implements PaymentContract
 {
-    public function savePayment(array $data): PaymentProcess
+    public function savePayment(array $data, int $processId = null): PaymentProcess
     {
-        return PaymentProcess::crate([
+        return PaymentProcess::create([
             'date' => $data['date'],
             'number' => $data['number'],
-            'process_id' => $data['process_id'],
+            'process_id' => $data['process_id'] ?? $processId,
             'description' => $this->getPaymentName(),
             'status' => 'A',
             'amount' => $data['amount'],
@@ -23,6 +23,7 @@ class Transfer implements PaymentContract
             'business_id' => $data['business_id'],
             'payment_id' => PaymentType::TRANSFER_ID,
             'concept_id' => $data['concept_id'],
+            'nrooperation' => $data['nrooperation'] ?? '-',
         ]);
     }
 
