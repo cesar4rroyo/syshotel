@@ -166,7 +166,7 @@ class SellService
             DB::table('processdetails')->insert([
                 'process_id' => $process->id,
                 'product_id' => ($type == 'product') ? $product['product_id'] : null,
-                'service_id' => ($type == 'service') ? $product['service_id'] : null,
+                'service_id' => ($type == 'service') ? $product['product_id'] : null,
                 'amount' => $product['quantity'],
                 'purchase_price' => $product['price'],
                 'sale_price' => $product['subtotal'],
@@ -202,7 +202,7 @@ class SellService
         foreach ($products as $product) {
             $billing->details()->create([
                 'product_id' => ($type == 'product') ? $product['product_id'] : null,
-                'service_id' => ($type == 'service') ? $product['service_id'] : null,
+                'service_id' => ($type == 'service') ? $product['product_id'] : null,
                 'amount' => $product['quantity'],
                 'purchase_price' => $product['price'],
                 'sale_price' => $product['subtotal'],

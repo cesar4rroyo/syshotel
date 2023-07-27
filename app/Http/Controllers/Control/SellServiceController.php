@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Control;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SellRequest;
 use App\Http\Services\CashRegisterService;
+use App\Http\Services\Payment\PaymentService;
 use App\Http\Services\SellService;
-use App\Models\Payments;
+use App\Models\PaymentType;
 use App\Models\People;
 use App\Models\Process;
 use App\Models\Service;
@@ -28,6 +29,8 @@ class SellServiceController extends Controller
     protected string $folderView;
     protected Process $process;
     protected CashRegisterService $cashRegisterService;
+    protected PaymentService $paymentService;
+
 
     public function __construct()
     {
@@ -37,6 +40,7 @@ class SellServiceController extends Controller
             $this->cashboxId = $request->session()->get('cashboxId');
             $this->sellService = new SellService($this->businessId, $this->branchId, 'service');
             $this->cashRegisterService = new CashRegisterService($this->businessId, $this->branchId, $this->cashboxId);
+            $this->paymentService = new PaymentService();
             return $next($request);
         });
         $this->folderView = 'control.sell.service.';
@@ -53,7 +57,7 @@ class SellServiceController extends Controller
     {
         $products = Service::search(null, $this->branchId, $this->businessId)->get();
         $cartProducts = $this->sellService->getCarts();
-        $cboPaymentTypes = $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción');
+        $cboPaymentTypes = $this->generateCboGeneral(PaymentType::class, 'description', 'id', 'Seleccione una opción');
         $cboDocumentTypes = ['' => 'Seleccione una opción'] + $this->sellService->getDocumentTypes();
         $cboPeople =  ['' => 'Seleccione una opción'] + People::PeopleClient()->pluck('name', 'id')->all();
         $cboCompanies = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all();
@@ -69,6 +73,7 @@ class SellServiceController extends Controller
             'cboClients' => $cboClients,
             'routes' => $this->routes,
             'number' => $number,
+            'paymentRoute' => 'sellproduct.create.payment',
         ]));
     }
 
@@ -84,7 +89,7 @@ class SellServiceController extends Controller
                 ], 500);
             }
             $product = Service::findOrfail($product);
-            $cart =  $this->sellService->addToSessionCart($product, $request);
+            $cart =  $this->sellService->addToSessionCart($product, $request, $product->sale_price);
             return response()->json([
                 'success' => true,
                 'cart' => $cart,
@@ -133,8 +138,9 @@ class SellServiceController extends Controller
         try {
             DB::beginTransaction();
             $process = $this->process->create($request->all());
-            $data = $this->sellService->formatData($request->all());
-            $billing = $this->sellService->createPaymentAndBilling($process, $data, 'service');
+            $billing = $this->sellService->createBilling($process, $request->billing, $request->products, 'service');
+            $this->sellService->createProcessDetails($request->products, $process, 'service');
+            $this->paymentService->savePayments($request->payments, $process->id);
             $this->sellService->clearSessionCart();
             DB::commit();
             return response()->json([
@@ -148,7 +154,7 @@ class SellServiceController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
-                'message' => 'Error al eliminar producto del carrito'
+                'message' => 'Error al crear registro'
             ], 500);
         }
     }
