@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Models\Payments;
+use App\Models\Process;
+use App\Models\ProcessType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ManagementRequest extends FormRequest
@@ -39,7 +41,7 @@ class ManagementRequest extends FormRequest
             'payment_type' => $payment_type,
             'status' => $status,
             'payment_type_id' => $payment_type_id,
-            'processtype_id' => 3,
+            'processtype_id' => ProcessType::HOTEL_SERVICE_ID,
         ]);
     }
 

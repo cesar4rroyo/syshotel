@@ -106,7 +106,7 @@ class Process extends Model
         return $this->hasMany(Billing::class);
     }
 
-    public function scopeSearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, string $status = null, int $cashbox_id = null, int $procesType_id = null, int $lastOpenCashRegister = null, int $lastCashRegisterId = null)
+    public function scopeSearch(Builder $query, string $param = null, int $branch_id = null, int $business_id = null, string $status = null, int $cashbox_id = null, array $procesType_id = null, int $lastOpenCashRegister = null, int $lastCashRegisterId = null)
     {
         return $query->when($param, function ($query, $param) {
             return $query->where('number', 'like', "%$param%");
@@ -119,7 +119,7 @@ class Process extends Model
         })->when($cashbox_id, function ($query, $cashbox_id) {
             return $query->where('cashbox_id', $cashbox_id);
         })->when($procesType_id, function ($query, $procesType_id) {
-            return $query->where('processtype_id', $procesType_id);
+            return $query->whereIn('processtype_id', $procesType_id);
         })->when($lastOpenCashRegister, function ($query, $lastOpenCashRegister) {
             return $query->where('id', '>=', $lastOpenCashRegister);
         })->when($lastCashRegisterId, function ($query, $lastCashRegisterId) {

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Concept;
 use App\Models\Payments;
+use App\Models\ProcessType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SellRequest extends FormRequest
@@ -119,7 +120,7 @@ class SellRequest extends FormRequest
             'concept_id' => Concept::SELL_PRODUCT_OR_SERVICE_ID,
             'payment_type' => $this->evaluatePaymentType($payments),
             'status' => 'C',
-            'processtype_id' => 1,
+            'processtype_id' => ProcessType::SELL_ID,
             'client_id' => $this->clientBilling ?? 1,
             'total' => $this->totalCart,
             'amount' => $this->totalCart,

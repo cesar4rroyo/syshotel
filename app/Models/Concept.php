@@ -19,6 +19,9 @@ class Concept extends Model
     const SELL_PRODUCT_OR_SERVICE_ID = 3;
     const HOTEL_SERVICE_ID = 4;
 
+    const TYPE_INCOME = 'Ingreso';
+    const TYPE_EXPENSE = 'Egreso';
+
     protected $fillable = [
         'name',
         'type',

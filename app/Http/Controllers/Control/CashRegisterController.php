@@ -11,6 +11,7 @@ use App\Models\Business;
 use App\Models\Concept;
 use App\Models\People;
 use App\Models\Process;
+use App\Models\ProcessType;
 use App\Traits\CRUDTrait;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
@@ -114,7 +115,7 @@ class CashRegisterController extends Controller
             $name = $this->getParam($request->name);
             $businessId  = $this->getParam($request->businessId);
             $branchId = $this->getParam($request->branch_id);
-            $processTypeId = 2; //ID MOVIMIENTO DE CAJA
+            $processTypeId = [ProcessType::CASH_REGISTER_MOVEMENT_ID, ProcessType::SELL_ID]; //ID MOVIMIENTO DE CAJA
             $lastOpenCashRegister = $this->cashRegisterService->getLastOpenCashRegisterId();
             $lastCloseCashRegister = $this->cashRegisterService->getLastCloseCashRegisterId();
             $lastCashRegisterId = $this->cashRegisterService->getLastProccessCashRegisterId();

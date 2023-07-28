@@ -8,6 +8,7 @@ use App\Models\Business;
 use App\Models\Floor;
 use App\Models\Payments;
 use App\Models\Process;
+use App\Models\ProcessType;
 use App\Models\Setting;
 use Illuminate\Support\Collection;
 use Illuminate\Http\Request;
@@ -112,7 +113,7 @@ class ManagementService
         return $process = $this->process->create([
             'date' => date('Y-m-d'),
             'number' => $this->getCashRegisterNumber($process->cashbox_id),
-            'processtype_id' => 2,
+            'processtype_id' => ProcessType::CASH_REGISTER_MOVEMENT_ID,
             'status' => 'C',
             'amount' => $process->amount,
             'payment_type' => $process->payment_type,

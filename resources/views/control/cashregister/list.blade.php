@@ -12,12 +12,28 @@
 		?>
 		@foreach ($lista as $key => $value)
         <tr>
-			<td class="py-3 px-4">{{ $value->created_at }}</td>
-			<td class="py-3 px-4">{{ $value->number }}</td>
-			<td class="py-3 px-4">{{ $value->concept->name }}</td>
-			<td class="py-3 px-4">{{ $value->amount }}</td>
-			<td class="py-3 px-4">{{ $value->client?->name ?? '-' }}</td>
-			<td class="py-3 px-4">{{ $value->notes ?? '-' }}</td>
+			<td class="py-3 px-4 text-sm">{{ $value->created_at }}</td>
+			@if ($value->processtype_id == \App\Models\ProcessType::SELL_ID)
+				<td class="py-3 px-4 text-sm">{{ 'Mov. Nro. ' . $value->number }}</td>
+			@else
+				<td class="py-3 px-4 text-sm">{{ 'Venta Nro. ' . $value->number }}</td>
+			@endif
+			@if ( $value->concept->type == \App\Models\Concept::TYPE_INCOME )
+				<td class="py-3 px-4">
+					<span style="font-size: 0.5rem" class="px-2 py-1 leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+						{{ $value->concept->name }}
+					</span>
+				</td>
+			@else
+				<td class="py-3 px-4">
+					<span class="px-2 py-1 leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-red-100">
+						{{ $value->concept->name }}
+					</span>
+				</td>
+			@endif
+			<td class="py-3 px-4 text-sm">{{ $value->amount }}</td>
+			<td class="py-3 px-4 text-sm">{{ $value->client?->name ?? '-' }}</td>
+			<td class="py-3 px-4 text-sm">{{ $value->notes ?? '-' }}</td>
 			{{-- <td class="py-3 px-4">
 				<div class="flex items-center space-x-4 text-lg">
 					@include('utils.basebuttons', ['ruta' => $ruta, 'id' => $value->id, 'titulo_modificar' => $titulo_modificar, 'titulo_eliminar' => $titulo_eliminar])
