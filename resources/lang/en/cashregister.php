@@ -15,6 +15,8 @@ return [
         'cash' => 'Total Efectivo',
         'card' => 'Total Tarjetas',
         'deposit' => 'Total Depósitos o Transferencias',
+        'digitalwallet' => 'Total Billeteras Digitales',
+        'pos' => 'Detalle POS',
     ],
     'reports' => [
         'title' => 'Cierre de Caja',

@@ -26,7 +26,7 @@
 				</td>
 			@else
 				<td class="py-3 px-4">
-					<span class="px-2 py-1 leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-red-100">
+					<span style="font-size: 0.5rem" class="px-2 py-1 leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-red-100">
 						{{ $value->concept->name }}
 					</span>
 				</td>

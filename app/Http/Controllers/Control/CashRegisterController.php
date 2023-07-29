@@ -124,12 +124,10 @@ class CashRegisterController extends Controller
             $resumeData = [
                 'incomes' => $this->cashRegisterService->getTotalIncomes(),
                 'expenses' => $this->cashRegisterService->getTotalExpenses(),
-                // 'cash' => $this->cashRegisterService->getCashAmountTotal() -  $this->cashRegisterService->getTotalExpenses(),
-                'cash' => 0,
-                // 'cards' => $this->cashRegisterService->getTotalCards(),
-                'cards' => 0,
-                // 'deposits' => $this->cashRegisterService->getTotalDeposits(),
-                'deposits' => 0,
+                'cash' => $this->cashRegisterService->getCashAmountTotal() -  $this->cashRegisterService->getTotalExpenses(),
+                'cards' => $this->cashRegisterService->getTotalCards(),
+                'deposits' => $this->cashRegisterService->getTotalDeposits(),
+                'digitalwallets' => $this->cashRegisterService->getTotalDigitalWallets(),
             ];
             if (count($list) > 0) {
                 $paramPaginacion = $this->clsLibreria->generarPaginacion($list, $paginas, $filas, $this->entity);
@@ -304,8 +302,7 @@ class CashRegisterController extends Controller
                 'action'        => $action,
                 'number'        => $this->cashRegisterService->getCashRegisterNumber(),
                 'today'         => date('Y-m-d'),
-                // 'amountreal'    => $this->cashRegisterService->getCashAmountTotal(),
-                'amountreal'    => '0.00'
+                'amountreal'    => $this->cashRegisterService->getCashAmountTotal() -  $this->cashRegisterService->getTotalExpenses(),
             ];
             if ($action == 'OPEN') {
                 return view('control.cashregister.open')->with(compact('formData'));
@@ -336,11 +333,16 @@ class CashRegisterController extends Controller
             'business' => Business::find($this->businessId),
             'date' => date('Y-m-d H:i:s'),
             'user' => auth()->user(),
-            'incomes' => $this->cashRegisterService->getLastMovementsIncomes(),
-            'expenses' => $this->cashRegisterService->getLastMovementsExpenses(),
-            'cash' => $this->cashRegisterService->getCashAmountTotal(),
-            'cards' => $this->cashRegisterService->getTotalCards(),
-            'deposits' => $this->cashRegisterService->getTotalDeposits(),
+            'incomes' => $this->cashRegisterService->getListOfIncomes(),
+            'expenses' => $this->cashRegisterService->getListOfExpenses(),
+            'cash' => $this->cashRegisterService->getListOfCashMovements(),
+            'cards' => $this->cashRegisterService->getListOfCardMovements(),
+            'deposits' => $this->cashRegisterService->getListOfDepositMovements(),
+            'digitalwallets' => $this->cashRegisterService->getListOfDigitalWalletMovements(),
+            'cardTypes' => $this->cashRegisterService->getCardTypes(),
+            'bankTypes' => $this->cashRegisterService->getBankTypes(),
+            'digitalWalletsTypes' => $this->cashRegisterService->getDigitalWalletsTypes(),
+            'posTypes' => $this->cashRegisterService->getPosTypes(),
         ];
         $pdf = \PDF::loadView($view, ['data' => $data]);
         $type == 'A4' ? $pdf->setPaper('A4', 'portrait') : $pdf->setPaper([0, 0, 567.00, 283.80], 'landscape');
@@ -350,27 +352,31 @@ class CashRegisterController extends Controller
     public function details(Request $request)
     {
         $type = $request->type;
-        dd('TO DO');
         switch ($type) {
             case 'expenses':
-                # code...
+                $list = $this->cashRegisterService->getListOfExpenses();
                 break;
             case 'incomes':
-                # code...
+                $list = $this->cashRegisterService->getListOfIncomes();
                 break;
             case 'cash':
-                # code...
+                $list = $this->cashRegisterService->getListOfCashMovements();
                 break;
             case 'cards':
-                # code...
+                $list = $this->cashRegisterService->getListOfCardMovements();
                 break;
             case 'deposits':
-                # code...
+                $list = $this->cashRegisterService->getListOfDepositMovements();
                 break;
-
+            case 'digitalwallets':
+                $list = $this->cashRegisterService->getListOfDigitalWalletMovements();
+                break;
             default:
-                # code...
                 break;
         }
+        return view('control.cashregister.modal')->with([
+            'list' => $list,
+            'type' => $type,
+        ]);
     }
 }

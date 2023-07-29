@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class Process extends Model
@@ -184,20 +185,20 @@ class Process extends Model
             ->sum('amount');
     }
 
-    public function scopeTotalAmountIncomes(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
+    public function scopeTotalAmountIncomes(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null): Collection
     {
         return $query->where('branch_id', $branch_id)
             ->where('id', '>=', $lastOpenId)
             ->where('business_id', $business_id)
             ->where('cashbox_id', $cashbox_id)
-            ->where('processtype_id', 2)
+            ->whereIn('processtype_id', [ProcessType::SELL_ID, ProcessType::CASH_REGISTER_MOVEMENT_ID])
             ->whereHas('concept', function ($query) {
                 $query->where('type', 'I');
             })
-            ->sum('amount');
+            ->select('*')->get();
     }
 
-    public function scopeTotalAmountExpenses(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
+    public function scopeTotalAmountExpenses(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null): Collection
     {
         return $query->where('branch_id', $branch_id)
             ->where('id', '>=', $lastOpenId)
@@ -207,59 +208,79 @@ class Process extends Model
             ->whereHas('concept', function ($query) {
                 $query->where('type', 'E');
             })
-            ->sum('amount');
+            ->select('*')->get();
     }
 
-    public function scopeTotalAmountCards(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
+    public function scopeTotalAmountCards(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null): Collection
     {
         return DB::table('paymentprocesses')
-            ->join('paymenttypes', 'paymentprocesses.payment_id', '=', 'paymenttypes.id')
             ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
+            ->join('cards', 'paymentprocesses.card_id', '=', 'cards.id')
+            ->join('people', 'processes.client_id', '=', 'people.id')
+            ->join('concepts', 'processes.concept_id', '=', 'concepts.id')
+            ->join('pos', 'paymentprocesses.pos_id', '=', 'pos.id')
             ->where('processes.branch_id', $branch_id)
             ->where('processes.id', '>=', $lastOpenId)
             ->where('processes.business_id', $business_id)
             ->where('processes.cashbox_id', $cashbox_id)
-            ->where('processes.processtype_id', 2)
-            ->where('paymenttypes.type', $type)
-            ->when($subtype, function ($query, $subtype) {
-                return $query->where('paymenttypes.name', $subtype);
+            ->where('paymentprocesses.payment_id', PaymentType::CARD_ID)
+            ->when($type, function ($query, $type) {
+                return $query->where('cards.type', $type);
             })
-            ->sum('paymentprocesses.amount');
+            ->when($subtype, function ($query, $subtype) {
+                return $query->where('cards.description', $subtype);
+            })
+            ->select('processes.*', 'cards.description as card', 'paymentprocesses.amount as total', 'paymentprocesses.comment as comments', 'cards.type as type', 'people.name as client', 'concepts.name as concept', 'processes.processtype_id as processtype', 'pos.description as pos', 'cards.id as card_id', 'pos.id as pos_id')->get();
     }
 
-    public function scopeTotalAmountCash(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
+    public function scopeTotalAmountCash(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null): Collection
     {
         return DB::table('paymentprocesses')
             ->join('paymenttypes', 'paymentprocesses.payment_id', '=', 'paymenttypes.id')
             ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
             ->join('concepts', 'processes.concept_id', '=', 'concepts.id')
+            ->join('people', 'processes.client_id', '=', 'people.id')
             ->where('processes.branch_id', $branch_id)
             ->where('processes.id', '>=', $lastOpenId)
             ->where('processes.business_id', $business_id)
             ->where('processes.cashbox_id', $cashbox_id)
-            ->where('processes.processtype_id', 2)
+            ->where('paymentprocesses.payment_id', PaymentType::CASH_ID)
             ->where('concepts.type', 'I')
-            ->where('paymenttypes.type', $type)
-            ->when($subtype, function ($query, $subtype) {
-                return $query->where('paymenttypes.name', $subtype);
-            })
-            ->sum('paymentprocesses.amount');
+            ->select('processes.*', 'paymenttypes.description as payment', 'paymentprocesses.amount as total', 'paymentprocesses.comment as comments', 'people.name as client', 'concepts.name as concept', 'processes.processtype_id as processtype')->get();
     }
 
-    public function scopeTotalAmountDeposits(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null, string $subtype = null)
+    public function scopeTotalAmountDeposits(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null): Collection
     {
         return DB::table('paymentprocesses')
-            ->join('paymenttypes', 'paymentprocesses.payment_id', '=', 'paymenttypes.id')
             ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
+            ->join('banks', 'paymentprocesses.bank_id', '=', 'banks.id')
+            ->join('people', 'processes.client_id', '=', 'people.id')
+            ->join('concepts', 'processes.concept_id', '=', 'concepts.id')
             ->where('processes.branch_id', $branch_id)
             ->where('processes.id', '>=', $lastOpenId)
             ->where('processes.business_id', $business_id)
             ->where('processes.cashbox_id', $cashbox_id)
-            ->where('processes.processtype_id', 2)
-            ->where('paymenttypes.type', $type)
-            ->when($subtype, function ($query, $subtype) {
-                return $query->where('paymenttypes.name', $subtype);
+            ->whereIn('paymentprocesses.payment_id', [PaymentType::DEPOSIT_ID, PaymentType::TRANSFER_ID])
+            ->when($type, function ($query, $type) {
+                return $query->where('banks.description', $type);
             })
-            ->sum('paymentprocesses.amount');
+            ->select('processes.*', 'banks.description as bank', 'paymentprocesses.amount as total', 'paymentprocesses.comment as comments', 'paymentprocesses.nrooperation as nrooperation', 'paymentprocesses.payment_id as type', 'people.name as client', 'concepts.name as concept', 'processes.processtype_id as processtype', 'banks.id as bank_id')->get();
+    }
+
+    public function scopeTotalAmountDigitalWallets(Builder $query, int $lastOpenId = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null, string $type = null): Collection
+    {
+        return DB::table('paymentprocesses')
+            ->join('processes', 'paymentprocesses.process_id', '=', 'processes.id')
+            ->join('digitalwallets', 'paymentprocesses.digitalwallet_id', '=', 'digitalwallets.id')
+            ->join('people', 'processes.client_id', '=', 'people.id')
+            ->join('concepts', 'processes.concept_id', '=', 'concepts.id')
+            ->where('processes.branch_id', $branch_id)
+            ->where('processes.id', '>=', $lastOpenId)
+            ->where('processes.business_id', $business_id)
+            ->where('processes.cashbox_id', $cashbox_id)
+            ->whereIn('paymentprocesses.payment_id', [PaymentType::DIGITALWALLET_ID])
+            ->when($type, function ($query, $type) {
+                return $query->where('digitalwallets.description', $type);
+            })->select('processes.*', 'digitalwallets.description as digitalwallet', 'paymentprocesses.amount as total', 'paymentprocesses.comment as comments', 'people.name as client', 'concepts.name as concept', 'processes.processtype_id as processtype', 'digitalwallets.id as digitalwallet_id')->get();
     }
 }

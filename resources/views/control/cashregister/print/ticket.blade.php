@@ -125,96 +125,188 @@ p {
 <body>
 
 
-<section class="performance-facts">
-  <header class="performance-facts__header">
-    <h1 style="font-size: 1.4rem" class="performance-facts__title">{{ __('cashregister.reports.subtitle', ['business' => $data['business']['name']]) }}</h1>
-    <p>{{ __('cashregister.reports.date', ['date' => $data['date']]) }}</p>
+  <section class="performance-facts">
+    <header class="performance-facts__header">
+      <h1 class="performance-facts__title">{{ __('cashregister.reports.subtitle', ['business' => $data['business']['name']]) }}</h1>
       <p>{{ __('cashregister.reports.user', ['user' => $data['user']->name]) }}</p>
-  </header>
-  @php
-      $incomes = $data['incomes'];
-      $expenses = $data['expenses'];
-      $cash = $data['cash'];
-      $cards = $data['cards'];
-      $deposits = $data['deposits'];
-  @endphp
-  <table class="performance-facts__table">
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <b>{{ __('cashregister.general.incomes') }}</b>
-        </th>
-        <td>
-          <b>{{ $incomes->sum('amount') }}</b>
-        </td>
-      </tr>
-      @foreach ($incomes as $item)
+    </header>
+    @php
+        $incomes = $data['incomes'];
+        $expenses = $data['expenses'];
+        $expenses = $expenses->filter(function($item) { return $item->concept_id != \App\Models\Concept::CLOSE_CASH_REGISTER_ID; });
+        $cash = $data['cash'];
+        $cards = $data['cards'];
+        $deposits = $data['deposits'];
+        $digitalwallets = $data['digitalwallets'];
+        $cardTypes = $data['cardTypes'];
+        $bankTypes = $data['bankTypes'];
+        $digitalWalletsTypes = $data['digitalWalletsTypes'];
+        $posTypes = $data['posTypes'];
+    @endphp
+    <table class="performance-facts__table">
+      <tbody>
         <tr>
-          <td class="blank-cell">
-          </td>
-          <th>
-            {{$item->concept->name}}
+          <th colspan="2">
+            <b>{{ __('cashregister.general.incomes') }}</b>
           </th>
           <td>
-            <b>{{ $item->amount }}</b>
+            <b>{{ 'S/. ' . number_format($incomes->sum('amount'), 2, '.', '') }}</b>
           </td>
         </tr>
-      @endforeach
-      <br>
-      <tr>
-        <th colspan="2">
-          <b>{{ __('cashregister.general.expenses') }}</b>
-        </th>
-        <td>
-          <b>{{ $expenses->sum('amount') }}</b>
-        </td>
-      </tr>
-      @foreach ($expenses as $item)
+        @foreach ($incomes as $item)
+          <tr>
+            <td class="blank-cell">
+            </td>
+            <th>
+              {{$item->concept->name}}
+            </th>
+            <td>
+              <b>{{ $item->amount }}</b>
+            </td>
+          </tr>
+        @endforeach
+        <br>
         <tr>
-          <td class="blank-cell">
-          </td>
-          <th>
-            {{$item->concept->name}}
+          <th colspan="2">
+            <b>{{ __('cashregister.general.expenses') }}</b>
           </th>
           <td>
-            <b>{{ $item->amount }}</b>
+            <b>{{ 'S/. ' . number_format($expenses->sum('amount'), 2, '.', '') }}</b>
           </td>
         </tr>
-      @endforeach
-      <br>
-      <tr>
-        <th colspan="2">
-          <b>{{ __('cashregister.general.cash') }}</b>
-        </th>
-        <td>
-          <b>{{ $cash }}</b>
-        </td>
-      </tr>
-      <br>
-      <tr>
-        <th colspan="2">
-          <b>{{ __('cashregister.general.card') }}</b>
-        </th>
-        <td>
-          <b>{{ $cards }}</b>
-        </td>
-      </tr>
-      <br>
-      <tr>
-        <th colspan="2">
-          <b>{{ __('cashregister.general.deposit') }}</b>
-        </th>
-        <td>
-          <b>{{ $deposits }}</b>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p class="small-info text-center">
-    {{ $data['date'] }} 
-  </p>
-
-</section>
-</body>
-</html>
+        @foreach ($expenses as $item)
+          <tr>
+            <td class="blank-cell">
+            </td>
+            <th>
+              {{$item->concept->name}}
+            </th>
+            <td>
+              <b>{{ $item->amount }}</b>
+            </td>
+          </tr>
+        @endforeach
+        <br>
+        <tr>
+          <th colspan="2">
+            <b>{{ __('cashregister.general.cash') }}</b>
+          </th>
+          <td>
+            <b>{{ 'S/. '. number_format($cash->sum('total') - $expenses->sum('amount'), 2, '.', '') }}</b>
+          </td>
+        </tr>
+        <br>
+        <tr>
+          <th colspan="2">
+            <b>{{ __('cashregister.general.card') }}</b>
+          </th>
+          <td>
+            <b>{{ 'S/. ' . number_format($cards->sum('total'), 2, '.', '') }}</b>
+          </td>
+        </tr>
+        @foreach ($cardTypes as $item)
+        @php
+          $amount = number_format($cards->filter(function($value) use ($item) { return $value->card_id == $item->id; })->sum('total'), 2, '.', '');
+        @endphp
+        @if ($amount > 0)
+          <tr>
+            <td class="blank-cell">
+            </td>
+            <th>
+              {{$item->description . ' - ' . $item->type}}
+            </th>
+            
+            <td>
+              <b>{{ 'S/. ' . $amount }}</b>
+            </td>
+          </tr>
+        @endif
+        @endforeach
+        <br>
+        <tr>
+          <th colspan="2">
+            <b>{{ __('cashregister.general.deposit') }}</b>
+          </th>
+          <td>
+            <b>{{ 'S/. ' . number_format($deposits->sum('total'), 2, '.', '') }}</b>
+          </td>
+        </tr>
+        @foreach ($bankTypes as $item)
+        @php
+          $amount = number_format($deposits->filter(function($value) use ($item) { return $value->bank_id == $item->id; })->sum('total'), 2, '.', '');
+        @endphp
+        @if ($amount > 0)
+          <tr>
+            <td class="blank-cell">
+            </td>
+            <th>
+              {{$item->description}}
+            </th>
+            
+            <td>
+              <b>{{ 'S/. ' . $amount }}</b>
+            </td>
+          </tr>
+        @endif
+        @endforeach
+        <br>
+        <tr>
+          <th colspan="2">
+            <b>{{ __('cashregister.general.digitalwallet') }}</b>
+          </th>
+          <td>
+            <b>{{ 'S/. ' . number_format($digitalwallets->sum('total'), 2, '.', '') }}</b>
+          </td>
+        </tr>
+        @foreach ($digitalWalletsTypes as $item)
+        @php
+          $amount = number_format($digitalwallets->filter(function($value) use ($item) { return $value->digitalwallet_id == $item->id; })->sum('total'), 2, '.', '');
+        @endphp
+        @if ($amount > 0)
+          <tr>
+            <td class="blank-cell">
+            </td>
+            <th>
+              {{$item->description}}
+            </th>
+            
+            <td>
+              <b>{{ 'S/. ' . $amount }}</b>
+            </td>
+          </tr>
+        @endif
+        @endforeach
+        <br>
+        <tr>
+          <th colspan="2">
+            <b>{{ __('cashregister.general.pos') }}</b>
+          </th>
+        </tr>
+        @foreach ($posTypes as $item)
+        @php
+          $amount = number_format($cards->filter(function($value) use ($item) { return $value->pos_id == $item->id; })->sum('total'), 2, '.', '');
+        @endphp
+        @if ($amount > 0)
+          <tr>
+            <td class="blank-cell">
+            </td>
+            <th>
+              {{$item->description}}
+            </th>
+            
+            <td>
+              <b>{{ 'S/. ' . $amount }}</b>
+            </td>
+          </tr>
+        @endif
+        @endforeach
+      </tbody>
+    </table>
+  
+    <p class="small-info text-center">
+      {{ $data['date'] }} 
+    </p>
+  
+  </section>
+  </body>
+  </html>

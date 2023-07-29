@@ -3,8 +3,13 @@
 namespace App\Http\Services;
 
 use App\Http\Services\Payment\PaymentService;
+use App\Models\Bank;
+use App\Models\Card;
+use App\Models\DigitalWallet;
 use App\Models\PaymentProcess;
+use App\Models\Pos;
 use App\Models\Process;
+use App\Models\ProcessType;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -158,28 +163,144 @@ class CashRegisterService
         ]);
     }
 
-    public function getCashAmountTotal(): float
+    public function getCashAmountTotal(): string
     {
-        return Process::TotalAmountCash($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'cash');
+        return number_format(Process::TotalAmountCash($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId)->sum('total'), 2, '.', '');
     }
 
-    public function getTotalIncomes(): float
+    public function getTotalIncomes(): string
     {
-        return Process::TotalAmountIncomes($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
+        return number_format(Process::TotalAmountIncomes($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId)->sum('amount'), 2, '.', '');
     }
 
-    public function getTotalExpenses(): float
+    public function getTotalExpenses(): string
     {
-        return Process::TotalAmountExpenses($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId);
+        return number_format(Process::TotalAmountExpenses($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId)->sum('amount'), 2, '.', '');
     }
 
-    public function getTotalCards(string $subType = null): float
+    public function getTotalCards(string $type = null, string $subType = null): string
     {
-        return Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'card', $subType = null);
+        return number_format(Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type = null, $subType = null)->sum('total'), 2, '.', '');
     }
 
-    public function getTotalDeposits(string $type = null): float
+    public function getTotalDeposits(string $type = null): string
     {
-        return Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, 'transfer', $type = null);
+        return number_format(Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type = null)->sum('total'), 2, '.', '');
+    }
+
+    public function getTotalDigitalWallets(string $type = null): string
+    {
+        return number_format(Process::TotalAmountDigitalWallets($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type = null)->sum('total'), 2, '.', '');
+    }
+
+    public function getListOfIncomes(): Collection
+    {
+        return Process::TotalAmountIncomes($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId)->collect()->map(function ($item) {
+            $item->total = number_format($item->amount, 2, '.', '');
+            $item->description = $item->concept->name;
+            $item->movtype = $item->concept->type;
+            $item->client = $item->client->name ?? '';
+            $item->comments = $item->notes;
+            $item->paymentType = 'Efectivo';
+            $item->numberList = 'Mov. Caja: ' . $item->number;
+            return $item;
+        });
+    }
+
+    public function getListOfExpenses(): Collection
+    {
+        return Process::TotalAmountExpenses($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId)->collect()->map(function ($item) {
+            $item->total = number_format($item->amount, 2, '.', '');
+            $item->description = $item->concept->name;
+            $item->movtype = $item->concept->type;
+            $item->client = $item->client->name ?? '';
+            $item->comments = $item->notes;
+            $item->paymentType = 'Efectivo';
+            $item->numberList = 'Mov. Caja: ' . $item->number;
+            return $item;
+        });
+    }
+
+    public function getListOfCashMovements(): Collection
+    {
+        return Process::TotalAmountCash($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId)->collect()->map(function ($item) {
+            $item->total = number_format($item->total, 2, '.', '');
+            $item->description = $item->concept;
+            $item->client = $item->client ?? '';
+            $item->paymentType = 'Efectivo';
+            $item->numberList = $this->getNumberTitle($item->processtype_id) . $item->number;
+            return $item;
+        });
+    }
+
+    public function getListOfCardMovements(string $type = null, string $subType = null): Collection
+    {
+        return Process::TotalAmountCards($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type, $subType)->collect()->map(function ($item) {
+            $item->total = number_format($item->total, 2, '.', '');
+            $item->description = $item->concept;
+            $item->client = $item->client ?? '';
+            $item->paymentType = 'Tarjeta ' . $item->card . ' - ' . $item->type . ' - ' . $item->pos;
+            $item->numberList = $this->getNumberTitle($item->processtype_id) . $item->number;
+            return $item;
+        });
+    }
+
+    public function getListOfDepositMovements(string $bank = null): Collection
+    {
+        return Process::TotalAmountDeposits($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $bank)->collect()->map(function ($item) {
+            $item->total = number_format($item->total, 2, '.', '');
+            $item->description = $item->concept;
+            $item->client = $item->client ?? '';
+            $item->paymentType = 'Depósito ' . $item->bank . ' - Nro. Op: ' . $item->nrooperation;
+            $item->numberList = $this->getNumberTitle($item->processtype_id) . $item->number;
+            return $item;
+        });
+    }
+
+    public function getListOfDigitalWalletMovements(string $type = null): Collection
+    {
+        return Process::TotalAmountDigitalWallets($this->getLastOpenCashRegisterId(), $this->branchId, $this->businessId, $this->cashboxId, $type)->collect()->map(function ($item) {
+            $item->total = number_format($item->total, 2, '.', '');
+            $item->description = $item->concept;
+            $item->client = $item->client ?? '';
+            $item->paymentType = $item->digitalwallet;
+            $item->numberList = $this->getNumberTitle($item->processtype_id) . $item->number;
+            return $item;
+        });
+    }
+
+    public function getNumberTitle(int $proccesTypeId): string
+    {
+        if ($proccesTypeId == ProcessType::SELL_ID) {
+            return 'Venta Nr.: ';
+        } else if ($proccesTypeId == ProcessType::HOTEL_SERVICE_ID) {
+            return 'Servicio Nr.: ';
+        } else if ($proccesTypeId == ProcessType::PURCHASE_ID) {
+            return 'Compra Nr.: ';
+        } else if ($proccesTypeId == ProcessType::STOCK_MOVEMENT_ID) {
+            return 'Mov. Stock: ';
+        } else {
+            return 'Mov. Caja: ';
+        }
+    }
+
+    public function getCardTypes(): Collection
+    {
+        return Card::all();
+    }
+
+    public function getBankTypes(): Collection
+    {
+        return Bank::all();
+    }
+
+    public function getDigitalWalletsTypes(): Collection
+    {
+        return DigitalWallet::all();
+    }
+
+    public function getPosTypes(): Collection
+    {
+        return Pos::all();
     }
 }
