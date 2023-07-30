@@ -13,8 +13,10 @@
 		@foreach ($lista as $key => $value)
         <tr>
 			<td class="py-3 px-4 text-sm">{{ $value->created_at }}</td>
-			@if ($value->processtype_id == \App\Models\ProcessType::SELL_ID)
+			@if (in_array($value->processtype_id, [\App\Models\ProcessType::CASH_REGISTER_MOVEMENT_ID]))
 				<td class="py-3 px-4 text-sm">{{ 'Mov. Nro. ' . $value->number }}</td>
+			@elseif(in_array($value->processtype_id, [\App\Models\ProcessType::HOTEL_SERVICE_ID]))
+				<td class="py-3 px-4 text-sm">{{ 'Servicio Hotel - ' . $value->number }}</td>
 			@else
 				<td class="py-3 px-4 text-sm">{{ 'Venta Nro. ' . $value->number }}</td>
 			@endif
