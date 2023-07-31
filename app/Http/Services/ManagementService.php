@@ -68,81 +68,23 @@ class ManagementService
         return Process::where('room_id', $roomId)->where('business_id', $this->businessId)->where('branch_id', $this->branchId)->orderBy('id', 'desc')->first()->id;
     }
 
-    public function createPaymentsAndBilling(Process $process, Request $request): Billing
-    {
-        $amounts = $this->getAmounts($request->all());
-        $cashregister = $this->createPaymentToCashRegister($process, 4);
-        $this->storeAmounts($amounts, $cashregister->id);
-        $billing = $this->createBilling($process, $request->clientBilling, $request->documentNumber, $request->document);
-        return $billing;
-    }
-
-    public function storeAmounts(mixed $amounts, int $processId): void
-    {
-        foreach ($amounts as $key => $amount) {
-            if ($key != 0) {
-                DB::table('paymentprocesses')->insert([
-                    'process_id' => $processId,
-                    'payment_id' => $key,
-                    'amount' => $amount,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-        }
-    }
-
-    public function getAmounts(array $data): mixed
-    {
-        $amounts = collect([]);
-        $payment_id = $data['payment_type_id'];
-        foreach ($data as $key => $value) {
-            if (strpos($key, 'amounts') !== false) {
-                $id = explode('_', $key)[1];
-                if (!$id) {
-                    $id = $payment_id;
-                }
-                $amounts->put($id, $value);
-            }
-        }
-        return $amounts;
-    }
-
-    public function createPaymentToCashRegister(Process $process, int $conceptId): Process
-    {
-        return $process = $this->process->create([
-            'date' => date('Y-m-d'),
-            'number' => $this->getCashRegisterNumber($process->cashbox_id),
-            'processtype_id' => ProcessType::CASH_REGISTER_MOVEMENT_ID,
-            'status' => 'C',
-            'amount' => $process->amount,
-            'payment_type' => $process->payment_type,
-            'client_id' => $process->client_id,
-            'user_id' => $process->user_id,
-            'business_id' => $process->business_id,
-            'branch_id' => $process->branch_id,
-            'cashbox_id' => $process->cashbox_id,
-            'concept_id' => $conceptId,
-        ]);
-    }
-
     public function getCashRegisterNumber(int $cashBoxId): string
     {
         return $this->process->NextNumberCashRegister(null, $this->businessId, $this->branchId, $cashBoxId);
     }
 
-    public function createBilling(Process $process, int $client = null, string $number, string $type): Billing
+    public function createBilling(Process $process, array $billing): Billing
     {
         $amounts = $this->billing->GetBillingAmounts($this->businessId, $this->branchId, (float) $process->amount);
         $billing = $this->billing->create([
             'date' => date('Y-m-d H:i:s'),
-            'number' => $number,
-            'type' => $type,
+            'number' => $billing['number'],
+            'type' => $billing['type'],
             'status' => Billing::STATUS_CREATED,
             'total' => $amounts['total'],
             'igv' => $amounts['igv'],
             'subtotal' => $amounts['subtotal'],
-            'client_id' => $client ?? $process->client_id,
+            'client_id' => $billing['client_id'] ?? $process->client_id,
             'process_id' => $process->id,
             'user_id' => auth()->user()->id,
             'business_id' => $this->businessId,

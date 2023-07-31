@@ -12,6 +12,7 @@
     'model' => isset($formData['model']) ? $formData['model'] : null,
 ])
 <input type="hidden" name="status" id="status" value="{{ $status }}">
+<input type="hidden" name="type" id="type" value="{{ $type }}">
 <input type="hidden" name="room_id" value="{{ isset($formData['model']) ? $formData['model']->room->id : $room->id }}">
 <h1 class=" font-bold mt-5">{{ __('maintenance.control.management.general') }}</h1>
 <hr>
@@ -26,6 +27,18 @@
         <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5 bg-blue-100" type="date" name="date" id="date" readonly
             value="{{ isset($formData['model']) ? $formData['model']->created_at : $formData['today'] }}" required>
     </div>
+    @if ($type == 'H')
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="start_time">{{ trans('maintenance.control.management.start_time') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="time" name="start_time" id="start_time"
+            value="{{ isset($formData['model']) ? $formData['model']->start_time : $formData['now'] }}" required>
+    </div>
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="end_time">{{ trans('maintenance.control.management.end_time') }}</label>
+        <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="time" name="end_time" id="end_time"
+            value="{{ isset($formData['model']) ? $formData['model']->end_time : $formData['today'] }}">
+    </div>  
+    @else
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="start_date">{{ trans('maintenance.control.management.start_date') }}</label>
         <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="datetime-local" name="start_date" id="start_date"
@@ -36,6 +49,7 @@
         <input class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="datetime-local" name="end_date" id="end_date"
             value="{{ isset($formData['model']) ? $formData['model']->end_date : $formData['today'] }}" required>
     </div>
+    @endif
 </div>
 <div class="flex space-x-6 mt-3">
     <div class="flex flex-col space-y-1 w-full">
@@ -46,16 +60,24 @@
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="price">{{ trans('maintenance.control.management.room') }}</label>
         <input onchange="handleChangePrice()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="price" id="price"
-            value="{{ isset($formData['model']) ? $formData['model']->room->roomType->price : $room->roomType->price }}" required>
+            value="{{ isset($formData['model']) ? $formData['model']->room->roomType->price : $price }}" required>
     </div>
+    @if ($type == 'H')
+    <div class="flex flex-col space-y-1 w-full">
+        <label class="font-medium text-sm text-gray-600" for="hours">{{ trans('maintenance.control.management.hours') }}</label>
+        <input onchange="handleChangeDays()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="hours" id="days"
+            value="{{ isset($formData['model']) ? $formData['model']->hours : null }}" required>
+    </div>    
+    @else
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="days">{{ trans('maintenance.control.management.days') }}</label>
         <input onchange="handleChangeDays()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="days" id="days"
             value="{{ isset($formData['model']) ? $formData['model']->days : null }}" required>
-    </div>
+    </div>    
+    @endif
     <div class="flex flex-col space-y-1 w-full">
         <label class="font-medium text-sm text-gray-600" for="amount">{{ trans('maintenance.control.management.amount') }}</label>
-        <input onchange="handleChangeTotal()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="amount" id="amount"
+        <input onchange="handleChangeTotal()" class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="number" name="amount_hotel" id="amount_hotel"
             value="{{ isset($formData['model']) ? $formData['model']->amount : null }}" required>
     </div>
 </div>
@@ -76,8 +98,8 @@
         </select>
     </div>
     <div class="flex flex-col space-y-1 w-full">
-        <label class="font-medium text-sm text-gray-600" for="notes">{{ trans('maintenance.control.management.notes') }}</label>
-        <textarea class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="notes" id="notes"
+        <label class="font-medium text-sm text-gray-600" for="notes_hotel">{{ trans('maintenance.control.management.notes') }}</label>
+        <textarea class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5" type="text" name="notes_hotel" id="notes_hotel"
             value="{{ isset($formData['model']) ? $formData['model']->notes : null }}" required>
         </textarea>
     </div>
@@ -100,7 +122,7 @@
     $(document).ready(function() {
         configurarAnchoModal('600');
         init(IDFORMMANTENIMIENTO + '{!! $formData['entidad'] !!}', 'M', '{!! $formData['entidad'] !!}');
-        document.getElementById('amount').readOnly = true;
+        document.getElementById('amount_hotel').readOnly = true;
         document.getElementById('billingToggle').disabled = true;
     });
 
@@ -109,12 +131,12 @@
         if(days != '' && days != null && days != undefined && days > 0){
             var price = document.getElementById('price').value;
             var amount = days * price;
-            document.getElementById('amount').value = amount;
-            document.getElementById('amount').readOnly = false;
+            document.getElementById('amount_hotel').value = amount;
+            document.getElementById('amount_hotel').readOnly = false;
             document.getElementById('billingToggle').disabled = false;
         }else{
             document.getElementById('days').value = 0;
-            document.getElementById('amount').value = 0;
+            document.getElementById('amount_hotel').value = 0;
             document.getElementById('billingToggle').disabled = true;
         }
     }
@@ -124,17 +146,17 @@
         if(price != '' && price != null && price != undefined && price > 0){
             var days = document.getElementById('days').value;
             var amount = days * price;
-            document.getElementById('amount').value = amount;
-            document.getElementById('amount').readOnly = false;
+            document.getElementById('amount_hotel').value = amount;
+            document.getElementById('amount_hotel').readOnly = false;
         }else{
-            document.getElementById('amount').value = 0;
+            document.getElementById('amount_hotel').value = 0;
             document.getElementById('price').value = 0;
         }
     }
 
     function handleChangeTotal()
     {
-        var amount = document.getElementById('amount').value;
+        var amount = document.getElementById('amount_hotel').value;
         if(amount != '' && amount != null && amount != undefined && amount > 0){
             document.getElementById('billingToggle').disabled = false;
         }else{
@@ -145,9 +167,12 @@
 
     function handleChangePayment()
     {
+        var input = document.getElementsByClassName('payment-amount')[0];
+        var total = document.getElementById('amount_hotel').value;
         var divBilling = document.getElementById('divBilling');
         if(divBilling.style.display == 'none'){
             divBilling.style.display = 'block';
+            input.value = total;
         }else{
             divBilling.style.display = 'none';
         }

@@ -36,6 +36,10 @@ class Process extends Model
         'booking_id',
         'concept_id',
         'cashbox_id',
+        'type',
+        'start_time',
+        'end_time',
+        'hours',
     ];
 
     public function getStatusAttribute($status)
@@ -125,7 +129,8 @@ class Process extends Model
             return $query->where('id', '>=', $lastOpenCashRegister);
         })->when($lastCashRegisterId, function ($query, $lastCashRegisterId) {
             return $query->where('id', '<=', $lastCashRegisterId);
-        })->orderBy('id', 'asc');
+        })->whereIn('status', ['C', 'PyC'])
+            ->orderBy('id', 'asc');
     }
 
     public function scopeNextNumber(Builder $query, $year = null, int $branch_id = null, int $business_id = null, int $cashbox_id = null)
@@ -157,6 +162,7 @@ class Process extends Model
         $year = $year ?? date('Y');
         $rs = $query->where('number', 'like', '%' . $year . '-%')
             ->where('branch_id', $branch_id)
+            ->where('processtype_id', ProcessType::HOTEL_SERVICE_ID)
             ->where('business_id', $business_id)
             ->select(DB::raw("max((CASE WHEN number is NULL THEN 0 ELSE convert(substr(number,6,11),SIGNED integer) END)*1) AS maximum"))->first();
         return $year . '-' . str_pad($rs->maximum + 1, 6, '0', STR_PAD_LEFT);

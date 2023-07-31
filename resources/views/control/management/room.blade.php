@@ -7,7 +7,7 @@
         </h5>
     </a>
     <hr>
-    <p class="mb-3 text-gray-900 dark:text-white font-semibold mt-2">{{ $room['roomType']['name'] . ' -  S/. ' .  $room['roomType']['price']}}</p>
+    <p class="mb-3 text-gray-900 dark:text-white font-semibold mt-2">{{ $room['roomType']['name'] . ' -  S/. ' .  $room['roomType']['price_hour']}}</p>
     <div class="flex justify-center">
         @include('control.management.actions', ['room' => $room, 'routes' => $routes])
     </div>

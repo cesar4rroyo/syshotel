@@ -7,8 +7,9 @@ use App\Http\Requests\ManagementRequest;
 use App\Http\Requests\UpdateManagementRequest;
 use App\Http\Services\CashRegisterService;
 use App\Http\Services\ManagementService;
+use App\Http\Services\Payment\PaymentService;
 use App\Librerias\Libreria;
-use App\Models\Payments;
+use App\Models\PaymentType;
 use App\Models\People;
 use App\Models\Process;
 use App\Models\Room;
@@ -28,6 +29,8 @@ class ManagementController extends Controller
     protected int $branchId;
     protected int $cashboxId;
     protected string $folderView;
+    protected PaymentService $paymentService;
+
 
     public function __construct()
     {
@@ -38,6 +41,7 @@ class ManagementController extends Controller
             $this->cashboxId = $request->session()->get('cashboxId');
             $this->service = new ManagementService($this->businessId, $this->branchId);
             $this->cashRegisterService = new CashRegisterService($this->businessId, $this->branchId, $this->cashboxId);
+            $this->paymentService = new PaymentService();
             return $next($request);
         });
         $this->folderView = 'control.management.';
@@ -154,6 +158,7 @@ class ManagementController extends Controller
             'model'             => null,
             'today'             => date('Y-m-d'),
             'number'            => $this->service->generateCheckInNumber(),
+            'now'               => date('H:i:s'),
         ];
         return view($this->folderView . 'create', with([
             'entidad' => $this->entity,
@@ -164,9 +169,12 @@ class ManagementController extends Controller
             'cboClients' => ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all(),
             'formData' => $formData,
             'room' => $room,
-            'cboPaymentTypes' => $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción'),
+            'cboPaymentTypes' =>  $this->generateCboGeneral(PaymentType::class, 'description', 'id', 'Seleccione una opción'),
             'cboDocumentTypes' => ['' => 'Seleccione una opción'] + $this->service->getDocumentTypes(),
             'status' => $request->status,
+            'type' => $request->type,
+            'price' => $request->type == 'H' ? $room->roomType->price_hour : $room->roomType->price,
+            'paymentRoute' => 'sellproduct.create.payment',
         ]));
     }
 
@@ -177,7 +185,8 @@ class ManagementController extends Controller
             $process = Process::create($request->all());
             $billing = null;
             if ($request->billingToggle == 'on') {
-                $billing = $this->service->createPaymentsAndBilling($process, $request);
+                $this->paymentService->savePayments($request->payments, $process->id);
+                $billing = $this->service->createBilling($process, $request->billing);
             }
             $process->room->update(['status' => 'O']);
             DB::commit();

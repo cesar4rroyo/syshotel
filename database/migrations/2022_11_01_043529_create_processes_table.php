@@ -17,13 +17,17 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->string('number')->nullable();
+            $table->string('type')->nullable();
             $table->foreignId('processtype_id')->nullable()->references('id')->on('processtypes');
             $table->string('status')->nullable();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
+            $table->string('start_time')->nullable();
+            $table->string('end_time')->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->decimal('amountreal', 10, 2)->nullable();
             $table->decimal('days', 10, 2)->nullable();
+            $table->decimal('hours', 10, 2)->nullable();
             $table->string('payment_type')->nullable();
             $table->foreignId('room_id')->nullable()->references('id')->on('rooms');
             $table->foreignId('client_id')->nullable()->references('id')->on('people');

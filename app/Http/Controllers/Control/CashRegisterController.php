@@ -115,7 +115,7 @@ class CashRegisterController extends Controller
             $name = $this->getParam($request->name);
             $businessId  = $this->getParam($request->businessId);
             $branchId = $this->getParam($request->branch_id);
-            $processTypeId = [ProcessType::CASH_REGISTER_MOVEMENT_ID, ProcessType::SELL_ID]; //ID MOVIMIENTO DE CAJA
+            $processTypeId = [ProcessType::CASH_REGISTER_MOVEMENT_ID, ProcessType::SELL_ID, ProcessType::HOTEL_SERVICE_ID]; //ID MOVIMIENTO DE CAJA
             $lastOpenCashRegister = $this->cashRegisterService->getLastOpenCashRegisterId();
             $lastCloseCashRegister = $this->cashRegisterService->getLastCloseCashRegisterId();
             $lastCashRegisterId = $this->cashRegisterService->getLastProccessCashRegisterId();

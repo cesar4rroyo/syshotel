@@ -14,7 +14,6 @@ use App\Models\PaymentType;
 use App\Models\People;
 use App\Models\Pos;
 use App\Models\Process;
-use App\Models\Product;
 use App\Models\StockProduct;
 use App\Traits\CRUDTrait;
 use Exception;

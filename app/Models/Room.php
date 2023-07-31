@@ -57,7 +57,7 @@ class Room extends Model
 
     public function getCheckoutDateAttribute()
     {
-        $today = date('Y-m-d');
+        $today = date('Y-m-d 00:00:00');
         $process = Process::where('room_id', $this->id)
             ->where('start_date', '>', $today)
             ->whereHas('room', function (Builder $query) {
@@ -66,6 +66,11 @@ class Room extends Model
             ->orderBy('id', 'desc')->first();
 
         if ($process) {
+            if ($process->type == 'H') {
+                $resthours = Carbon::parse(Carbon::now())->diffInHours($process->end_date);
+                $restminutes = Carbon::parse(Carbon::now())->diffInMinutes($process->end_date) - ($resthours * 60);
+                return 'Checkout en: ' . $resthours . ' hora(s) y ' . $restminutes . ' minuto(s)';
+            }
             return 'Checkout en: ' . Carbon::parse(Carbon::now())->diffInDays($process->end_date) . ' día(s)';
         } else {
             return "";
