@@ -90,9 +90,12 @@
     <tbody>
       @foreach ($details as $item)
         <tr>
-          <td>{{ isset($item['product_id']) ? $item['product']['name'] : $item['service']['name'] }}</td>
+          @php
+            $productOrService = isset($item['product']) ? $item['product'] : $item['service'];
+          @endphp
+          <td>{{ isset($item['notes']) ? $item['notes'] : $productOrService['name'] }}</td>
           <td align="right">{{ $item['amount'] }}</td>
-          <td align="right">{{ $item['purchase_price'] }}</td>
+          <td align="right">{{ isset($item['notes']) ? $item['sale_price'] : $item['purchase_price'] }}</td>
           <td align="right">{{ $item['sale_price'] }}</td>
         </tr>  
       @endforeach
