@@ -62,21 +62,21 @@
             <input onchange="handleChangePrice()"
                 class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5"
                 type="number" name="price" id="price"
-                value="{{ $model->room->roomType->price ?? $room->roomType->price }}" required {{ $model->status == config('constants.processStatus.PyC') ? 'readonly' : null}}>
+                value="{{ $price }}" required readonly>
         </div>
         <div class="flex flex-col space-y-1 w-full">
             <label class="font-medium text-sm text-gray-600"
-                for="days">{{ trans('maintenance.control.management.days') }}</label>
+                for="days">{{ trans('maintenance.control.management.days') . '/' . trans('maintenance.control.management.hours') }}</label>
             <input onchange="handleChangeDays()"
                 class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5"
-                type="number" name="days" id="days" value="{{ $model->days ?? null }}" required {{ $model->status == config('constants.processStatus.PyC') ? 'readonly' : null}}>
+                type="number" name="days" id="days" value="{{ $model ? $daysOrHours : null }}" required readonly>
         </div>
         <div class="flex flex-col space-y-1 w-full">
             <label class="font-medium text-sm text-gray-600"
                 for="amount">{{ trans('maintenance.control.management.amount') }}</label>
             <input onchange="handleChangeTotal()"
                 class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5"
-                type="number" name="amount" id="amount" value="{{ $model->amount ?? null }}" required {{ $model->status == config('constants.processStatus.PyC') ? 'readonly' : null}}>
+                type="number" name="amount_hotel" id="amount_hotel" value="{{ $model->amount ?? null }}" required readonly>
         </div>
     </div>
     <div class="flex space-x-6 mt-3">
@@ -104,20 +104,27 @@
         </div>
         <div class="flex flex-col space-y-1 w-full">
             <label class="font-medium text-sm text-gray-600"
-                for="notes">{{ trans('maintenance.control.management.notes') }}</label>
+                for="notes_hotel">{{ trans('maintenance.control.management.notes') }}</label>
             <textarea
                 class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-0 focus:border-gray-300 focus:outline-none block w-full px-4 py-2.5"
-                type="text" name="notes" id="notes" required>
+                type="text" name="notes_hotel" id="notes_hotel" required>
                 {{ $model->notes ?? null }}
             </textarea>
         </div>
     </div>
+    @if (count($payments)>0)
+        @include('control.management.payments', [
+            'payments' => $payments,
+        ])
+    @endif
+    @if ($status == 'Pendiente')
     @include('control.management.billing2', [
         'formData' => $formData,
         'cboPaymentTypes' => $cboPaymentTypes,
         'cboDocumentTypes' => $cboDocumentTypes,
         'routes' => $routes,
     ])
+    @endif
     <div class="flex items-center justify-end space-x-5 py-3 w-full">
         <button class="px-5 py-2 rounded-lg bg-blue-corp text-white flex items-center space-x-2" id="btnGuardar"
             onclick="guardar('{{ $formData['entidad'] }}', this);">
@@ -130,58 +137,8 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        configurarAnchoModal('600');
         init(IDFORMMANTENIMIENTO + '{!! $formData['entidad'] !!}', 'M', '{!! $formData['entidad'] !!}');
-        document.getElementById('amount').readOnly = true;
-        document.getElementById('billingToggle').disabled = true;
     });
-
-    function handleChangeDays() {
-        var days = document.getElementById('days').value;
-        if (days != '' && days != null && days != undefined && days > 0) {
-            var price = document.getElementById('price').value;
-            var amount = days * price;
-            document.getElementById('amount').value = amount;
-            document.getElementById('amount').readOnly = false;
-            document.getElementById('billingToggle').disabled = false;
-        } else {
-            document.getElementById('days').value = 0;
-            document.getElementById('amount').value = 0;
-            document.getElementById('billingToggle').disabled = true;
-        }
-    }
-
-    function handleChangePrice() {
-        var price = document.getElementById('price').value;
-        if (price != '' && price != null && price != undefined && price > 0) {
-            var days = document.getElementById('days').value;
-            var amount = days * price;
-            document.getElementById('amount').value = amount;
-            document.getElementById('amount').readOnly = false;
-        } else {
-            document.getElementById('amount').value = 0;
-            document.getElementById('price').value = 0;
-        }
-    }
-
-    function handleChangeTotal() {
-        var amount = document.getElementById('amount').value;
-        if (amount != '' && amount != null && amount != undefined && amount > 0) {
-            document.getElementById('billingToggle').disabled = false;
-        } else {
-            document.getElementById('billingToggle').disabled = true;
-        }
-        handleChangePayment();
-    }
-
-    function handleChangePayment() {
-        var divBilling = document.getElementById('divBilling');
-        if (divBilling.style.display == 'none') {
-            divBilling.style.display = 'block';
-        } else {
-            divBilling.style.display = 'none';
-        }
-    }
 
     function guardar(entidad, idboton, entidad2) {
         var idformulario = IDFORMMANTENIMIENTO + entidad;

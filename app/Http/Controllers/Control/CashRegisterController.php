@@ -193,7 +193,7 @@ class CashRegisterController extends Controller
                 'entidad'           => $this->entity,
                 'listar'            => $this->getParam($request->input('listagain'), 'NO'),
                 'boton'             => 'Registrar',
-                'cboConcepts'       => Concept::whereNotIn('id', [Concept::OPEN_CASH_REGISTER_ID, Concept::CLOSE_CASH_REGISTER_ID])->pluck('name', 'id')->toArray(),
+                'cboConcepts'       => Concept::whereNotIn('id', [Concept::OPEN_CASH_REGISTER_ID, Concept::CLOSE_CASH_REGISTER_ID, Concept::HOTEL_SERVICE_ID, Concept::SELL_PRODUCT_OR_SERVICE_ID])->pluck('name', 'id')->toArray(),
                 'cboClients'        => $this->generateCboGeneral(People::class, 'name', 'id', 'Seleccione una opción'),
                 'number'            => $this->cashRegisterService->getCashRegisterNumber(),
                 'today'             => date('Y-m-d'),

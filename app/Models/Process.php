@@ -103,7 +103,7 @@ class Process extends Model
 
     public function payments()
     {
-        return $this->belongsToMany(PaymentType::class, 'paymentprocesses', 'process_id', 'payment_id');
+        return $this->belongsToMany(PaymentType::class, 'paymentprocesses', 'process_id', 'payment_id')->withPivot('amount', 'comment', 'card_id', 'bank_id', 'pos_id', 'digitalwallet_id', 'nrooperation');
     }
 
     public function billings()

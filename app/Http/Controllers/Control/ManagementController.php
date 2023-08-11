@@ -76,13 +76,16 @@ class ManagementController extends Controller
         try {
             DB::beginTransaction();
             $process = Process::find($id);
-            $billing = null;
-            if ($process->status == config('constants.processStatus.PyNC')) {
-                $billing = $this->service->createPaymentsAndBilling($process, $request);
+            $billing = $process->billings->first();
+            if ($process->status == 'Pendiente') {
+                $this->paymentService->savePayments($request->payments, $process->id);
+                $billing = $this->service->createBilling($process, $request->billing);
             }
             $process->update([
                 'notes' => $request->notes,
                 'status' => 'C',
+                'end_date' => $request->end_date,
+                'end_time' => $request->end_time,
             ]);
             $process->room->update(['status' => 'D']);
             DB::commit();
@@ -121,6 +124,8 @@ class ManagementController extends Controller
         ];
         return view($this->folderView . 'checkout', with([
             'model'             => $process,
+            'daysOrHours'       => $this->getDaysOrHours($process),
+            'price'             => $this->getPrice($process),
             'entidad'           => $this->entity,
             'id'                => $request->managementId,
             'routes'            => $this->routes,
@@ -129,9 +134,11 @@ class ManagementController extends Controller
             'cboClients'        => ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all(),
             'formData'          => $formData,
             'room'              => $room,
-            'cboPaymentTypes'   => $this->generateCboGeneral(Payments::class, 'name', 'id', 'Seleccione una opción'),
+            'cboPaymentTypes'   => $this->generateCboGeneral(PaymentType::class, 'name', 'id', 'Seleccione una opción'),
             'cboDocumentTypes'  => ['' => 'Seleccione una opción'] + $this->service->getDocumentTypes(),
             'status'            => $process->status,
+            'payments'          => $process->payments,
+            'paymentRoute'      => 'sellproduct.create.payment',
         ]));
     }
 
@@ -218,5 +225,23 @@ class ManagementController extends Controller
             $cboClients = ['' => 'Seleccione una opción'] + People::Companies()->pluck('social_reason', 'id')->all() + People::PeopleClient()->pluck('name', 'id')->all();
         }
         return response()->json(['documentNumber' => $documentNumber, 'cboClients' => $cboClients]);
+    }
+
+    public function getDaysOrHours(Process $process): mixed
+    {
+        if ($process->type == 'H') {
+            return $process->hours;
+        } else {
+            return $process->days;
+        }
+    }
+
+    public function getPrice(Process $process): mixed
+    {
+        if ($process->type == 'H') {
+            return $process->room->roomType->price_hour;
+        } else {
+            return $process->room->roomType->price;
+        }
     }
 }
