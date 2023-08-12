@@ -8,11 +8,15 @@ use App\Http\Requests\UpdateManagementRequest;
 use App\Http\Services\CashRegisterService;
 use App\Http\Services\ManagementService;
 use App\Http\Services\Payment\PaymentService;
+use App\Http\Services\SellService;
 use App\Librerias\Libreria;
 use App\Models\PaymentType;
 use App\Models\People;
 use App\Models\Process;
 use App\Models\Room;
+use App\Models\Service;
+use App\Models\StockProduct;
+use App\Traits\CashRegisterTrait;
 use App\Traits\CRUDTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +25,7 @@ use Illuminate\Support\Facades\URL;
 
 class ManagementController extends Controller
 {
-    use CRUDTrait;
+    use CRUDTrait, CashRegisterTrait;
 
     protected ManagementService $service;
     protected CashRegisterService $cashRegisterService;
@@ -30,6 +34,8 @@ class ManagementController extends Controller
     protected int $cashboxId;
     protected string $folderView;
     protected PaymentService $paymentService;
+    protected SellService $sellService;
+
 
 
     public function __construct()
@@ -58,6 +64,10 @@ class ManagementController extends Controller
             'checkout' => 'management.checkout',
             'print'   => 'billinglist.print',
             'status' => 'management.update.status',
+            'sell' => 'management.sell',
+            'sellstore' => 'management.sell.store',
+            'findproduct'    => 'product.find',
+            'findservice'    => 'service.find',
         ];
         $this->idForm = 'formMantenimiento' . $this->entity;
     }
@@ -245,6 +255,64 @@ class ManagementController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al actualizar el registro',
+            ]);
+        }
+    }
+
+    public function sell(Request $request)
+    {
+        $lastProcessInRommId = $this->service->getLastProcessInRoom($request->id);
+        if ($request->type == 'service') {
+            $this->sellService = new SellService($this->businessId, $this->branchId, 'service');
+            $products = Service::all();
+            $findroute = $this->routes['findservice'];
+            $placeholder = 'Buscar servicio ...';
+            $addcartroute = 'sellservice.addToCart';
+            $removecartroute = 'sellservice.removeFromCart';
+        } else {
+            $this->sellService = new SellService($this->businessId, $this->branchId, 'product');
+            $products = StockProduct::search(null, $this->branchId, $this->businessId)->get();
+            $findroute = $this->routes['findproduct'];
+            $placeholder = 'Buscar producto ...';
+            $addcartroute = 'sellproduct.addToCart';
+            $removecartroute = 'sellproduct.removeFromCart';
+        }
+        return view($this->folderView . 'sell', with([
+            'products' => $products,
+            'type' => $request->type,
+            'roomId' => $request->id,
+            'processId' => $lastProcessInRommId,
+            'find' => $findroute,
+            'routes' => $this->routes,
+            'entidad' => $this->entity,
+            'cartProducts' => $this->sellService->getCarts(),
+            'placeholder' => $placeholder,
+            'addcartroute' => $addcartroute,
+            'removecartroute' => $removecartroute,
+            'storesell' => $this->routes['sellstore'],
+        ]));
+    }
+
+    public function sellStore(Request $request)
+    {
+        try {
+            $products = $this->prepareProductsData($request);
+            DB::beginTransaction();
+            $this->sellService = new SellService($this->businessId, $this->branchId, $request->type);
+            $this->sellService->createProductsInRoomsRegister($products, $request->processId, $request->roomId, $request->type);
+            $this->sellService->clearSessionCart();
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Registro creado correctamente',
+                'routes' => URL::route($this->routes['create'], ['status' => 'Ocupado', 'id' => $request->roomId]),
+            ]);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al agregar el registro',
             ]);
         }
     }

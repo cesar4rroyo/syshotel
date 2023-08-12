@@ -8,12 +8,16 @@ use App\Librerias\Libreria;
 use App\Models\Branch;
 use App\Models\Service;
 use App\Traits\CRUDTrait;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ServicesController extends Controller
 {
     use CRUDTrait;
+
+    protected int $businessId;
+    protected int $branchId;
 
     public function __construct()
     {
@@ -34,6 +38,7 @@ class ServicesController extends Controller
             'edit'    => 'service.edit',
             'update'  => 'service.update',
             'destroy' => 'service.destroy',
+            'find'    => 'service.find',
         ];
         $this->idForm       = 'formMantenimiento' . $this->entity;
         $this->clsLibreria = new Libreria();
@@ -63,6 +68,12 @@ class ServicesController extends Controller
                 'numero' => '1',
             ],
         ];
+
+        $this->middleware(function ($request, $next) {
+            $this->businessId = auth()->user()->business_id;
+            $this->branchId = auth()->user()->business->branches->first()->id;
+            return $next($request);
+        });
     }
 
     public function search(Request $request)
@@ -246,6 +257,23 @@ class ServicesController extends Controller
             return is_null($error) ? "OK" : $error;
         } catch (\Throwable $th) {
             return $this->MessageResponse($th->getMessage(), 'danger');
+        }
+    }
+
+    public function find(Request $request): JsonResponse
+    {
+        $param = $request->input('param');
+        try {
+            $products = Service::where('name', 'like', "%$param%")
+                ->where('business_id', $this->businessId)
+                ->where('branch_id', $this->branchId)
+                ->get()->each(function ($item, $key) use ($request) {
+                    $item->name = $item->name . ' - ' . $item->price;
+                });
+            return response()->json(['success' => true, 'data' => $products]);
+        } catch (\Throwable $th) {
+            $data = [];
+            return response()->json(['success' => false, 'data' => $data, 'message' => 'No se encontraron servicios']);
         }
     }
 }

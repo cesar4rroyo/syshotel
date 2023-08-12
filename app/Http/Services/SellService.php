@@ -8,6 +8,7 @@ use App\Models\Billing;
 use App\Models\Business;
 use App\Models\Process;
 use App\Models\Product;
+use App\Models\ProductInRoom;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -158,6 +159,27 @@ class SellService
             event(new BillingEvents($billing));
         }
         return $billing;
+    }
+
+    public function createProductsInRoomsRegister(array $products, int $processId, int $roomId, string $type): void
+    {
+        foreach ($products as $product) {
+            ProductInRoom::create([
+                'process_id' => $processId,
+                'room_id' => $roomId,
+                'product_id' => ($type == 'product') ? $product['product_id'] : null,
+                'service_id' => ($type == 'service') ? $product['product_id'] : null,
+                'quantity' => $product['quantity'],
+                'purchase_price' => $product['price'],
+                'sale_price' => $product['subtotal'],
+                'total_purchase_price' => $product['quantity'] * $product['price'],
+                'branch_id' => $this->branchId,
+                'business_id' => $this->businessId
+            ]);
+            if ($type == 'product') {
+                $this->stockProductService->decreaseStock($this->branchId, $product['product_id'], $product['quantity']);
+            }
+        }
     }
 
     public function createProcessDetails(array $products, Process $process, string $type): void

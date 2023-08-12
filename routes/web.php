@@ -59,6 +59,8 @@ Route::middleware([
     Route::post('/management', [ManagementController::class, 'store'])->name('management.store');
     Route::get('/management/checkout', [ManagementController::class, 'checkout'])->name('management.checkout');
     Route::get('/management/create', [ManagementController::class, 'create'])->name('management.create');
+    Route::get('/management/sell', [ManagementController::class, 'sell'])->name('management.sell');
+    Route::post('/management/selltoroom', [ManagementController::class, 'sellStore'])->name('management.sell.store');
 
     Route::get('cashregister/print', [CashRegisterController::class, 'print'])->name('cashregister.print');
     Route::get('cashregister/details', [CashRegisterController::class, 'details'])->name('cashregister.details');
@@ -115,6 +117,7 @@ Route::middleware([
     /* services routes */
     Route::post('service/search', [ServicesController::class, 'search'])->name('service.search');
     Route::get('service/delete/{id}/{listagain}', [ServicesController::class, 'delete'])->name('service.delete');
+    Route::get('service/findByName', [ServicesController::class, 'find'])->name('service.find');
     Route::resource('service', ServicesController::class)->except(['show']);
     /* products routes */
     Route::post('product/search', [ProductsController::class, 'search'])->name('product.search');
