@@ -20,26 +20,28 @@ class UpdateManagementRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $payments = $this->preparePaymentData($this);
-        $billing = $this->prepareBillingData($this);
+        if ($this->status == 'Pendiente') {
+            $payments = $this->preparePaymentData($this);
+            $billing = $this->prepareBillingData($this);
+        }
 
         unset($this['payment_type'], $this['payment_type_id'], $this['payment_amount'], $this['notes'], $this['pos'], $this['card'], $this['bank'], $this['noperation'], $this['digitalwallet']);
 
         $this->merge([
-            'business_id' => session()->get('businessId'),
-            'branch_id' => session()->get('branchId'),
-            'cashbox_id' => session()->get('cashboxId'),
-            'user_id' => auth()->user()->id,
-            'payments' => $payments,
-            'billing' => $billing,
-            'payment_type' => $this->evaluatePaymentType($payments),
-            'status' => $this->evaluateStatus($this->billingToggle),
-            'processtype_id' => ProcessType::HOTEL_SERVICE_ID,
-            'concept_id' => Concept::HOTEL_SERVICE_ID,
-            'client_id' => $this->clientBilling ?? 1,
             'notes' => $this->notes_hotel,
-            'amount' => $this->amount_hotel,
         ]);
+
+        if ($this->status == 'Pendiente') {
+            $this->merge([
+                'payments' => $payments,
+                'billing' => $billing,
+                'payment_type' => $this->evaluatePaymentType($payments),
+                'processtype_id' => ProcessType::HOTEL_SERVICE_ID,
+                'concept_id' => Concept::HOTEL_SERVICE_ID,
+                'client_id' => $this->clientBilling ?? 1,
+                'notes' => $this->notes_hotel,
+            ]);
+        }
 
         if ($this->type == 'H') {
             $this->merge([

@@ -54,6 +54,7 @@ Route::middleware([
 
     Route::get('/management', [ManagementController::class, 'index'])->name('management');
     Route::put('/management/update/{id}', [ManagementController::class, 'update'])->name('management.update');
+    Route::put('/management/update/status/{id}', [ManagementController::class, 'updateStatus'])->name('management.update.status');
     Route::get('/management/document', [ManagementController::class, 'documentNumber'])->name('management.documentNumber');
     Route::post('/management', [ManagementController::class, 'store'])->name('management.store');
     Route::get('/management/checkout', [ManagementController::class, 'checkout'])->name('management.checkout');

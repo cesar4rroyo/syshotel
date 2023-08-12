@@ -57,6 +57,7 @@ class ManagementController extends Controller
             'documentType' => 'management.documentNumber',
             'checkout' => 'management.checkout',
             'print'   => 'billinglist.print',
+            'status' => 'management.update.status',
         ];
         $this->idForm = 'formMantenimiento' . $this->entity;
     }
@@ -87,7 +88,7 @@ class ManagementController extends Controller
                 'end_date' => $request->end_date,
                 'end_time' => $request->end_time,
             ]);
-            $process->room->update(['status' => 'D']);
+            $process->room->update(['status' => Room::MAINTENANCE_STATUS]);
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -148,9 +149,24 @@ class ManagementController extends Controller
         if ($status == 'close') {
             return redirect()->route($this->routes['back'])->withErrors(['error' => 'La caja se encuentra cerrada']);
         }
-        if ($request->status == 'Ocupado' || $request->status == 'Mantenimiento') {
+        if ($request->status == 'Ocupado') {
             $lastProcessInRommId = $this->service->getLastProcessInRoom($request->id);
             return redirect()->route($this->routes['checkout'], ['managementId' => $lastProcessInRommId, 'roomId' => $request->id]);
+        } else if ($request->status == 'Mantenimiento') {
+            $lastProcessInRommId = $this->service->getLastProcessInRoom($request->id);
+            $formData = [
+                'route'         => array($this->routes['status'], $lastProcessInRommId),
+                'method'        => 'PUT',
+                'class'         => 'form-horizontal',
+                'id'            => $this->idForm,
+                'autocomplete'  => 'off',
+                'boton'         => 'Sí',
+                'entidad'       => $this->entity,
+                'listar'        => 'NO',
+                'modelo'        => null,
+                'roomId'        => $request->id,
+            ];
+            return view('utils.confirmChangeStatus', with(compact('formData')));
         }
         $room = Room::findOrFail($request->id);
         $formData = [
@@ -195,7 +211,7 @@ class ManagementController extends Controller
                 $this->paymentService->savePayments($request->payments, $process->id);
                 $billing = $this->service->createBilling($process, $request->billing);
             }
-            $process->room->update(['status' => 'O']);
+            $process->room->update(['status' => Room::OCCUPIED_STATUS]);
             DB::commit();
             return response()->json([
                 'success' => true,
@@ -212,6 +228,23 @@ class ManagementController extends Controller
                 'message' => 'Ocurrió un error al crear el registro',
                 'room' => $request->room_id,
                 'routes' => URL::route($this->routes['back']),
+            ]);
+        }
+    }
+
+    public function updateStatus(Request $request, int $id)
+    {
+        try {
+            DB::beginTransaction();
+            Room::find($request->roomId)->update(['status' => Room::AVAILABLE_STATUS]);
+            DB::commit();
+            return "OK";
+        } catch (\Throwable $th) {
+            Log::error($th);
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al actualizar el registro',
             ]);
         }
     }

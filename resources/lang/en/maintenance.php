@@ -273,6 +273,7 @@ return [
         'back'   => 'Regresar',
         'search' => 'Buscar',
         'close'  => 'Cerrar',
+        'change_status' => 'Estas seguro de cambiar el estado de la habitación?',
     ],
 
     'sell' => [

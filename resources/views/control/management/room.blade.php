@@ -11,4 +11,12 @@
     <div class="flex justify-center">
         @include('control.management.actions', ['room' => $room, 'routes' => $routes])
     </div>
+    <div class="flex justify-center mt-2">
+        <span style="font-size: 0.5rem" class="px-2 py-1 leading-tight text-yellow-700 bg-yellow-100 rounded-full dark:bg-yellow-700 dark:text-yellow-100 mr-1">
+            Venta de Adicionales
+        </span>
+        <span style="font-size: 0.5rem" class="px-2 py-1 leading-tight text-yellow-700 bg-yellow-100 rounded-full dark:bg-yellow-700 dark:text-yellow-100">
+            Mover Stocks
+        </span>
+    </div>
 </div>
